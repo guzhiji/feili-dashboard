@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>看板</title>
+		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<script src="/webjars/jquery/jquery.min.js"></script>
+		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+		<script src="/echarts.min.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							内存使用率
+						</div>
+						<div class="panel-body">
+							<div id="mu-pie-chart" style="height: 300px;"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							内存使用率变化
+						</div>
+						<div class="panel-body">
+							<div id="mu-line-chart" style="height: 300px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							CPU使用率
+						</div>
+						<div class="panel-body">
+							<div id="cpu-pie-chart" style="height: 300px;"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							CPU使用率变化
+						</div>
+						<div class="panel-body">
+							<div id="cpu-line-chart" style="height: 300px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+
+var memoryUsagePie = (function() {
+
+	var muPieChart = echarts.init(document.getElementById('mu-pie-chart'));
+	var dataMemPie = [
+		{value: 0, name: '已用'},
+		{value: 1, name: '可用'}
+	];
+	var muPieChartOption = {
+		legend: {
+			data: ['已用', '可用']
+		},
+		series: [
+			{
+				name: '内存使用率',
+				type: 'pie',
+				data: dataMemPie
+			}
+		]
+	};
+
+	// init
+	muPieChart.setOption(muPieChartOption);
+
+	function update(used, free) {
+		dataMemPie[0].value = used;
+		dataMemPie[1].value = free;
+		muPieChart.setOption({
+			series: [{data: dataMemPie}]
+		});
+	}
+
+	return {
+		update: update
+	};
+})();
+
+var cpuUsagePie = (function() {
+	var cpuPieChart = echarts.init(document.getElementById('cpu-pie-chart'));
+	var dataCpuPie = [
+		{value: 0, name: '已用'},
+		{value: 1, name: '空闲'}
+	];
+	var cpuPieChartOption = {
+		legend: {
+			data: ['已用', '空闲']
+		},
+		series: [
+			{
+				name: 'CPU使用率',
+				type: 'pie',
+				data: dataCpuPie
+			}
+		]
+	};
+
+	// init
+	cpuPieChart.setOption(cpuPieChartOption);
+
+	function update(usage) {
+		dataCpuPie[0].value = usage;
+		dataCpuPie[1].value = 100 - usage;
+		cpuPieChart.setOption({
+			series: [{data: dataCpuPie}]
+		});
+	}
+
+	return {
+		update: update
+	};
+})();
+
+var LINECHART_MAX = 100;
+
+var memoryUsageLine = (function() {
+
+	var muLineChart = echarts.init(document.getElementById('mu-line-chart'));
+	var dataTimePoints = [], dataMemUsage = [];
+	var muLineChartOption = {
+		legend: {
+			data: ['内存使用率变化']
+		},
+		xAxis: [
+			{
+				type: 'category',
+				data: dataTimePoints
+			}
+		],
+		yAxis: [
+			{
+				type: 'value',
+				axisLabel: {
+					formatter: '{value} %'
+				}
+			}
+		],
+		series: [
+			{
+				name: '内存使用率变化',
+				type: 'line',
+				itemStyle: {normal: {areaStyle: {type: 'default'}}},
+				data: dataMemUsage
+			}
+		]
+	};
+
+	// init
+	muLineChart.setOption(muLineChartOption);
+
+	function update(used, free) {
+		if (dataTimePoints.length >= LINECHART_MAX)
+			dataTimePoints.shift();
+		if (dataMemUsage.length >= LINECHART_MAX)
+			dataMemUsage.shift();
+		dataTimePoints.push(new Date().toLocaleTimeString());
+		// dataTimePoints.push(new Date());
+		dataMemUsage.push(used / (used + free) * 100);
+		muLineChart.setOption({
+			xAxis: [{data: dataTimePoints}],
+			series: [{data: dataMemUsage}]
+		});
+	}
+
+	return {
+		update: update
+	};
+
+})();
+
+var cpuUsageLine = (function() {
+
+	var cpuLineChart = echarts.init(document.getElementById('cpu-line-chart'));
+	var dataTimePoints = [], dataLegends = [], dataCpuUsage = [];
+	var cpuLineChartOption = {
+		legend: {
+			data: dataLegends
+		},
+		xAxis: [
+			{
+				type: 'category',
+				data: dataTimePoints
+			}
+		],
+		yAxis: [
+			{
+				type: 'value',
+				axisLabel: {
+					formatter: '{value} %'
+				}
+			}
+		],
+		series: dataCpuUsage
+	};
+
+	// init
+	cpuLineChart.setOption(cpuLineChartOption);
+
+	function update(data) {
+
+		if (dataTimePoints.length >= LINECHART_MAX)
+			dataTimePoints.shift();
+		dataTimePoints.push(new Date().toLocaleTimeString());
+
+		for (var cpu in data) {
+			if (dataLegends.indexOf(cpu) == -1) {
+				dataLegends.push(cpu);
+				dataCpuUsage.push({
+					name: cpu,
+					type: 'line',
+					itemStyle: {normal: {areaStyle: {type: 'default'}}},
+					data: [data[cpu]]
+				});
+			} else {
+				for (var i = 0; i < dataCpuUsage.length; i++) {
+					if (dataCpuUsage[i].name == cpu) {
+						if (dataCpuUsage[i].data.length >= LINECHART_MAX)
+							dataCpuUsage[i].data.shift();
+						dataCpuUsage[i].data.push(data[cpu]);
+						break;
+					}
+				}
+			}
+		}
+
+		cpuLineChart.setOption({
+			legend: {data: dataLegends},
+			xAxis: [{data: dataTimePoints}],
+			series: dataCpuUsage
+		});
+	}
+
+	return {
+		update: update
+	};
+})();
+
+var ws = null;
+if (window.WebSocket) {
+	ws = new WebSocket("ws://localhost:8080/websocket");
+} else {
+	ws = new SockJS("/sockjs");
+}
+
+ws.onmessage = function (evt) {
+	var arr = evt.data.split(';'),
+		mem = arr[0].split(','),
+		used = parseInt(mem[0]),
+		free = parseInt(mem[1]),
+		cpus = arr[1].split(',');
+
+	var data = {};
+	for (var i = 0; i < cpus.length; i++) {
+		if (cpus[i].indexOf(':') == -1) continue;
+		var cpu = cpus[i].split(':');
+		if (cpu[0] == 'cpu') {
+			cpuUsagePie.update(parseFloat(cpu[1]));
+		} else {
+			data[cpu[0]] = parseFloat(cpu[1]);
+		}
+	}
+	cpuUsageLine.update(data);
+
+	memoryUsagePie.update(used, free);
+	memoryUsageLine.update(used, free);
+};
+
+		</script>
+	</body>
+</html>
+
