@@ -17,23 +17,17 @@ public class BackgroundTask {
 
 
     @Scheduled(fixedDelay = 1000)
-    public void pushData() {
-
+    public void pushCpuUsage() {
         Map<String, Long[]> cpuTime = SysInfo.getCPUUsage();
-        long[] memUsage = SysInfo.getMemoryUsage();
-        if (memUsage != null && lastCpuTime != null && cpuTime != null) {
-            StringBuilder out = new StringBuilder();
-            out.append(memUsage[0])
-                    .append(',')
-                    .append(memUsage[1])
-                    .append(';');
+        if (lastCpuTime != null && cpuTime != null) {
+            StringBuilder out = new StringBuilder("cpu:");
             for (Map.Entry<String, Long[]> entry : cpuTime.entrySet()) {
                 Long[] prev = lastCpuTime.get(entry.getKey());
                 Long[] cur = entry.getValue();
                 long total = cur[0] - prev[0];
                 long used = cur[1] - prev[1];
                 out.append(entry.getKey())
-                        .append(':')
+                        .append('=')
                         .append(100.0 * used / total)
                         .append(',');
             }
@@ -41,6 +35,13 @@ public class BackgroundTask {
         }
 
         lastCpuTime = cpuTime;
+    }
+
+    @Scheduled(fixedDelay = 1000)
+    public void pushMemoryUsage() {
+        long[] memUsage = SysInfo.getMemoryUsage();
+	if (memUsage != null)
+            webSocketHandler.broadcast("mem:" + memUsage[0] + ',' + memUsage[1]);
     }
 
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>看板</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
@@ -260,26 +261,29 @@ if (window.WebSocket) {
 }
 
 ws.onmessage = function (evt) {
-	var arr = evt.data.split(';'),
-		mem = arr[0].split(','),
-		used = parseInt(mem[0]),
-		free = parseInt(mem[1]),
-		cpus = arr[1].split(',');
-
-	var data = {};
-	for (var i = 0; i < cpus.length; i++) {
-		if (cpus[i].indexOf(':') == -1) continue;
-		var cpu = cpus[i].split(':');
-		if (cpu[0] == 'cpu') {
-			cpuUsagePie.update(parseFloat(cpu[1]));
-		} else {
-			data[cpu[0]] = parseFloat(cpu[1]);
+	var arr = evt.data.split(':');
+	if (arr.length) {
+		if (arr[0] == 'cpu') {
+			var cpus = arr[1].split(',');
+			var data = {};
+			for (var i = 0; i < cpus.length; i++) {
+				if (cpus[i].indexOf('=') == -1) continue;
+				var cpu = cpus[i].split('=');
+				if (cpu[0] == 'cpu') {
+					cpuUsagePie.update(parseFloat(cpu[1]));
+				} else {
+					data[cpu[0]] = parseFloat(cpu[1]);
+				}
+			}
+			cpuUsageLine.update(data);
+		} else if (arr[0] == 'mem') {
+			var mem = arr[1].split(','),
+			used = parseInt(mem[0]),
+			free = parseInt(mem[1]);
+			memoryUsagePie.update(used, free);
+			memoryUsageLine.update(used, free);
 		}
 	}
-	cpuUsageLine.update(data);
-
-	memoryUsagePie.update(used, free);
-	memoryUsageLine.update(used, free);
 };
 
 		</script>
