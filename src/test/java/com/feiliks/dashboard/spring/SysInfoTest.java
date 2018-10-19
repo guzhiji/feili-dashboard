@@ -22,4 +22,10 @@ public class SysInfoTest {
         Assert.assertTrue(!m.isEmpty());
     }
 
+    @Test
+    public void testExtractIfaces() throws IOException {
+        Map<String, Long[]> m = SysInfo.extractIfaces("/proc/net/dev");
+        Assert.assertTrue(!m.isEmpty());
+    }
+
 }
