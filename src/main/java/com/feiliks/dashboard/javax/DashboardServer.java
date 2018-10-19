@@ -24,13 +24,14 @@ public class DashboardServer {
     }
 
     private final static Set<Session> SESSIONS = new CopyOnWriteArraySet<>();
-    private final static ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(2);
+    private final static ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(3);
     private final static ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<>();
     private static boolean running = true;
 
     static {
-        SCHEDULER.scheduleAtFixedRate(new CpuMonitor(), 0, 1, TimeUnit.SECONDS);
         SCHEDULER.scheduleAtFixedRate(new MemoryMonitor(), 0, 1, TimeUnit.SECONDS);
+        SCHEDULER.scheduleAtFixedRate(new CpuMonitor(), 0, 2, TimeUnit.SECONDS);
+        SCHEDULER.scheduleAtFixedRate(new NetMonitor(), 0, 2, TimeUnit.SECONDS);
         new Thread(new Runnable() {
             @Override
             public void run() {
