@@ -89,4 +89,34 @@ public class SysInfo {
         }
     }
 
+    public static Map<String, Long[]> extractIfaces(String filename) throws IOException {
+        try (BufferedReader br = new BufferedReader(
+                new FileReader(filename))) {
+            Map<String, Long[]> out = new HashMap<>();
+            String line;
+            do {
+                line = br.readLine();
+                if (line != null) {
+                    String[] cols = spPt.split(line.trim());
+                    if (cols.length == 17 && cols[0].endsWith(":")) {
+                        String iface = cols[0].substring(0, cols[0].length() - 1);
+                        Long[] bytes = new Long[2];
+                        bytes[0] = Long.parseLong(cols[1]);
+                        bytes[1] = Long.parseLong(cols[9]);
+                        out.put(iface, bytes);
+                    }
+                }
+            } while (line != null);
+            return out;
+        }
+    }
+
+    public static Map<String, Long[]> getIfaces() {
+        try {
+            return extractIfaces("/proc/net/dev");
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
 }

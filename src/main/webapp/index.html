@@ -6,7 +6,6 @@
 		<link href="bootstrap.min.css" rel="stylesheet">
 		<script src="jquery.min.js"></script>
 		<script src="bootstrap.min.js"></script>
-		<script src="sockjs.min.js"></script>
 		<script src="echarts.min.js"></script>
 	</head>
 	<body>
@@ -51,6 +50,28 @@
 						</div>
 						<div class="panel-body">
 							<div id="cpu-line-chart" style="height: 300px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							网络数据接收速度
+						</div>
+						<div class="panel-body">
+							<div id="netrx-line-chart" style="height: 300px;"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							网络数据发送速度
+						</div>
+						<div class="panel-body">
+							<div id="nettx-line-chart" style="height: 300px;"></div>
 						</div>
 					</div>
 				</div>
@@ -253,12 +274,86 @@ var cpuUsageLine = (function() {
 	};
 })();
 
-var ws = null;
-if (window.WebSocket) {
-	ws = new WebSocket("ws://localhost:8080/feili-dashboard/websocket");
-} else {
-	ws = new SockJS("/sockjs");
-}
+var netSpeedLine = function(id) {
+
+	function sizeFormatter(value) {
+		var s = value;
+		if (s < 1000) return s + '';
+		s /= 1024;
+		if (s < 1000) return s.toFixed(1) + ' Kb';
+		s /= 1024;
+		if (s < 1000) return s.toFixed(1) + ' Mb';
+		s /= 1024;
+		return s.toFixed(1) + ' Gb';
+	}
+
+	var netLineChart = echarts.init(document.getElementById(id));
+	var dataTimePoints = [], dataLegends = [], dataNet = [];
+	var netLineChartOption = {
+		legend: {
+			data: dataLegends
+		},
+		xAxis: [
+			{
+				type: 'category',
+				data: dataTimePoints
+			}
+		],
+		yAxis: [
+			{
+				type: 'value',
+				axisLabel: {
+					formatter: sizeFormatter
+				}
+			}
+		],
+		series: dataNet
+	};
+
+	// init
+	netLineChart.setOption(netLineChartOption);
+
+	function update(data) {
+		if (dataTimePoints.length >= LINECHART_MAX)
+			dataTimePoints.shift();
+		dataTimePoints.push(new Date().toLocaleTimeString());
+
+		for (var iface in data) {
+			if (dataLegends.indexOf(iface) == -1) {
+				dataLegends.push(iface);
+				dataNet.push({
+					name: iface,
+					type: 'line',
+					itemStyle: {normal: {areaStyle: {type: 'default'}}},
+					data: [data[iface]]
+				});
+			} else {
+				for (var i = 0; i < dataNet.length; i++) {
+					if (dataNet[i].name == iface) {
+						if (dataNet[i].data.length >= LINECHART_MAX)
+							dataNet[i].data.shift();
+						dataNet[i].data.push(data[iface]);
+						break;
+					}
+				}
+			}
+		
+		}
+		netLineChart.setOption({
+			legend: {data: dataLegends},
+			xAxis: [{data: dataTimePoints}],
+			series: dataNet
+		});
+	}
+
+	return {
+		update: update
+	};
+};
+var netRxLine = netSpeedLine('netrx-line-chart');
+var netTxLine = netSpeedLine('nettx-line-chart');
+
+var ws = new WebSocket("ws://localhost:8080/feili-dashboard/websocket");
 
 ws.onmessage = function (evt) {
 	var arr = evt.data.split(':');
@@ -282,6 +377,18 @@ ws.onmessage = function (evt) {
 			free = parseInt(mem[1]);
 			memoryUsagePie.update(used, free);
 			memoryUsageLine.update(used, free);
+		} else if (arr[0] == 'net') {
+			var ifaces = arr[1].split(';'),
+				  rx = {}, tx = {};
+			for (var i = 0; i < ifaces.length; i++) {
+				if (ifaces[i].indexOf('=') == -1) continue;
+				var iface = ifaces[i].split('='),
+					values = iface[1].split(',');
+				rx[iface[0]] = parseFloat(values[0]);
+				tx[iface[0]] = parseFloat(values[1]);
+			}
+			netRxLine.update(rx);
+			netTxLine.update(tx);
 		}
 	}
 };
