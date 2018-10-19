@@ -1,4 +1,4 @@
-package com.feiliks.dashboard.spring;
+package com.feiliks.dashboard;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

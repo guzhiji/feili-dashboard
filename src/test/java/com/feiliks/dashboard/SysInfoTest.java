@@ -1,4 +1,4 @@
-package com.feiliks.dashboard.spring;
+package com.feiliks.dashboard;
 
 import org.junit.Assert;
 import org.junit.Test;
