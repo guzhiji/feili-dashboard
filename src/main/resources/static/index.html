@@ -78,6 +78,9 @@
 				</div>
 			</div>
 		</div>
+		<div style="position: fixed; top: 100px; display: none; text-align: center;" id="error-message" class="alert alert-danger">
+			服务器连接错误
+		</div>
 		<script>
 
 var memoryUsagePie = (function() {
@@ -353,51 +356,64 @@ var netSpeedLine = function(id) {
 };
 var netRxLine = netSpeedLine('netrx-line-chart');
 var netTxLine = netSpeedLine('nettx-line-chart');
-
 var ws = null;
-if (window.WebSocket) {
-	ws = new WebSocket("ws://localhost:8080/websocket");
-} else {
-	ws = new SockJS("/sockjs");
-}
 
-ws.onmessage = function (evt) {
-	var arr = evt.data.split(':');
-	if (arr.length) {
-		if (arr[0] == 'cpu') {
-			var cpus = arr[1].split(',');
-			var data = {};
-			for (var i = 0; i < cpus.length; i++) {
-				if (cpus[i].indexOf('=') == -1) continue;
-				var cpu = cpus[i].split('=');
-				if (cpu[0] == 'cpu') {
-					cpuUsagePie.update(parseFloat(cpu[1]));
-				} else {
-					data[cpu[0]] = parseFloat(cpu[1]);
-				}
-			}
-			cpuUsageLine.update(data);
-		} else if (arr[0] == 'mem') {
-			var mem = arr[1].split(','),
-			used = parseInt(mem[0]),
-			free = parseInt(mem[1]);
-			memoryUsagePie.update(used, free);
-			memoryUsageLine.update(used, free);
-		} else if (arr[0] == 'net') {
-			var ifaces = arr[1].split(';'),
-				  rx = {}, tx = {};
-			for (var i = 0; i < ifaces.length; i++) {
-				if (ifaces[i].indexOf('=') == -1) continue;
-				var iface = ifaces[i].split('='),
-					values = iface[1].split(',');
-				rx[iface[0]] = parseFloat(values[0]);
-				tx[iface[0]] = parseFloat(values[1]);
-			}
-			netRxLine.update(rx);
-			netTxLine.update(tx);
-		}
+function connect() {
+	if (window.WebSocket) {
+		ws = new WebSocket('ws://localhost:8080/websocket');
+	} else {
+		ws = new SockJS('/sockjs');
 	}
-};
+	ws.onmessage = function (evt) {
+		var arr = evt.data.split(':');
+		if (arr.length) {
+			if (arr[0] == 'cpu') {
+				var cpus = arr[1].split(',');
+				var data = {};
+				for (var i = 0; i < cpus.length; i++) {
+					if (cpus[i].indexOf('=') == -1) continue;
+					var cpu = cpus[i].split('=');
+					if (cpu[0] == 'cpu') {
+						cpuUsagePie.update(parseFloat(cpu[1]));
+					} else {
+						data[cpu[0]] = parseFloat(cpu[1]);
+					}
+				}
+				cpuUsageLine.update(data);
+			} else if (arr[0] == 'mem') {
+				var mem = arr[1].split(','),
+				used = parseInt(mem[0]),
+				free = parseInt(mem[1]);
+				memoryUsagePie.update(used, free);
+				memoryUsageLine.update(used, free);
+			} else if (arr[0] == 'net') {
+				var ifaces = arr[1].split(';'),
+					rx = {}, tx = {};
+				for (var i = 0; i < ifaces.length; i++) {
+					if (ifaces[i].indexOf('=') == -1) continue;
+					var iface = ifaces[i].split('='),
+						values = iface[1].split(',');
+					rx[iface[0]] = parseFloat(values[0]);
+					tx[iface[0]] = parseFloat(values[1]);
+				}
+				netRxLine.update(rx);
+				netTxLine.update(tx);
+			}
+		}
+	};
+	ws.onopen = function(evt) {
+		$('#error-message').hide();
+	};
+	ws.onclose = function (evt) {
+		var e = $('#error-message'), w = $(window);
+		e.css({
+			top: (w.height() - e.height()) / 2,
+			left: (w.width() - e.width()) / 2
+		}).show();
+		setTimeout(connect, 1000);
+	};
+}
+connect();
 
 		</script>
 	</body>
