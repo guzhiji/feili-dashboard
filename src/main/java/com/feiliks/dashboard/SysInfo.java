@@ -99,11 +99,14 @@ public class SysInfo {
                 if (line != null) {
                     String[] cols = spPt.split(line.trim());
                     if (cols.length == 17 && cols[0].endsWith(":")) {
-                        String iface = cols[0].substring(0, cols[0].length() - 1);
-                        Long[] bytes = new Long[2];
-                        bytes[0] = Long.parseLong(cols[1]);
-                        bytes[1] = Long.parseLong(cols[9]);
-                        out.put(iface, bytes);
+                        try {
+                            String iface = cols[0].substring(0, cols[0].length() - 1);
+                            Long[] bytes = new Long[2];
+                            bytes[0] = Long.parseLong(cols[1]);
+                            bytes[1] = Long.parseLong(cols[9]);
+                            out.put(iface, bytes);
+                        } catch (NumberFormatException ex) {
+                        }
                     }
                 }
             } while (line != null);
@@ -115,6 +118,49 @@ public class SysInfo {
         try {
             return extractIfaces("/proc/net/dev");
         } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public static Map<String, Long[]> extractDiskstats(String filename) throws IOException {
+        try (BufferedReader br = new BufferedReader(
+                new FileReader(filename))) {
+            Map<String, Long[]> out = new HashMap<>();
+            String line;
+            do {
+                line = br.readLine();
+                if (line != null) {
+                    String[] cols = spPt.split(line.trim());
+                    if (cols.length > 13 && cols[2].length() > 3 && (
+                            cols[2].startsWith("sd") || cols[2].startsWith("hd"))) {
+                        try {
+                            Long[] values = new Long[11];
+                            for (int i = 3; i < 14; i++) {
+                                values[i - 3] = Long.parseLong(cols[i]);
+                            }
+                            out.put(cols[2], values);
+                        } catch (NumberFormatException ex) {
+                        }
+                    }
+                }
+            } while (line != null);
+            return out;
+        }
+    }
+
+    public static Map<String, Long[]> getDiskIO() {
+        try {
+            Map<String, Long[]> out = new HashMap<>();
+            for (Map.Entry<String, Long[]> entry : extractDiskstats(
+                    "/proc/diskstats").entrySet()) {
+                Long[] io = new Long[2];
+                Long[] values = entry.getValue();
+                io[0] = values[2];
+                io[1] = values[6];
+                out.put(entry.getKey(), io);
+            }
+            return out;
+        } catch (IOException ex) {
             return null;
         }
     }

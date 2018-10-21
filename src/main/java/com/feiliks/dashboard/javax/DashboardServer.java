@@ -32,6 +32,7 @@ public class DashboardServer {
         SCHEDULER.scheduleAtFixedRate(new MemoryMonitor(), 0, 1, TimeUnit.SECONDS);
         SCHEDULER.scheduleAtFixedRate(new CpuMonitor(), 0, 2, TimeUnit.SECONDS);
         SCHEDULER.scheduleAtFixedRate(new NetMonitor(), 0, 2, TimeUnit.SECONDS);
+        SCHEDULER.scheduleAtFixedRate(new DiskMonitor(), 0, 2, TimeUnit.SECONDS);
         new Thread(new Runnable() {
             @Override
             public void run() {

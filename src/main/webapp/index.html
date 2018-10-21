@@ -76,6 +76,28 @@
 					</div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							磁盘读速度
+						</div>
+						<div class="panel-body">
+							<div id="diskr-line-chart" style="height: 300px;"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							磁盘写速度
+						</div>
+						<div class="panel-body">
+							<div id="diskw-line-chart" style="height: 300px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div style="position: fixed; top: 100px; display: none; text-align: center;" id="error-message" class="alert alert-danger">
 			服务器连接错误
@@ -355,9 +377,12 @@ var netSpeedLine = function(id) {
 };
 var netRxLine = netSpeedLine('netrx-line-chart');
 var netTxLine = netSpeedLine('nettx-line-chart');
+var diskRLine = netSpeedLine('diskr-line-chart');
+var diskWLine = netSpeedLine('diskw-line-chart');
+var ws = null;
 
 function connect() {
-	var ws = new WebSocket("ws://localhost:8080/feili-dashboard/websocket");
+	ws = new WebSocket("ws://localhost:8080/feili-dashboard/websocket");
 	ws.onmessage = function (evt) {
 		var arr = evt.data.split(':');
 		if (arr.length) {
@@ -392,6 +417,18 @@ function connect() {
 				}
 				netRxLine.update(rx);
 				netTxLine.update(tx);
+			} else if (arr[0] == 'disk') {
+				var disks = arr[1].split(';'),
+					r = {}, w = {};
+				for (var i = 0; i < disks.length; i++) {
+					if (disks[i].indexOf('=') == -1) continue;
+					var disk = disks[i].split('='),
+						values = disk[1].split(',');
+					r[disk[0]] = 512 * parseFloat(values[0]);
+					w[disk[0]] = 512 * parseFloat(values[1]);
+				}
+				diskRLine.update(r);
+				diskWLine.update(w);
 			}
 		}
 	};
