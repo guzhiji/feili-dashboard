@@ -104,76 +104,48 @@
 		</div>
 		<script>
 
-var memoryUsagePie = (function() {
-
-	var muPieChart = echarts.init(document.getElementById('mu-pie-chart'));
-	var dataMemPie = [
-		{value: 0, name: '已用'},
-		{value: 1, name: '可用'}
-	];
-	var muPieChartOption = {
-		legend: {
-			data: ['已用', '可用']
-		},
-		series: [
-			{
-				name: '内存使用率',
-				type: 'pie',
-				data: dataMemPie
-			}
-		]
-	};
-
+var UtilizationPie = function(id, name, legends) {
+	var chart = echarts.init(document.getElementById(id)),
+		data = [
+			{value: 0, name: legends.used},
+			{value: 1, name: legends.free}
+		],
+		option = {
+			legend: {
+				data: [legends.used, legends.free]
+			},
+			series: [
+				{
+					name: name,
+					type: 'pie',
+					label: {
+						show: true,
+						formatter: '{b}: {d} %'
+					},
+					data: data
+				}
+			]
+		};
 	// init
-	muPieChart.setOption(muPieChartOption);
-
-	function update(used, free) {
-		dataMemPie[0].value = used;
-		dataMemPie[1].value = free;
-		muPieChart.setOption({
-			series: [{data: dataMemPie}]
-		});
-	}
-
+	chart.setOption(option);
 	return {
-		update: update
+		update: function(used, free) {
+			data[0].value = used;
+			data[1].value = free;
+			chart.setOption({
+				series: [{data: data}]
+			});
+		}
 	};
-})();
-
-var cpuUsagePie = (function() {
-	var cpuPieChart = echarts.init(document.getElementById('cpu-pie-chart'));
-	var dataCpuPie = [
-		{value: 0, name: '已用'},
-		{value: 1, name: '空闲'}
-	];
-	var cpuPieChartOption = {
-		legend: {
-			data: ['已用', '空闲']
-		},
-		series: [
-			{
-				name: 'CPU使用率',
-				type: 'pie',
-				data: dataCpuPie
-			}
-		]
-	};
-
-	// init
-	cpuPieChart.setOption(cpuPieChartOption);
-
-	function update(usage) {
-		dataCpuPie[0].value = usage;
-		dataCpuPie[1].value = 100 - usage;
-		cpuPieChart.setOption({
-			series: [{data: dataCpuPie}]
-		});
-	}
-
-	return {
-		update: update
-	};
-})();
+};
+var memoryUsagePie = UtilizationPie('mu-pie-chart', '内存使用率', {
+	used: '已用',
+	free: '可用'
+});
+var cpuUsagePie = UtilizationPie('cpu-pie-chart', 'CPU使用率', {
+	used: '已用',
+	free: '空闲'
+});
 
 var LINECHART_MAX = 100;
 
@@ -393,7 +365,7 @@ function connect() {
 					if (cpus[i].indexOf('=') == -1) continue;
 					var cpu = cpus[i].split('=');
 					if (cpu[0] == 'cpu') {
-						cpuUsagePie.update(parseFloat(cpu[1]));
+						cpuUsagePie.update(parseFloat(cpu[1]), 100 - parseFloat(cpu[1]));
 					} else {
 						data[cpu[0]] = parseFloat(cpu[1]);
 					}
