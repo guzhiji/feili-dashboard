@@ -11,6 +11,7 @@
 		<style>
 			body {
 				background-color: #061325;
+				padding: 100px;
 			}
 		
 			.panel-primary>.panel-heading {
@@ -24,92 +25,84 @@
 		</style>
 	</head>
 	<body>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							内存使用率
-						</div>
-						<div class="panel-body">
-							<div id="mu-pie-chart" style="height: 300px;"></div>
-						</div>
+		<div class="row">
+			<div class="col-md-4">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						内存使用率
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							内存使用率变化
-						</div>
-						<div class="panel-body">
-							<div id="mu-line-chart" style="height: 300px;"></div>
-						</div>
+					<div class="panel-body">
+						<div id="mu-pie-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							CPU使用率
-						</div>
-						<div class="panel-body">
-							<div id="cpu-pie-chart" style="height: 300px;"></div>
-						</div>
+			<div class="col-md-8">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						内存使用率变化
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							CPU使用率变化
-						</div>
-						<div class="panel-body">
-							<div id="cpu-line-chart" style="height: 300px;"></div>
-						</div>
+					<div class="panel-body">
+						<div id="mu-line-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							网络数据接收速度
-						</div>
-						<div class="panel-body">
-							<div id="netrx-line-chart" style="height: 300px;"></div>
-						</div>
+			<div class="col-md-4">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						CPU使用率
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							网络数据发送速度
-						</div>
-						<div class="panel-body">
-							<div id="nettx-line-chart" style="height: 300px;"></div>
-						</div>
+					<div class="panel-body">
+						<div id="cpu-pie-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							磁盘读速度
-						</div>
-						<div class="panel-body">
-							<div id="diskr-line-chart" style="height: 300px;"></div>
-						</div>
+			<div class="col-md-8">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						CPU使用率变化
+					</div>
+					<div class="panel-body">
+						<div id="cpu-line-chart" style="height: 300px;"></div>
 					</div>
 				</div>
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							磁盘写速度
-						</div>
-						<div class="panel-body">
-							<div id="diskw-line-chart" style="height: 300px;"></div>
-						</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						网络数据接收速度
+					</div>
+					<div class="panel-body">
+						<div id="netrx-line-chart" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						网络数据发送速度
+					</div>
+					<div class="panel-body">
+						<div id="nettx-line-chart" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						磁盘读速度
+					</div>
+					<div class="panel-body">
+						<div id="diskr-line-chart" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						磁盘写速度
+					</div>
+					<div class="panel-body">
+						<div id="diskw-line-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
