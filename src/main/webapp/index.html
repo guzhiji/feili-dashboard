@@ -104,15 +104,15 @@
 		</div>
 		<script>
 
-var UtilizationPie = function(id, name, legends) {
+var UtilizationPie = function(id, name, labels) {
 	var chart = echarts.init(document.getElementById(id)),
 		data = [
-			{value: 0, name: legends.used},
-			{value: 1, name: legends.free}
+			{value: 0, name: labels.used},
+			{value: 1, name: labels.free}
 		],
 		option = {
 			legend: {
-				data: [legends.used, legends.free]
+				data: [labels.used, labels.free]
 			},
 			series: [
 				{
@@ -149,208 +149,109 @@ var cpuUsagePie = UtilizationPie('cpu-pie-chart', 'CPU使用率', {
 
 var LINECHART_MAX = 100;
 
-var memoryUsageLine = (function() {
+function sizeFormatter(value) {
+	var s = value;
+	if (s < 1000) return s + '';
+	s /= 1024;
+	if (s < 1000) return s.toFixed(1) + ' Kb';
+	s /= 1024;
+	if (s < 1000) return s.toFixed(1) + ' Mb';
+	s /= 1024;
+	return s.toFixed(1) + ' Gb';
+}
 
-	var muLineChart = echarts.init(document.getElementById('mu-line-chart'));
-	var dataTimePoints = [], dataMemUsage = [];
-	var muLineChartOption = {
-		legend: {
-			data: ['内存使用率变化']
-		},
-		xAxis: [
-			{
-				type: 'category',
-				data: dataTimePoints
-			}
-		],
-		yAxis: [
-			{
-				type: 'value',
-				axisLabel: {
-					formatter: '{value} %'
+var TimeLine = function(id, labels, formatter) {
+	var chart = echarts.init(document.getElementById(id)),
+		xData = [],
+		yData = [],
+		legends = [],
+		option = {
+			legend: {
+				data: legends
+			},
+			tooltip: {
+				trigger: 'axis',
+				formatter: function(params) {
+					var t = '';
+					if (typeof(formatter) == 'function') {
+						for (var i = 0; i < params.length; i++) {
+							t += params[i].seriesName + ': ' +
+								formatter(params[i].value) + '<br>\n';
+						}
+					} else {
+						for (var i = 0; i < params.length; i++) {
+							t += params[i].seriesName + ': ' +
+								params[i].value + '<br>\n';
+						}
+					}
+					return t;
 				}
-			}
-		],
-		series: [
-			{
-				name: '内存使用率变化',
-				type: 'line',
-				itemStyle: {normal: {areaStyle: {type: 'default'}}},
-				data: dataMemUsage
-			}
-		]
-	};
-
+			},
+			xAxis: [
+				{
+					type: 'category',
+					data: xData
+				}
+			],
+			yAxis: [
+				{
+					type: 'value',
+					axisLabel: {
+						formatter: formatter
+					}
+				}
+			],
+			serise: yData
+		};
 	// init
-	muLineChart.setOption(muLineChartOption);
-
-	function update(used, free) {
-		if (dataTimePoints.length >= LINECHART_MAX)
-			dataTimePoints.shift();
-		if (dataMemUsage.length >= LINECHART_MAX)
-			dataMemUsage.shift();
-		dataTimePoints.push(new Date().toLocaleTimeString());
-		// dataTimePoints.push(new Date());
-		dataMemUsage.push(used / (used + free) * 100);
-		muLineChart.setOption({
-			xAxis: [{data: dataTimePoints}],
-			series: [{data: dataMemUsage}]
-		});
-	}
-
+	chart.setOption(option);
 	return {
-		update: update
-	};
+		update: function(data) {
+			if (xData.length >= LINECHART_MAX)
+				xData.shift();
+			xData.push(new Date().toLocaleTimeString());
 
-})();
-
-var cpuUsageLine = (function() {
-
-	var cpuLineChart = echarts.init(document.getElementById('cpu-line-chart'));
-	var dataTimePoints = [], dataLegends = [], dataCpuUsage = [];
-	var cpuLineChartOption = {
-		legend: {
-			data: dataLegends
-		},
-		xAxis: [
-			{
-				type: 'category',
-				data: dataTimePoints
-			}
-		],
-		yAxis: [
-			{
-				type: 'value',
-				axisLabel: {
-					formatter: '{value} %'
-				}
-			}
-		],
-		series: dataCpuUsage
-	};
-
-	// init
-	cpuLineChart.setOption(cpuLineChartOption);
-
-	function update(data) {
-
-		if (dataTimePoints.length >= LINECHART_MAX)
-			dataTimePoints.shift();
-		dataTimePoints.push(new Date().toLocaleTimeString());
-
-		for (var cpu in data) {
-			if (dataLegends.indexOf(cpu) == -1) {
-				dataLegends.push(cpu);
-				dataCpuUsage.push({
-					name: cpu,
-					type: 'line',
-					itemStyle: {normal: {areaStyle: {type: 'default'}}},
-					data: [data[cpu]]
-				});
-			} else {
-				for (var i = 0; i < dataCpuUsage.length; i++) {
-					if (dataCpuUsage[i].name == cpu) {
-						if (dataCpuUsage[i].data.length >= LINECHART_MAX)
-							dataCpuUsage[i].data.shift();
-						dataCpuUsage[i].data.push(data[cpu]);
-						break;
+			for (var key in data) {
+				var legend = key in labels ? labels[key] : key;
+				if (legends.indexOf(legend) == -1) {
+					legends.push(legend);
+					yData.push({
+						name: legend,
+						type: 'line',
+						itemStyle: {normal: {areaStyle: {type: 'default'}}},
+						data: [data[key]]
+					});
+				} else {
+					for (var i = 0; i < yData.length; i++) {
+						if (yData[i].name == legend) {
+							if (yData[i].data.length >= LINECHART_MAX)
+								yData[i].data.shift();
+							yData[i].data.push(data[key]);
+							break;
+						}
 					}
 				}
 			}
+
+			chart.setOption({
+				legend: {data: legends},
+				xAxis: [{data: xData}],
+				series: yData
+			});
 		}
-
-		cpuLineChart.setOption({
-			legend: {data: dataLegends},
-			xAxis: [{data: dataTimePoints}],
-			series: dataCpuUsage
-		});
-	}
-
-	return {
-		update: update
-	};
-})();
-
-var netSpeedLine = function(id) {
-
-	function sizeFormatter(value) {
-		var s = value;
-		if (s < 1000) return s + '';
-		s /= 1024;
-		if (s < 1000) return s.toFixed(1) + ' Kb';
-		s /= 1024;
-		if (s < 1000) return s.toFixed(1) + ' Mb';
-		s /= 1024;
-		return s.toFixed(1) + ' Gb';
-	}
-
-	var netLineChart = echarts.init(document.getElementById(id));
-	var dataTimePoints = [], dataLegends = [], dataNet = [];
-	var netLineChartOption = {
-		legend: {
-			data: dataLegends
-		},
-		xAxis: [
-			{
-				type: 'category',
-				data: dataTimePoints
-			}
-		],
-		yAxis: [
-			{
-				type: 'value',
-				axisLabel: {
-					formatter: sizeFormatter
-				}
-			}
-		],
-		series: dataNet
-	};
-
-	// init
-	netLineChart.setOption(netLineChartOption);
-
-	function update(data) {
-		if (dataTimePoints.length >= LINECHART_MAX)
-			dataTimePoints.shift();
-		dataTimePoints.push(new Date().toLocaleTimeString());
-
-		for (var iface in data) {
-			if (dataLegends.indexOf(iface) == -1) {
-				dataLegends.push(iface);
-				dataNet.push({
-					name: iface,
-					type: 'line',
-					itemStyle: {normal: {areaStyle: {type: 'default'}}},
-					data: [data[iface]]
-				});
-			} else {
-				for (var i = 0; i < dataNet.length; i++) {
-					if (dataNet[i].name == iface) {
-						if (dataNet[i].data.length >= LINECHART_MAX)
-							dataNet[i].data.shift();
-						dataNet[i].data.push(data[iface]);
-						break;
-					}
-				}
-			}
-		
-		}
-		netLineChart.setOption({
-			legend: {data: dataLegends},
-			xAxis: [{data: dataTimePoints}],
-			series: dataNet
-		});
-	}
-
-	return {
-		update: update
 	};
 };
-var netRxLine = netSpeedLine('netrx-line-chart');
-var netTxLine = netSpeedLine('nettx-line-chart');
-var diskRLine = netSpeedLine('diskr-line-chart');
-var diskWLine = netSpeedLine('diskw-line-chart');
+
+var memoryUsageLine = TimeLine('mu-line-chart', {
+	utilization: '内存使用率'
+}, '{value} %');
+
+var cpuUsageLine = TimeLine('cpu-line-chart', {}, '{value} %');
+
+var netRxLine = TimeLine('netrx-line-chart', {}, sizeFormatter);
+var netTxLine = TimeLine('nettx-line-chart', {}, sizeFormatter);
+var diskRLine = TimeLine('diskr-line-chart', {}, sizeFormatter);
+var diskWLine = TimeLine('diskw-line-chart', {}, sizeFormatter);
 var ws = null;
 
 function connect() {
@@ -376,7 +277,7 @@ function connect() {
 				used = parseInt(mem[0]),
 				free = parseInt(mem[1]);
 				memoryUsagePie.update(used, free);
-				memoryUsageLine.update(used, free);
+				memoryUsageLine.update({utilization: used / (used + free) * 100});
 			} else if (arr[0] == 'net') {
 				var ifaces = arr[1].split(';'),
 					rx = {}, tx = {};
