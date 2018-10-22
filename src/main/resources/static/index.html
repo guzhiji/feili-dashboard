@@ -8,6 +8,20 @@
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
+		<style>
+			body {
+				background-color: #061325;
+			}
+		
+			.panel-primary>.panel-heading {
+				color: #70cac7;
+				background-color: #06131b;
+			}
+		
+			.panel-primary>.panel-body {
+				background-color: #061325;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="container">
@@ -105,6 +119,8 @@
 		</div>
 		<script>
 
+var LINECHART_MAX = 100;
+var COLOR_ORDER = ['#963c3e','#3b5579', '#4e9845', '#ab9f52', '#729e8a','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'];
 var UtilizationPie = function(id, name, labels) {
 	var chart = echarts.init(document.getElementById(id)),
 		data = [
@@ -112,7 +128,11 @@ var UtilizationPie = function(id, name, labels) {
 			{value: 1, name: labels.free}
 		],
 		option = {
+			color: COLOR_ORDER,
 			legend: {
+				textStyle: {
+					color: '#a5c8e6'
+				},
 				data: [labels.used, labels.free]
 			},
 			series: [
@@ -122,6 +142,9 @@ var UtilizationPie = function(id, name, labels) {
 					label: {
 						show: true,
 						formatter: '{b}: {d} %'
+					},
+					itemStyle: {
+						opacity: 0.9
 					},
 					data: data
 				}
@@ -148,7 +171,6 @@ var cpuUsagePie = UtilizationPie('cpu-pie-chart', 'CPU使用率', {
 	free: '空闲'
 });
 
-var LINECHART_MAX = 100;
 
 function sizeFormatter(value) {
 	var s = value;
@@ -167,7 +189,11 @@ var TimeLine = function(id, labels, formatter) {
 		yData = [],
 		legends = [],
 		option = {
+			color: COLOR_ORDER,
 			legend: {
+				textStyle: {
+					color: '#a5c8e6'
+				},
 				data: legends
 			},
 			tooltip: {
@@ -191,12 +217,22 @@ var TimeLine = function(id, labels, formatter) {
 			xAxis: [
 				{
 					type: 'category',
+					axisLine: {
+						lineStyle: {
+							color: '#a5c8e6'
+						}
+					},
 					data: xData
 				}
 			],
 			yAxis: [
 				{
 					type: 'value',
+					axisLine: {
+						lineStyle: {
+							color: '#a5c8e6'
+						}
+					},
 					axisLabel: {
 						formatter: formatter
 					}
