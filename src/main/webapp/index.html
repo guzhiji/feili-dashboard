@@ -322,7 +322,7 @@ function connect() {
 				used = parseInt(mem[0]),
 				free = parseInt(mem[1]);
 				memoryUsagePie.update(used, free);
-				memoryUsageLine.update(t, {utilization: used / (used + free) * 100});
+				memoryUsageLine.update(t, {utilization: Math.round(used / (used + free) * 10000) / 100});
 			} else if (arr[0] == 'net') {
 				var ifaces = arr[2].split(';'),
 					rx = {}, tx = {};

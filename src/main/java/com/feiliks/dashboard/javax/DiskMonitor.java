@@ -19,9 +19,9 @@ public class DiskMonitor extends DashboardServer.DashboardMonitorTask {
                 Long[] cur = disk.getValue();
                 out.append(disk.getKey())
                         .append('=')
-                        .append((cur[0] > prev[0]) ? ((cur[0] - prev[0]) / timeDiff) : 0.0)
+                        .append((cur[0] > prev[0]) ? (Math.round((cur[0] - prev[0]) / timeDiff * 100) / 100.0) : 0.0)
                         .append(',')
-                        .append((cur[1] > prev[1]) ? ((cur[1] - prev[1]) / timeDiff) : 0.0)
+                        .append((cur[1] > prev[1]) ? (Math.round((cur[1] - prev[1]) / timeDiff * 100) / 100.0) : 0.0)
                         .append(';');
             }
             broadcast("disk", out.toString());

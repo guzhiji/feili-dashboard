@@ -19,7 +19,7 @@ public class CpuMonitor extends DashboardServer.DashboardMonitorTask {
                 long used = cur[1] - prev[1];
                 out.append(entry.getKey())
                         .append('=')
-                        .append(100.0 * used / total)
+                        .append(Math.round(10000.0 * used / total) / 100.0)
                         .append(',');
             }
             broadcast("cpu", out.toString());

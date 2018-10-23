@@ -10,7 +10,7 @@ public class NetMonitor extends DashboardServer.DashboardMonitorTask {
     @Override
     public void run() {
         Map<String, Long[]> ifaces = SysInfo.getIfaces();
-        double curTime = System.currentTimeMillis() / 1000;
+        double curTime = System.currentTimeMillis() / 1000.0;
         if (ifaces != null && lastRxTx != null && curTime > lastRxTxTime) {
             StringBuilder out = new StringBuilder();
             double timeDiff = curTime - lastRxTxTime;
@@ -19,9 +19,9 @@ public class NetMonitor extends DashboardServer.DashboardMonitorTask {
                 Long[] cur = iface.getValue();
                 out.append(iface.getKey())
                         .append('=')
-                        .append((cur[0] > prev[0]) ? ((cur[0] - prev[0]) / timeDiff) : 0.0)
+                        .append((cur[0] > prev[0]) ? (Math.round((cur[0] - prev[0]) / timeDiff * 100) / 100.0) : 0.0)
                         .append(',')
-                        .append((cur[1] > prev[1]) ? ((cur[1] - prev[1]) / timeDiff) : 0.0)
+                        .append((cur[1] > prev[1]) ? (Math.round((cur[1] - prev[1]) / timeDiff * 100) / 100.0) : 0.0)
                         .append(';');
             }
             broadcast("net", out.toString());
