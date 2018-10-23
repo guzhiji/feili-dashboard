@@ -10,6 +10,7 @@
 		<style>
 			body {
 				background-color: #061325;
+				padding: 100px;
 			}
 		
 			.panel-primary>.panel-heading {
@@ -23,92 +24,84 @@
 		</style>
 	</head>
 	<body>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							内存使用率
-						</div>
-						<div class="panel-body">
-							<div id="mu-pie-chart" style="height: 300px;"></div>
-						</div>
+		<div class="row">
+			<div class="col-md-4">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						内存使用率
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							内存使用率变化
-						</div>
-						<div class="panel-body">
-							<div id="mu-line-chart" style="height: 300px;"></div>
-						</div>
+					<div class="panel-body">
+						<div id="mu-pie-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							CPU使用率
-						</div>
-						<div class="panel-body">
-							<div id="cpu-pie-chart" style="height: 300px;"></div>
-						</div>
+			<div class="col-md-8">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						内存使用率变化
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							CPU使用率变化
-						</div>
-						<div class="panel-body">
-							<div id="cpu-line-chart" style="height: 300px;"></div>
-						</div>
+					<div class="panel-body">
+						<div id="mu-line-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							网络数据接收速度
-						</div>
-						<div class="panel-body">
-							<div id="netrx-line-chart" style="height: 300px;"></div>
-						</div>
+			<div class="col-md-4">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						CPU使用率
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							网络数据发送速度
-						</div>
-						<div class="panel-body">
-							<div id="nettx-line-chart" style="height: 300px;"></div>
-						</div>
+					<div class="panel-body">
+						<div id="cpu-pie-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							磁盘读速度
-						</div>
-						<div class="panel-body">
-							<div id="diskr-line-chart" style="height: 300px;"></div>
-						</div>
+			<div class="col-md-8">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						CPU使用率变化
+					</div>
+					<div class="panel-body">
+						<div id="cpu-line-chart" style="height: 300px;"></div>
 					</div>
 				</div>
-				<div class="col-md-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							磁盘写速度
-						</div>
-						<div class="panel-body">
-							<div id="diskw-line-chart" style="height: 300px;"></div>
-						</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						网络数据接收速度
+					</div>
+					<div class="panel-body">
+						<div id="netrx-line-chart" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						网络数据发送速度
+					</div>
+					<div class="panel-body">
+						<div id="nettx-line-chart" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						磁盘读速度
+					</div>
+					<div class="panel-body">
+						<div id="diskr-line-chart" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						磁盘写速度
+					</div>
+					<div class="panel-body">
+						<div id="diskw-line-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
@@ -118,8 +111,10 @@
 		</div>
 		<script>
 
-var LINECHART_MAX = 100;
-var COLOR_ORDER = ['#963c3e','#3b5579', '#4e9845', '#ab9f52', '#729e8a','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'];
+var LINECHART_MAX = 100,
+	COLOR_ORDER = ['#963c3e','#3b5579', '#4e9845', '#ab9f52', '#729e8a','#749f83', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
+	COLOR_TEXT = '#a5c8e6', COLOR_DARK_LINE = '#395273';
+
 var UtilizationPie = function(id, name, labels) {
 	var chart = echarts.init(document.getElementById(id)),
 		data = [
@@ -130,7 +125,7 @@ var UtilizationPie = function(id, name, labels) {
 			color: COLOR_ORDER,
 			legend: {
 				textStyle: {
-					color: '#a5c8e6'
+					color: COLOR_TEXT
 				},
 				data: [labels.used, labels.free]
 			},
@@ -140,6 +135,7 @@ var UtilizationPie = function(id, name, labels) {
 					type: 'pie',
 					label: {
 						show: true,
+						color: COLOR_TEXT,
 						formatter: '{b}: {d} %'
 					},
 					itemStyle: {
@@ -161,6 +157,7 @@ var UtilizationPie = function(id, name, labels) {
 		}
 	};
 };
+
 var memoryUsagePie = UtilizationPie('mu-pie-chart', '内存使用率', {
 	used: '已用',
 	free: '可用'
@@ -169,7 +166,6 @@ var cpuUsagePie = UtilizationPie('cpu-pie-chart', 'CPU使用率', {
 	used: '已用',
 	free: '空闲'
 });
-
 
 function sizeFormatter(value) {
 	var s = value;
@@ -184,14 +180,14 @@ function sizeFormatter(value) {
 
 var TimeLine = function(id, labels, formatter) {
 	var chart = echarts.init(document.getElementById(id)),
-		xData = [],
 		yData = [],
 		legends = [],
 		option = {
 			color: COLOR_ORDER,
+			animation: false,
 			legend: {
 				textStyle: {
-					color: '#a5c8e6'
+					color: COLOR_TEXT
 				},
 				data: legends
 			},
@@ -202,12 +198,12 @@ var TimeLine = function(id, labels, formatter) {
 					if (typeof(formatter) == 'function') {
 						for (var i = 0; i < params.length; i++) {
 							t += params[i].seriesName + ': ' +
-								formatter(params[i].value) + '<br>\n';
+								formatter(params[i].value[1]) + '<br>\n';
 						}
 					} else {
 						for (var i = 0; i < params.length; i++) {
 							t += params[i].seriesName + ': ' +
-								params[i].value + '<br>\n';
+								params[i].value[1] + '<br>\n';
 						}
 					}
 					return t;
@@ -215,24 +211,39 @@ var TimeLine = function(id, labels, formatter) {
 			},
 			xAxis: [
 				{
-					type: 'category',
-					axisLine: {
+					type: 'time',
+					showMinLabel: false,
+					showMaxLabel: false,
+					splitLine: {
 						lineStyle: {
-							color: '#a5c8e6'
+							color: [COLOR_DARK_LINE]
 						}
 					},
-					data: xData
+					axisLine: {
+						lineStyle: {
+							color: COLOR_DARK_LINE
+						}
+					},
+					axisLabel: {
+						color: COLOR_TEXT
+					}
 				}
 			],
 			yAxis: [
 				{
 					type: 'value',
+					splitLine: {
+						lineStyle: {
+							color: [COLOR_DARK_LINE]
+						}
+					},
 					axisLine: {
 						lineStyle: {
-							color: '#a5c8e6'
+							color: COLOR_DARK_LINE
 						}
 					},
 					axisLabel: {
+						color: COLOR_TEXT,
 						formatter: formatter
 					}
 				}
@@ -241,12 +252,9 @@ var TimeLine = function(id, labels, formatter) {
 		};
 	// init
 	chart.setOption(option);
+	// export
 	return {
 		update: function(data) {
-			if (xData.length >= LINECHART_MAX)
-				xData.shift();
-			xData.push(new Date().toLocaleTimeString());
-
 			for (var key in data) {
 				var legend = key in labels ? labels[key] : key;
 				if (legends.indexOf(legend) == -1) {
@@ -254,15 +262,16 @@ var TimeLine = function(id, labels, formatter) {
 					yData.push({
 						name: legend,
 						type: 'line',
-						itemStyle: {normal: {areaStyle: {type: 'default'}}},
-						data: [data[key]]
+						symbolSize: 2,
+						itemStyle: { normal: { areaStyle: { type: 'default' } } },
+						data: [[new Date(), data[key]]]
 					});
 				} else {
 					for (var i = 0; i < yData.length; i++) {
 						if (yData[i].name == legend) {
 							if (yData[i].data.length >= LINECHART_MAX)
 								yData[i].data.shift();
-							yData[i].data.push(data[key]);
+							yData[i].data.push([new Date(), data[key]]);
 							break;
 						}
 					}
@@ -271,7 +280,6 @@ var TimeLine = function(id, labels, formatter) {
 
 			chart.setOption({
 				legend: {data: legends},
-				xAxis: [{data: xData}],
 				series: yData
 			});
 		}
