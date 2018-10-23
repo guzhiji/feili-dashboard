@@ -255,7 +255,7 @@ var TimeLine = function(id, labels, formatter) {
 	chart.setOption(option);
 	// export
 	return {
-		update: function(data) {
+		update: function(t, data) {
 			for (var key in data) {
 				var legend = key in labels ? labels[key] : key;
 				if (legends.indexOf(legend) == -1) {
@@ -265,14 +265,14 @@ var TimeLine = function(id, labels, formatter) {
 						type: 'line',
 						symbolSize: 2,
 						itemStyle: { normal: { areaStyle: { type: 'default' } } },
-						data: [[new Date(), data[key]]]
+						data: [[new Date(t), data[key]]]
 					});
 				} else {
 					for (var i = 0; i < yData.length; i++) {
 						if (yData[i].name == legend) {
 							if (yData[i].data.length >= LINECHART_MAX)
 								yData[i].data.shift();
-							yData[i].data.push([new Date(), data[key]]);
+							yData[i].data.push([new Date(t), data[key]]);
 							break;
 						}
 					}
@@ -308,8 +308,9 @@ function connect() {
 	ws.onmessage = function (evt) {
 		var arr = evt.data.split(':');
 		if (arr.length) {
+			var t = parseInt(arr[1]);
 			if (arr[0] == 'cpu') {
-				var cpus = arr[1].split(',');
+				var cpus = arr[2].split(',');
 				var data = {};
 				for (var i = 0; i < cpus.length; i++) {
 					if (cpus[i].indexOf('=') == -1) continue;
@@ -320,37 +321,37 @@ function connect() {
 						data[cpu[0]] = parseFloat(cpu[1]);
 					}
 				}
-				cpuUsageLine.update(data);
+				cpuUsageLine.update(t, data);
 			} else if (arr[0] == 'mem') {
-				var mem = arr[1].split(','),
+				var mem = arr[2].split(','),
 				used = parseInt(mem[0]),
 				free = parseInt(mem[1]);
 				memoryUsagePie.update(used, free);
-				memoryUsageLine.update({utilization: used / (used + free) * 100});
+				memoryUsageLine.update(t, {utilization: Math.round(used / (used + free) * 10000) / 100});
 			} else if (arr[0] == 'net') {
-				var ifaces = arr[1].split(';'),
+				var ifaces = arr[2].split(';'),
 					rx = {}, tx = {};
 				for (var i = 0; i < ifaces.length; i++) {
 					if (ifaces[i].indexOf('=') == -1) continue;
 					var iface = ifaces[i].split('='),
 						values = iface[1].split(',');
-					rx[iface[0]] = parseFloat(values[0]);
-					tx[iface[0]] = parseFloat(values[1]);
+					rx[iface[0]] = parseInt(values[0]);
+					tx[iface[0]] = parseInt(values[1]);
 				}
-				netRxLine.update(rx);
-				netTxLine.update(tx);
+				netRxLine.update(t, rx);
+				netTxLine.update(t, tx);
 			} else if (arr[0] == 'disk') {
-				var disks = arr[1].split(';'),
+				var disks = arr[2].split(';'),
 					r = {}, w = {};
 				for (var i = 0; i < disks.length; i++) {
 					if (disks[i].indexOf('=') == -1) continue;
 					var disk = disks[i].split('='),
 						values = disk[1].split(',');
-					r[disk[0]] = 512 * parseFloat(values[0]);
-					w[disk[0]] = 512 * parseFloat(values[1]);
+					r[disk[0]] = 512 * parseInt(values[0]);
+					w[disk[0]] = 512 * parseInt(values[1]);
 				}
-				diskRLine.update(r);
-				diskWLine.update(w);
+				diskRLine.update(t, r);
+				diskWLine.update(t, w);
 			}
 		}
 	};
