@@ -303,7 +303,7 @@ function connect() {
 	ws.onmessage = function (evt) {
 		var arr = evt.data.split(':');
 		if (arr.length) {
-            var t = parseInt(arr[1]);
+			var t = parseInt(arr[1]);
 			if (arr[0] == 'cpu') {
 				var cpus = arr[2].split(',');
 				var data = {};
@@ -330,8 +330,8 @@ function connect() {
 					if (ifaces[i].indexOf('=') == -1) continue;
 					var iface = ifaces[i].split('='),
 						values = iface[1].split(',');
-					rx[iface[0]] = parseFloat(values[0]);
-					tx[iface[0]] = parseFloat(values[1]);
+					rx[iface[0]] = parseInt(values[0]);
+					tx[iface[0]] = parseInt(values[1]);
 				}
 				netRxLine.update(t, rx);
 				netTxLine.update(t, tx);
@@ -342,8 +342,8 @@ function connect() {
 					if (disks[i].indexOf('=') == -1) continue;
 					var disk = disks[i].split('='),
 						values = disk[1].split(',');
-					r[disk[0]] = 512 * parseFloat(values[0]);
-					w[disk[0]] = 512 * parseFloat(values[1]);
+					r[disk[0]] = 512 * parseInt(values[0]);
+					w[disk[0]] = 512 * parseInt(values[1]);
 				}
 				diskRLine.update(t, r);
 				diskWLine.update(t, w);
