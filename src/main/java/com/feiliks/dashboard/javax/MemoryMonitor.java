@@ -2,7 +2,7 @@ package com.feiliks.dashboard.javax;
 
 import com.feiliks.dashboard.SysInfo;
 
-public class MemoryMonitor extends DashboardServer.DashboardMonitorTask {
+public class MemoryMonitor extends DashboardMonitorTask {
 
     @Override
     public void run() {

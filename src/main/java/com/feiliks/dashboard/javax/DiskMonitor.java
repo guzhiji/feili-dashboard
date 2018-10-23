@@ -1,9 +1,10 @@
 package com.feiliks.dashboard.javax;
 
 import com.feiliks.dashboard.SysInfo;
+
 import java.util.Map;
 
-public class DiskMonitor extends DashboardServer.DashboardMonitorTask {
+public class DiskMonitor extends DashboardMonitorTask {
     private Map<String, Long[]> lastIO = null;
     private double lastTime;
 

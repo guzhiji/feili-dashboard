@@ -1,9 +1,10 @@
 package com.feiliks.dashboard.javax;
 
 import com.feiliks.dashboard.SysInfo;
+
 import java.util.Map;
 
-public class CpuMonitor extends DashboardServer.DashboardMonitorTask {
+public class CpuMonitor extends DashboardMonitorTask {
 
     private Map<String, Long[]> lastCpuTime = null;
 

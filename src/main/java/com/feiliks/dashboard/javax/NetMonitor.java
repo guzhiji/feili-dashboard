@@ -1,9 +1,10 @@
 package com.feiliks.dashboard.javax;
 
 import com.feiliks.dashboard.SysInfo;
+
 import java.util.Map;
 
-public class NetMonitor extends DashboardServer.DashboardMonitorTask {
+public class NetMonitor extends DashboardMonitorTask {
     private Map<String, Long[]> lastRxTx = null;
     private double lastRxTxTime;
 
