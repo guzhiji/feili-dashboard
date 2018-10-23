@@ -37,13 +37,17 @@ public class DashboardServer {
             @Override
             public void run() {
                 while (running) {
-                    String msg = QUEUE.poll();
-                    if (msg != null) {
-                        for (Session session : SESSIONS) {
-                            try {
-                                session.getBasicRemote().sendText(msg);
-                            } catch (IOException ex) {
+                    while (true) {
+                        String msg = QUEUE.poll();
+                        if (msg != null) {
+                            for (Session session : SESSIONS) {
+                                try {
+                                    session.getBasicRemote().sendText(msg);
+                                } catch (IOException ex) {
+                                }
                             }
+                        } else {
+                            break;
                         }
                     }
                     try {
