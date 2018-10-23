@@ -18,13 +18,13 @@ public class DashboardServer {
     public static abstract class DashboardMonitorTask implements Runnable {
 
         public void broadcast(String type, String msg) {
-            QUEUE.add(type + ":" + msg);
+            QUEUE.add(type + ":" + System.currentTimeMillis() + ":" + msg);
         }
 
     }
 
     private final static Set<Session> SESSIONS = new CopyOnWriteArraySet<>();
-    private final static ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(3);
+    private final static ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(4);
     private final static ConcurrentLinkedQueue<String> QUEUE = new ConcurrentLinkedQueue<>();
     private static boolean running = true;
 
