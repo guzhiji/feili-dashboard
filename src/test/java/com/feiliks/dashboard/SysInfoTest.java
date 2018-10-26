@@ -28,4 +28,10 @@ public class SysInfoTest {
         Assert.assertTrue(!m.isEmpty());
     }
 
+    @Test
+    public void testExtractDiskstats() throws IOException {
+        Map<String, Long[]> m = SysInfo.extractDiskstats("/proc/diskstats");
+        Assert.assertTrue(!m.isEmpty());
+    }
+
 }

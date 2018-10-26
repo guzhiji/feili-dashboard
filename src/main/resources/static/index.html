@@ -89,6 +89,26 @@
 			<div class="col-md-6">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
+						磁盘使用率
+					</div>
+					<div class="panel-body">
+						<div id="disk-bar-chart" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						磁盘活动时间
+					</div>
+					<div class="panel-body">
+						<div id="disktime-line-chart" style="height: 300px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
 						磁盘读速度
 					</div>
 					<div class="panel-body">
@@ -159,6 +179,100 @@ var UtilizationPie = function(id, name, labels) {
 	};
 };
 
+var UtilizationBar = function(id, labels) {
+	var chart = echarts.init(document.getElementById(id)),
+		bars = [],
+		usedValues = [],
+		freeValues = [],
+		option = {
+			color: COLOR_ORDER,
+			animation: false,
+			legend: {
+				textStyle: {
+					color: COLOR_TEXT
+				},
+				data: [labels.used, labels.free]
+			},
+			tooltip: {
+				show: true,
+				formatter: '{b}: {c} %'
+			},
+			yAxis: {
+				splitLine: {
+					lineStyle: {
+						color: [COLOR_DARK_LINE]
+					}
+				},
+				axisLine: {
+					lineStyle: {
+						color: COLOR_DARK_LINE
+					}
+				},
+				axisLabel: {
+					color: COLOR_TEXT,
+					formatter: '{value} %'
+				}
+			},
+			xAxis: {
+				splitLine: {
+					lineStyle: {
+						color: [COLOR_DARK_LINE]
+					}
+				},
+				axisLine: {
+					lineStyle: {
+						color: COLOR_DARK_LINE
+					}
+				},
+				axisLabel: {
+					color: COLOR_TEXT
+				},
+				data: bars
+			},
+			series: [
+				{
+					name: labels.used,
+					type: 'bar',
+					stack: 'one',
+					itemStyle: {
+						opacity: 0.9
+					},
+					data: usedValues
+				},
+				{
+					name: labels.free,
+					type: 'bar',
+					stack: 'one',
+					itemStyle: {
+						opacity: 0.9
+					},
+					data: freeValues
+				}
+			]
+		};
+	// init
+	chart.setOption(option);
+	// export
+	return {
+		update: function(data) {
+			for (var key in data) {
+				var p = bars.indexOf(key),
+					used = Math.round(data[key] * 100) / 100,
+					free = Math.round((100 - data[key]) * 100) / 100;
+				if (p == -1) {
+					bars.push(key);
+					usedValues.push(used);
+					freeValues.push(free);
+				} else {
+					usedValues[p] = used;
+					freeValues[p] = free;
+				}
+			}
+			chart.setOption(option);
+		}
+	};
+};
+
 var memoryUsagePie = UtilizationPie('mu-pie-chart', '内存使用率', {
 	used: '已用',
 	free: '可用'
@@ -177,6 +291,15 @@ function sizeFormatter(value) {
 	if (s < 1000) return s.toFixed(1) + ' Mb';
 	s /= 1024;
 	return s.toFixed(1) + ' Gb';
+}
+
+function millisFormatter(value) {
+	var s = value;
+	if (s < 1000) return s + ' ms';
+	s /= 1000;
+	if (s < 60) return s.toFixed(1) + ' s';
+	s /= 60;
+	return s.toFixed(1) + ' min';
 }
 
 var TimeLine = function(id, labels, formatter) {
@@ -295,6 +418,11 @@ var cpuUsageLine = TimeLine('cpu-line-chart', {}, '{value} %');
 
 var netRxLine = TimeLine('netrx-line-chart', {}, sizeFormatter);
 var netTxLine = TimeLine('nettx-line-chart', {}, sizeFormatter);
+var diskBar = UtilizationBar('disk-bar-chart', {
+	used: '已用',
+	free: '可用'
+});
+var diskTimeLine = TimeLine('disktime-line-chart', {}, millisFormatter);
 var diskRLine = TimeLine('diskr-line-chart', {}, sizeFormatter);
 var diskWLine = TimeLine('diskw-line-chart', {}, sizeFormatter);
 var ws = null;
@@ -340,18 +468,31 @@ function connect() {
 				}
 				netRxLine.update(t, rx);
 				netTxLine.update(t, tx);
-			} else if (arr[0] == 'disk') {
+			} else if (arr[0] == 'diskio') {
 				var disks = arr[2].split(';'),
-					r = {}, w = {};
+					r = {}, w = {}, dt = {};
 				for (var i = 0; i < disks.length; i++) {
 					if (disks[i].indexOf('=') == -1) continue;
 					var disk = disks[i].split('='),
 						values = disk[1].split(',');
 					r[disk[0]] = 512 * parseInt(values[0]);
 					w[disk[0]] = 512 * parseInt(values[1]);
+					dt[disk[0]] = parseInt(values[2]);
 				}
 				diskRLine.update(t, r);
 				diskWLine.update(t, w);
+				diskTimeLine.update(t, dt);
+			} else if (arr[0] == 'disk') {
+				var disks = arr[2].split(';'), d = {};
+				for (var i = 0; i < disks.length; i++) {
+					if (disks[i].indexOf('=') == -1) continue;
+					var disk = disks[i].split('='),
+						values = disk[1].split(','),
+						used = parseInt(values[0]),
+						free = parseInt(values[1]);
+					d[disk[0]] = used / (used + free) * 100;
+				}
+				diskBar.update(d);
 			}
 		}
 	};

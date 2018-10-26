@@ -1,8 +1,6 @@
 package com.feiliks.dashboard;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,8 +11,9 @@ public class SysInfo {
     private static Pattern keyNumPt = Pattern.compile("(\\S+):\\s+([0-9]+)");
     private static Pattern spPt = Pattern.compile("\\s+");
     private static Pattern cpuPt = Pattern.compile("cpu[0-9]*");
+    private static Pattern devPt = Pattern.compile("/dev/([a-zA-Z0-9]+)");
 
-    public static Map<String, Long> extractKeyNum(String filename) throws IOException {
+    static Map<String, Long> extractKeyNum(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(
                 new FileReader(filename))) {
             Map<String, Long> out = new HashMap<>();
@@ -46,7 +45,7 @@ public class SysInfo {
         }
     }
 
-    public static Map<String, Long[]> extractCPUs(String filename) throws IOException {
+    static Map<String, Long[]> extractCPUs(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(
                 new FileReader(filename))) {
             Map<String, Long[]> out = new HashMap<>();
@@ -89,7 +88,7 @@ public class SysInfo {
         }
     }
 
-    public static Map<String, Long[]> extractIfaces(String filename) throws IOException {
+    static Map<String, Long[]> extractIfaces(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(
                 new FileReader(filename))) {
             Map<String, Long[]> out = new HashMap<>();
@@ -122,7 +121,55 @@ public class SysInfo {
         }
     }
 
-    public static Map<String, Long[]> extractDiskstats(String filename) throws IOException {
+    public static class DiskInfo {
+        private long reads; // 4
+        private long sectorsRead; // 6
+        private long timeReading; // 7
+        private long writes; // 8
+        private long sectorsWritten; // 10
+        private long timeWriting; // 11
+        private long used;
+        private long available;
+        private String pathMounted;
+
+        public long getReads() {
+            return reads;
+        }
+
+        public long getSectorsRead() {
+            return sectorsRead;
+        }
+
+        public long getTimeReading() {
+            return timeReading;
+        }
+
+        public long getWrites() {
+            return writes;
+        }
+
+        public long getSectorsWritten() {
+            return sectorsWritten;
+        }
+
+        public long getTimeWriting() {
+            return timeWriting;
+        }
+
+        public long getUsed() {
+            return used;
+        }
+
+        public long getAvailable() {
+            return available;
+        }
+
+        public String getPathMounted() {
+            return pathMounted;
+        }
+    }
+
+    static Map<String, Long[]> extractDiskstats(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(
                 new FileReader(filename))) {
             Map<String, Long[]> out = new HashMap<>();
@@ -131,8 +178,8 @@ public class SysInfo {
                 line = br.readLine();
                 if (line != null) {
                     String[] cols = spPt.split(line.trim());
-                    if (cols.length > 13 && cols[2].length() > 3 && (
-                            cols[2].startsWith("sd") || cols[2].startsWith("hd"))) {
+                    if (cols.length > 13 && (cols[2].startsWith("sd") ||
+                            cols[2].startsWith("hd"))) {
                         try {
                             Long[] values = new Long[11];
                             for (int i = 3; i < 14; i++) {
@@ -144,6 +191,16 @@ public class SysInfo {
                     }
                 }
             } while (line != null);
+            ArrayList<String> toRemove = new ArrayList<>();
+            for (String dev : out.keySet()) {
+                for (String dev2 : out.keySet()) {
+                    if (dev.equals(dev2)) continue;
+                    if (dev2.startsWith(dev))
+                        toRemove.add(dev);
+                }
+            }
+            for (String dev : toRemove)
+                out.remove(dev);
             return out;
         }
     }
@@ -153,14 +210,63 @@ public class SysInfo {
             Map<String, Long[]> out = new HashMap<>();
             for (Map.Entry<String, Long[]> entry : extractDiskstats(
                     "/proc/diskstats").entrySet()) {
-                Long[] io = new Long[2];
+                Long[] io = new Long[3];
                 Long[] values = entry.getValue();
-                io[0] = values[2];
-                io[1] = values[6];
+                io[0] = values[2]; // sectors read
+                io[1] = values[6]; // sectors written
+                io[2] = values[3] + values[7]; // active time (read + write, millisecs)
                 out.put(entry.getKey(), io);
             }
             return out;
         } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    static Map<String, DiskInfo> extractDiskInfo() throws IOException {
+        Map<String, Long[]> disks = extractDiskstats("/proc/diskstats");
+        Process p = new ProcessBuilder("df").start();
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(p.getInputStream()))) {
+            Map<String, DiskInfo> out = new HashMap<>();
+            String line;
+            do {
+                line = br.readLine();
+                if (line != null) {
+                    String[] cols = spPt.split(line.trim());
+                    if (cols.length == 6) {
+                        Matcher m = devPt.matcher(cols[0]);
+                        if (m.find()) {
+                            String dev = m.group(1);
+                            if (disks.containsKey(dev)) {
+                                try {
+                                    DiskInfo disk = new DiskInfo();
+                                    Long[] values = disks.get(dev);
+                                    disk.reads = values[0];
+                                    disk.sectorsRead = values[2];
+                                    disk.timeReading = values[3];
+                                    disk.writes = values[4];
+                                    disk.sectorsWritten = values[6];
+                                    disk.timeWriting = values[7];
+                                    disk.used = Long.parseLong(cols[2]);
+                                    disk.available = Long.parseLong(cols[3]);
+                                    disk.pathMounted = cols[5];
+                                    out.put(dev, disk);
+                                } catch (NumberFormatException ignored) {
+                                }
+                            }
+                        }
+                    }
+                }
+            } while (line != null);
+            return out;
+        }
+    }
+
+    public static Map<String, DiskInfo> getDiskInfo() {
+        try {
+            return extractDiskInfo();
+        } catch (IOException ignored) {
             return null;
         }
     }

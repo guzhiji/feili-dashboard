@@ -90,12 +90,32 @@ public class BackgroundTask {
                         .append((cur[0] > prev[0]) ? Math.round((cur[0] - prev[0]) / timeDiff) : 0.0)
                         .append(',')
                         .append((cur[1] > prev[1]) ? Math.round((cur[1] - prev[1]) / timeDiff) : 0.0)
+                        .append(',')
+                        .append((cur[2] > prev[2]) ? (cur[2] - prev[2]) : 0.0)
                         .append(';');
             }
-            broadcast("disk", out.toString());
+            broadcast("diskio", out.toString());
         }
         lastIO = disks;
         lastDiskIOTime = curTime;
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void pushDiskUsage() {
+        Map<String, SysInfo.DiskInfo> disks = SysInfo.getDiskInfo();
+        if (disks != null) {
+            StringBuilder out = new StringBuilder();
+            for (Map.Entry<String, SysInfo.DiskInfo> entry : disks.entrySet()) {
+                SysInfo.DiskInfo disk = entry.getValue();
+                out.append(entry.getKey())
+                    .append('=')
+                    .append(disk.getUsed())
+                    .append(',')
+                    .append(disk.getAvailable())
+                    .append(';');
+            }
+            broadcast("disk", out.toString());
+        }
     }
 
 }
