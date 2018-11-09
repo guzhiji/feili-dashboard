@@ -44,7 +44,9 @@ public class ConsolidationDao {
         private boolean isToCombine;
         private Date shipDate;
         private String storer;
+        private String storerName;
         private String consignee;
+        private String consigneeName;
         private String factory;
         private String line;
 
@@ -76,8 +78,16 @@ public class ConsolidationDao {
             return storer;
         }
 
+        public String getStorerName() {
+            return storerName;
+        }
+
         public String getConsignee() {
             return consignee;
+        }
+
+        public String getConsigneeName() {
+            return consigneeName;
         }
 
         public String getFactory() {
@@ -108,13 +118,17 @@ public class ConsolidationDao {
             "t.ISASRS is_asrs, " +
             "o.REQUESTEDSHIPDATE ship_date, " +
             "o.STORERKEY storer, " +
+            "s.COMPANY storer_name, " +
             "o.SUSR35 consignee, " +
+            "c.COMPANY consignee_name, " +
             "o.CONSIGNEEKEY factory, " +
             "o.TRADINGPARTNER line " +
             "from (" + sqlPickDetail + ") t " +
             "inner join DROPIDDETAIL dd on dd.CHILDID = t.DROPID " +
             "inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = ? " + 
-            "left join ORDERS o on o.ORDERKEY = t.ORDERKEY";
+            "left join ORDERS o on o.ORDERKEY = t.ORDERKEY " +
+            "left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' " +
+            "left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10'";
 
     public List<PickDetail> getPickDetails(String putAwayZone, String areaKey) {
         return jdbc.query(
@@ -152,9 +166,11 @@ public class ConsolidationDao {
                         o.isAsrs = !"0".equals(resultSet.getString(4));
                         o.shipDate = resultSet.getDate(5);
                         o.storer = resultSet.getString(6);
-                        o.consignee = resultSet.getString(7);
-                        o.factory = resultSet.getString(8);
-                        o.line = resultSet.getString(9);
+                        o.storerName = resultSet.getString(7);
+                        o.consignee = resultSet.getString(8);
+                        o.consigneeName = resultSet.getString(9);
+                        o.factory = resultSet.getString(10);
+                        o.line = resultSet.getString(11);
                         return o;
                     }
                 });
