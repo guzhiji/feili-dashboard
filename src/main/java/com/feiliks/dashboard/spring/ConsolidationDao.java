@@ -109,7 +109,7 @@ public class ConsolidationDao {
             "inner join PICKDETAIL p on p.LOC = l.LOC " +
             "where l.PUTAWAYZONE = ? " +
             "union all " +
-            "select p.ORDERKEY, p.DROPID, l.ISASRS from AREADETAIL ad " +
+            "select p.ORDERKEY, p.DROPID, p.STATUS, l.ISASRS from AREADETAIL ad " +
             "inner join LOC l on l.PUTAWAYZONE = ad.PUTAWAYZONE " +
             "inner join PICKDETAIL p on p.LOC = l.LOC " +
             "where ad.AREAKEY = ?";
