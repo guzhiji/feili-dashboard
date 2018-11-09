@@ -41,11 +41,12 @@ public class ConsolidationTask {
         }
     }
 
-    private List<ConsolidationDao.OrderTrolley> table = null;
-    private final Map<String, Integer> currentStats = new HashMap<>();
-    private Date currentHour = null;
-    private Map<String, Set<String>> currentHourStats = null;
     private final LinkedList<HourlyStats> historicalStats = new LinkedList<>();
+    private final Map<String, Integer> currentStats = new HashMap<>();
+    private List<ConsolidationDao.OrderTrolley> table = null;
+    private Map<String, Integer> currentHourStats = null;
+    private Map<String, Set<String>> previousHourData = null, currentHourData = null;
+    private Date currentHour = null;
 
     private static Date getHour(Date d) {
         Calendar cal = Calendar.getInstance();
@@ -56,23 +57,50 @@ public class ConsolidationTask {
         return cal.getTime();
     }
 
-    private static void mapOrdersByStatus(
-            List<ConsolidationDao.OrderTrolley> data,
-            Map<String, Set<String>> out) {
-        for (ConsolidationDao.OrderTrolley ot : data) {
-            String status = ot.getStatus();
-            Set<String> orderKeys = out.get(status);
-            if (orderKeys == null) {
-                orderKeys = new HashSet<>();
-                out.put(status, orderKeys);
-            }
-            orderKeys.add(ot.getOrderKey());
+    private void nextHour(Date h) {
+        currentHour = h;
+        previousHourData = currentHourData;
+        currentHourData = new HashMap<>();
+        currentHourStats = new HashMap<>();
+        for (ConsolidationDao.Status s : ConsolidationDao.Status.values()) {
+            currentHourData.put(s.name(), new HashSet<String>());
+            currentHourStats.put(s.name(), 0);
         }
+        if (historicalStats.size() > 24)
+            historicalStats.poll();
+        historicalStats.offer(new HourlyStats(currentHour, currentHourStats));
     }
 
-    private static void computeCounts(Map<String, Set<String>> data, Map<String, Integer> counts) {
-        for (Map.Entry<String, Set<String>> entry : data.entrySet())
-            counts.put(entry.getKey(), entry.getValue().size());
+    private void process(ConsolidationDao.OrderTrolley row) {
+        String key = row.getOrderKey();
+        String status = row.getStatus();
+        Set<String> prev = previousHourData == null ? null : previousHourData.get(status);
+        if (prev == null || !prev.contains(key)) { // new order key
+            Integer count = currentHourStats.get(status);
+            if (count == null) count = 0;
+            currentHourStats.put(status, count + 1);
+        }
+        Set<String> cur = currentHourData.get(status);
+        if (cur != null) cur.add(key);
+    }
+
+    private void processAll(Iterable<ConsolidationDao.OrderTrolley> rows) {
+        for (ConsolidationDao.OrderTrolley row : rows)
+            process(row);
+    }
+
+    private void computeCurrentStats(Iterable<ConsolidationDao.OrderTrolley> rows) {
+        Map<String, Set<String>> data = new HashMap<>();
+        for (ConsolidationDao.Status s : ConsolidationDao.Status.values()) {
+            currentStats.put(s.name(), 0);
+            data.put(s.name(), new HashSet<String>());
+        }
+        for (ConsolidationDao.OrderTrolley row : rows) {
+            Set<String> keys = data.get(row.getStatus());
+            if (keys != null) keys.add(row.getOrderKey());
+        }
+        for (Map.Entry<String, Set<String>> e : data.entrySet())
+            currentStats.put(e.getKey(), e.getValue().size());
     }
 
     public List<ConsolidationDao.OrderTrolley> getTable() {
@@ -90,29 +118,13 @@ public class ConsolidationTask {
     @Scheduled(fixedDelay = 5000)
     public void run() {
 
-        table = dao.getOrderTrolley();
         Date hour = getHour(new Date());
-        if (currentHour == null || currentHourStats == null) {
-            // the first run
-            currentHour = hour;
-            currentHourStats = new HashMap<>();
-        } else if (hour.after(currentHour)) {
-            // a newer hour
-            if (historicalStats.size() > 24)
-                historicalStats.poll();
-            Map<String, Integer> data = new HashMap<>();
-            computeCounts(currentHourStats, data);
-            historicalStats.offer(new HourlyStats(currentHour, data));
-            currentHour = hour;
-            currentHourStats = new HashMap<>();
+        table = dao.getOrderTrolley();
+        if (currentHour == null || hour.after(currentHour)) {
+            nextHour(hour);
         }
-        // accumulate
-        mapOrdersByStatus(table, currentHourStats);
-
-        // current
-        Map<String, Set<String>> stats = new HashMap<>();
-        mapOrdersByStatus(table, stats);
-        computeCounts(stats, currentStats);
+        processAll(table);
+        computeCurrentStats(table);
 
     }
 

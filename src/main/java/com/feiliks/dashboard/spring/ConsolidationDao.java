@@ -12,6 +12,9 @@ import java.util.*;
 @Repository
 public class ConsolidationDao {
 
+    public enum Status {
+        PICKED, SHIPPED, OTHER
+    }
     public static class PickDetail {
         private String orderKey;
         private String dropId;
@@ -191,11 +194,11 @@ public class ConsolidationDao {
     private String convertStatus(String s) {
         if (s != null) s = s.trim();
         if ("5".equals(s) || "6".equals(s))
-            return "picked";
+            return Status.PICKED.name();
         else if ("9".equals(s))
-            return "shipped";
+            return Status.SHIPPED.name();
         else
-            return "other";
+            return Status.OTHER.name();
     }
 
     public List<OrderTrolley> getOrderTrolley() {
