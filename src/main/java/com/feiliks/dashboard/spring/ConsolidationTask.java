@@ -47,6 +47,7 @@ public class ConsolidationTask {
     private Map<String, Integer> currentHourStats = null;
     private Map<String, Set<String>> previousHourData = null, currentHourData = null;
     private Date currentHour = null;
+    private boolean hasUpdate = false;
 
     private static Date getHour(Date d) {
         Calendar cal = Calendar.getInstance();
@@ -74,19 +75,24 @@ public class ConsolidationTask {
     private void process(ConsolidationDao.OrderTrolley row) {
         String key = row.getOrderKey();
         String status = row.getStatus();
+        Set<String> cur = currentHourData.get(status);
+        if (cur == null) return;
         Set<String> prev = previousHourData == null ? null : previousHourData.get(status);
-        if (prev == null || !prev.contains(key)) { // new order key
+        if ((prev == null || !prev.contains(key)) && !cur.contains(key)) { // new order key
             Integer count = currentHourStats.get(status);
             if (count == null) count = 0;
             currentHourStats.put(status, count + 1);
+            hasUpdate = true;
         }
-        Set<String> cur = currentHourData.get(status);
-        if (cur != null) cur.add(key);
+        cur.add(key);
     }
 
     private void processAll(Iterable<ConsolidationDao.OrderTrolley> rows) {
+        hasUpdate = false;
         for (ConsolidationDao.OrderTrolley row : rows)
             process(row);
+        if (hasUpdate)
+            webSocketHandler.broadcast("line:" + currentHour.getTime() + ":" + stringifyStats(currentHourStats));
     }
 
     private void computeCurrentStats(Iterable<ConsolidationDao.OrderTrolley> rows) {
@@ -101,6 +107,17 @@ public class ConsolidationTask {
         }
         for (Map.Entry<String, Set<String>> e : data.entrySet())
             currentStats.put(e.getKey(), e.getValue().size());
+        webSocketHandler.broadcast("pie:" + stringifyStats(currentStats));
+    }
+
+    private static String stringifyStats(Map<String, Integer> stats) {
+        StringBuilder out = new StringBuilder();
+        for (Map.Entry<String, Integer> item : stats.entrySet())
+            out.append(item.getKey())
+                .append('=')
+                .append(item.getValue())
+                .append(';');
+        return out.toString();
     }
 
     public List<ConsolidationDao.OrderTrolley> getTable() {
