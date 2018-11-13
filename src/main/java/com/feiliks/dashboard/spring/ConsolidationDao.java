@@ -105,14 +105,10 @@ public class ConsolidationDao {
     @Autowired
     private JdbcTemplate jdbc;
 
-    private final static String sqlPickDetail = "select p.ORDERKEY, p.DROPID, p.STATUS, l.ISASRS from LOC l " +
-            "inner join PICKDETAIL p on p.LOC = l.LOC " +
-            "where l.PUTAWAYZONE = ? " +
-            "union all " +
-            "select p.ORDERKEY, p.DROPID, p.STATUS, l.ISASRS from AREADETAIL ad " +
-            "inner join LOC l on l.PUTAWAYZONE = ad.PUTAWAYZONE " +
-            "inner join PICKDETAIL p on p.LOC = l.LOC " +
-            "where ad.AREAKEY = ?";
+    private final static String sqlPickDetail = "select p.ORDERKEY, p.DROPID, p.STATUS, l.ISASRS from PICKDETAIL p " +
+            "inner join LOC l on l.LOC = p.LOC " +
+            "inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = ? " +
+            "where p.EDITDATE >= sysdate - 1";
 
     private final static String sqlOrderTrolley = "select " +
             "dd.DROPID trolley_id, " +
@@ -133,10 +129,10 @@ public class ConsolidationDao {
             "left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' " +
             "left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10'";
 
-    public List<PickDetail> getPickDetails(String putAwayZone, String areaKey) {
+    public List<PickDetail> getPickDetails(String areaKey) {
         return jdbc.query(
                 sqlPickDetail,
-                new Object[] {putAwayZone, areaKey},
+                new Object[] {areaKey},
                 new RowMapper<PickDetail>() {
                     @Override
                     public PickDetail mapRow(ResultSet resultSet, int i) throws SQLException {
@@ -151,13 +147,13 @@ public class ConsolidationDao {
     }
 
     public List<PickDetail> getPickDetails() {
-        return getPickDetails("AUTO", "CQ2");
+        return getPickDetails("CQ2");
     }
 
-    public List<OrderTrolley> getOrderTrolley(String putAwayZone, String areaKey) {
+    public List<OrderTrolley> getOrderTrolley(String areaKey, String dropIdType) {
         List<OrderTrolley> result = jdbc.query(
                 sqlOrderTrolley,
-                new Object[]{putAwayZone, areaKey, "10"},
+                new Object[]{areaKey, dropIdType},
                 new RowMapper<OrderTrolley>() {
                     @Override
                     public OrderTrolley mapRow(ResultSet resultSet, int i) throws SQLException {
@@ -218,7 +214,7 @@ public class ConsolidationDao {
     }
 
     public List<OrderTrolley> getOrderTrolley() {
-        return getOrderTrolley("AUTO", "CQ2");
+        return getOrderTrolley("CQ2", "10");
     }
 
 }
