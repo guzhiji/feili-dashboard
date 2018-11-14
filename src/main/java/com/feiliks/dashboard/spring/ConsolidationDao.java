@@ -15,6 +15,7 @@ public class ConsolidationDao {
     public enum Status {
         PICKED, SHIPPED, OTHER
     }
+
     public static class PickDetail {
         private String orderKey;
         private String dropId;
@@ -45,7 +46,7 @@ public class ConsolidationDao {
         private String status;
         private boolean isAsrs;
         private boolean isToCombine;
-        private Date shipDate;
+        private long shipDate;
         private String storer;
         private String storerName;
         private String consignee;
@@ -73,7 +74,7 @@ public class ConsolidationDao {
             return isToCombine;
         }
 
-        public Date getShipDate() {
+        public long getShipDate() {
             return shipDate;
         }
 
@@ -112,22 +113,25 @@ public class ConsolidationDao {
 
     private final static String sqlOrderTrolley = "select " +
             "dd.DROPID trolley_id, " +
-            "t.ORDERKEY order_key, " +
-            "t.STATUS status, " +
-            "t.ISASRS is_asrs, " +
+            "p.ORDERKEY order_key, " +
+            "p.STATUS status, " +
+            "l.ISASRS is_asrs, " +
             "o.REQUESTEDSHIPDATE ship_date, " +
-            "o.STORERKEY storer, " +
+            "o.STORERKEY storer_key, " +
             "s.COMPANY storer_name, " +
-            "o.SUSR35 consignee, " +
+            "o.SUSR35 consignee_key, " +
             "c.COMPANY consignee_name, " +
             "o.CONSIGNEEKEY factory, " +
             "o.TRADINGPARTNER line " +
-            "from (" + sqlPickDetail + ") t " +
-            "inner join DROPIDDETAIL dd on dd.CHILDID = t.DROPID " +
-            "inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = ? " + 
-            "left join ORDERS o on o.ORDERKEY = t.ORDERKEY " +
+            "from PICKDETAIL p " +
+            "inner join LOC l on l.LOC = p.LOC " +
+            "inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = ? " +
+            "inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID " +
+            "inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = ? " +
+            "left join ORDERS o on o.ORDERKEY = p.ORDERKEY " +
             "left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' " +
-            "left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10'";
+            "left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10' " +
+            "where p.EDITDATE >= sysdate - 1";
 
     public List<PickDetail> getPickDetails(String areaKey) {
         return jdbc.query(
@@ -163,13 +167,22 @@ public class ConsolidationDao {
                         o.status = resultSet.getString(3);
                         o.isToCombine = false;
                         o.isAsrs = !"0".equals(resultSet.getString(4));
-                        o.shipDate = resultSet.getDate(5);
+                        Date shipDate = resultSet.getTimestamp(5);
+                        o.shipDate = shipDate == null ? 0L : shipDate.getTime();
                         o.storer = resultSet.getString(6);
                         o.storerName = resultSet.getString(7);
+                        if (o.storerName != null)
+                            o.storerName = o.storerName.trim();
                         o.consignee = resultSet.getString(8);
                         o.consigneeName = resultSet.getString(9);
+                        if (o.consigneeName != null)
+                            o.consigneeName = o.consigneeName.trim();
                         o.factory = resultSet.getString(10);
+                        if (o.factory != null)
+                            o.factory = o.factory.trim();
                         o.line = resultSet.getString(11);
+                        if (o.line != null)
+                            o.line = o.line.trim();
                         return o;
                     }
                 });

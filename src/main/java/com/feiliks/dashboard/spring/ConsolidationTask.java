@@ -16,19 +16,19 @@ public class ConsolidationTask {
     private ConsolidationDao dao;
 
     public static class HourlyStats {
-        private Date hour;
+        private long hour;
         private Map<String, Integer> data;
 
         public HourlyStats(Date hour, Map<String, Integer> data) {
-            this.hour = hour;
+            this.hour = hour.getTime();
             this.data = data;
         }
 
-        public Date getHour() {
+        public long getHour() {
             return hour;
         }
 
-        public void setHour(Date hour) {
+        public void setHour(long hour) {
             this.hour = hour;
         }
 
