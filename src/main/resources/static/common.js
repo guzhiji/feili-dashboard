@@ -170,6 +170,7 @@ var LineChart = function(id, formatter, translatedLabels) {
             yAxis: [
                 {
                     type: 'value',
+                    interval: 1,
                     splitLine: {
                         lineStyle: {
                             color: [COLOR_DARK_LINE]
@@ -193,7 +194,7 @@ var LineChart = function(id, formatter, translatedLabels) {
         return {
             name: name,
             type: 'line',
-            symbolSize: 5,
+            symbolSize: 8,
             itemStyle: { normal: { areaStyle: { type: 'default' } } },
             data: []
         };

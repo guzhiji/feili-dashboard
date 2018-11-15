@@ -106,12 +106,12 @@ public class ConsolidationDao {
     @Autowired
     private JdbcTemplate jdbc;
 
-    private final static String sqlPickDetail = "select p.ORDERKEY, p.DROPID, p.STATUS, l.ISASRS from PICKDETAIL p " +
+    private final static String sqlPickDetail = "select distinct p.ORDERKEY, p.DROPID, p.STATUS, l.ISASRS from PICKDETAIL p " +
             "inner join LOC l on l.LOC = p.LOC " +
             "inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = ? " +
             "where p.EDITDATE >= sysdate - 1";
 
-    private final static String sqlOrderTrolley = "select " +
+    private final static String sqlOrderTrolley = "select distinct " +
             "dd.DROPID trolley_id, " +
             "p.ORDERKEY order_key, " +
             "p.STATUS status, " +
