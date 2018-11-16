@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
@@ -92,6 +93,31 @@ public class ConsolidationTask {
                 groupByHour.put(count.getTime(), stats);
             } else {
                 stats.getData().put(count.getStatus(), count.getCount());
+            }
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        for (int h = cal.get(Calendar.HOUR_OF_DAY); h >= 0; h--) {
+            cal.set(Calendar.HOUR_OF_DAY, h);
+            long t = cal.getTimeInMillis();
+            HourlyStats stats = groupByHour.get(t);
+            if (stats == null) {
+                Map<String, Long> counts = new HashMap<>();
+                for (ConsolidationDao.Status status : ConsolidationDao.Status.values()) {
+                    if (status == ConsolidationDao.Status.OTHER) continue;
+                    counts.put(status.name(), 0L);
+                }
+                stats = new HourlyStats(t, counts);
+                groupByHour.put(t, stats);
+            } else {
+                for (ConsolidationDao.Status status : ConsolidationDao.Status.values()) {
+                    if (status == ConsolidationDao.Status.OTHER) continue;
+                    Map<String, Long> counts = stats.getData();
+                    if (!counts.containsKey(status.name()))
+                        counts.put(status.name(), 0L);
+                }
             }
         }
         List<HourlyStats> sortedStats = new ArrayList<>(groupByHour.values());

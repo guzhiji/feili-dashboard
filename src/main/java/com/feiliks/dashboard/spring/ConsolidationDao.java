@@ -153,7 +153,7 @@ public class ConsolidationDao {
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
             "        inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10' " +
             "where" +
-            "    o.STATUS not in ('98', '99') and" +
+            "    o.STATUS in ('95', '55') and" +
             "        o.REQUESTEDSHIPDATE >= trunc(sysdate) and" +
             "        o.REQUESTEDSHIPDATE < trunc(sysdate) + 1 " +
             "group by o.STATUS, to_char(o.EDITDATE, 'YYYY-MM-DD HH24')";

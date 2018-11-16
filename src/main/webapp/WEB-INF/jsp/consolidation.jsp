@@ -77,7 +77,7 @@
 			<div class="col-md-12">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						集货信息
+						台车信息
 					</div>
 					<div class="panel-body">
 						<table id="data-table" class="table table-striped">
@@ -127,38 +127,29 @@ var datatable = DataTable('data-table', 5000, [
 	function(row) { return formatDuration2(calcRemainingTime(row.shipDate)); }
 ]);
 
-var ws = null;
-function connect() {
-	ws = new SockJS('/sockjs');
-	ws.onmessage = function(evt) {
-		var arr = evt.data.split(':');
-		if (arr.length) {
-			if (arr[0] == 'pie') {
-				piechart.update(deserializeMessage(arr[1], parseInt));
-				$.get('/consolidation/table.json', datatable.update);
-			} else if (arr[0] == 'line') {
-				var t = parseInt(arr[1]);
-				linechart.update(t, deserializeMessage(arr[2], parseInt));
-				console.log(arr);
-			}
-		}
-	};
-	ws.onopen = function(evt) {
-		$('#error-message').hide();
-		$.get('/consolidation/table.json', datatable.update);
-		$.get('/consolidation/status.json', piechart.update);
-		$.get('/consolidation/history.json', linechart.load);
-	};
-	ws.onclose = function(evt) {
-		var e = $('#error-message'), w = $(window);
-		e.css({
-			top: (w.height() - e.height()) / 2,
-			left: (w.width() - e.width()) / 2
-		}).show('slow');
-		setTimeout(connect, 1000);
-	};
+function showError() {
+	var e = $('#error-message'), w = $(window);
+	e.css({
+		top: (w.height() - e.height()) / 2,
+		left: (w.width() - e.width()) / 2
+	}).show();
+	piechart.clear();
+	linechart.clear();
+	datatable.clear();
 }
-connect();
+
+function hideError() {
+	$('#error-message').hide();
+}
+
+function updateData(done) {
+	$.get('/consolidation/table.json', datatable.update).done(hideError).done(done).fail(showError);
+	$.get('/consolidation/status.json', piechart.update).done(hideError).fail(showError);
+	$.get('/consolidation/history.json', linechart.load).done(hideError).fail(showError);
+}
+
+setInterval(updateData, 5000);
+updateData(datatable.render);
 
 	</script>
 </html>
