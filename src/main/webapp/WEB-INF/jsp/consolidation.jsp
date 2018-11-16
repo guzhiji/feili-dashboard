@@ -146,6 +146,7 @@ function connect() {
 	ws.onopen = function(evt) {
 		$('#error-message').hide();
 		$.get('/consolidation/table.json', datatable.update);
+		$.get('/consolidation/status.json', piechart.update);
 		$.get('/consolidation/history.json', linechart.load);
 	};
 	ws.onclose = function(evt) {

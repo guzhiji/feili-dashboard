@@ -32,7 +32,7 @@ public class ConsolidationController {
     }
 
     @GetMapping("/status.json")
-    public ResponseEntity<Map<String, Integer>> getStatus() {
+    public ResponseEntity<Map<String, Long>> getStatus() {
         return ResponseEntity.ok(task.getCurrentStats());
     }
 
