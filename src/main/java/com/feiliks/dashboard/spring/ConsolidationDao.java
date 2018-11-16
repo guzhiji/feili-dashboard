@@ -16,30 +16,6 @@ public class ConsolidationDao {
         PICKED, SHIPPED, OTHER
     }
 
-    public static class PickDetail {
-        private String orderKey;
-        private String dropId;
-        private String status;
-        private boolean isAsrs;
-
-        public String getOrderKey() {
-            return orderKey;
-        }
-
-        public String getDropId() {
-            return dropId;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public boolean isAsrs() {
-            return isAsrs;
-        }
-
-    }
-
     public class OrderTrolley {
         private String trolleyId;
         private String orderKey;
@@ -53,6 +29,7 @@ public class ConsolidationDao {
         private String consigneeName;
         private String factory;
         private String line;
+        private Date opTime;
 
         public String getTrolleyId() {
             return trolleyId;
@@ -101,63 +78,44 @@ public class ConsolidationDao {
         public String getLine() {
             return line;
         }
+
+        private Date getOpTime() {
+            return opTime;
+        }
     }
 
     @Autowired
     private JdbcTemplate jdbc;
 
-    private final static String sqlPickDetail = "select distinct p.ORDERKEY, p.DROPID, p.STATUS, l.ISASRS from PICKDETAIL p " +
-            "inner join LOC l on l.LOC = p.LOC " +
-            "inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = ? " +
-            "where p.EDITDATE >= sysdate - 1";
-
     private final static String sqlOrderTrolley = "select distinct " +
-            "dd.DROPID trolley_id, " +
-            "p.ORDERKEY order_key, " +
-            "p.STATUS status, " +
-            "l.ISASRS is_asrs, " +
-            "o.REQUESTEDSHIPDATE ship_date, " +
-            "o.STORERKEY storer_key, " +
-            "s.COMPANY storer_name, " +
-            "o.SUSR35 consignee_key, " +
-            "c.COMPANY consignee_name, " +
-            "o.CONSIGNEEKEY factory, " +
-            "o.TRADINGPARTNER line " +
-            "from PICKDETAIL p " +
-            "inner join LOC l on l.LOC = p.LOC " +
-            "inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = ? " +
-            "inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID " +
-            "inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = ? " +
-            "left join ORDERS o on o.ORDERKEY = p.ORDERKEY " +
-            "left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' " +
-            "left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10' " +
-            "where p.EDITDATE >= sysdate - 1";
+"    dd.DROPID trolley_id," +
+"    o.ORDERKEY order_key," +
+"    o.STATUS status," +
+"    l.ISASRS is_asrs," +
+"    o.REQUESTEDSHIPDATE ship_time," +
+"    o.STORERKEY storer_key," +
+"    s.COMPANY storer_name," +
+"    o.SUSR35 consignee_key," +
+"    c.COMPANY consignee_name," +
+"    o.CONSIGNEEKEY factory," +
+"    o.TRADINGPARTNER line," +
+"    o.EDITDATE op_time " +
+"from ORDERS o" +
+"    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
+"    inner join LOC l on l.LOC = p.LOC" +
+"        inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = 'CQ2'" +
+"    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
+"        inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10'" +
+"    left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1'" +
+"    left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10' " +
+"where" +
+"    o.STATUS not in ('98', '99') and" +
+"        o.REQUESTEDSHIPDATE >= trunc(sysdate) and" +
+"        o.REQUESTEDSHIPDATE < trunc(sysdate) + 1";
 
-    public List<PickDetail> getPickDetails(String areaKey) {
-        return jdbc.query(
-                sqlPickDetail,
-                new Object[] {areaKey},
-                new RowMapper<PickDetail>() {
-                    @Override
-                    public PickDetail mapRow(ResultSet resultSet, int i) throws SQLException {
-                        PickDetail p = new PickDetail();
-                        p.orderKey = resultSet.getString(1);
-                        p.dropId = resultSet.getString(2);
-                        p.status = resultSet.getString(3);
-                        p.isAsrs = !"0".equals(resultSet.getString(4));
-                        return p;
-                    }
-                });
-    }
-
-    public List<PickDetail> getPickDetails() {
-        return getPickDetails("CQ2");
-    }
-
-    public List<OrderTrolley> getOrderTrolley(String areaKey, String dropIdType) {
+    public List<OrderTrolley> getOrderTrolley() {
         List<OrderTrolley> result = jdbc.query(
                 sqlOrderTrolley,
-                new Object[]{areaKey, dropIdType},
                 new RowMapper<OrderTrolley>() {
                     @Override
                     public OrderTrolley mapRow(ResultSet resultSet, int i) throws SQLException {
@@ -183,6 +141,7 @@ public class ConsolidationDao {
                         o.line = resultSet.getString(11);
                         if (o.line != null)
                             o.line = o.line.trim();
+                        o.opTime = resultSet.getTimestamp(12);
                         return o;
                     }
                 });
@@ -218,16 +177,12 @@ public class ConsolidationDao {
 
     private String convertStatus(String s) {
         if (s != null) s = s.trim();
-        if ("5".equals(s) || "6".equals(s))
+        if ("55".equals(s))
             return Status.PICKED.name();
-        else if ("9".equals(s))
+        else if ("95".equals(s))
             return Status.SHIPPED.name();
         else
             return Status.OTHER.name();
-    }
-
-    public List<OrderTrolley> getOrderTrolley() {
-        return getOrderTrolley("CQ2", "10");
     }
 
 }
