@@ -20,6 +20,9 @@ public class ConsolidationTask {
         private long hour;
         private Map<String, Long> data;
 
+        public HourlyStats() {
+        }
+
         public HourlyStats(long hour, Map<String, Long> data) {
             this.hour = hour;
             this.data = data;
