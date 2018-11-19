@@ -79,7 +79,7 @@ public class ConsolidationDao {
             return line;
         }
 
-        private Date getOpTime() {
+        public Date getOpTime() {
             return opTime;
         }
     }
@@ -88,30 +88,30 @@ public class ConsolidationDao {
     private JdbcTemplate jdbc;
 
     private final static String sqlOrderTrolley = "select distinct " +
-"    dd.DROPID trolley_id," +
-"    o.ORDERKEY order_key," +
-"    o.STATUS status," +
-"    l.ISASRS is_asrs," +
-"    o.REQUESTEDSHIPDATE ship_time," +
-"    o.STORERKEY storer_key," +
-"    s.COMPANY storer_name," +
-"    o.SUSR35 consignee_key," +
-"    c.COMPANY consignee_name," +
-"    o.CONSIGNEEKEY factory," +
-"    o.TRADINGPARTNER line," +
-"    o.EDITDATE op_time " +
-"from ORDERS o" +
-"    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
-"    inner join LOC l on l.LOC = p.LOC" +
-"        inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = 'CQ2'" +
-"    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
-"        inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10'" +
-"    left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1'" +
-"    left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10' " +
-"where" +
-"    o.STATUS not in ('98', '99') and" +
-"        o.REQUESTEDSHIPDATE >= trunc(sysdate) and" +
-"        o.REQUESTEDSHIPDATE < trunc(sysdate) + 1";
+            "    dd.DROPID trolley_id," +
+            "    o.ORDERKEY order_key," +
+            "    o.STATUS status," +
+            "    l.ISASRS is_asrs," +
+            "    o.REQUESTEDSHIPDATE ship_time," +
+            "    o.STORERKEY storer_key," +
+            "    s.COMPANY storer_name," +
+            "    o.SUSR35 consignee_key," +
+            "    c.COMPANY consignee_name," +
+            "    o.CONSIGNEEKEY factory," +
+            "    o.TRADINGPARTNER line," +
+            "    o.EDITDATE op_time " +
+            "from ORDERS o" +
+            "    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
+            "    inner join LOC l on l.LOC = p.LOC" +
+            "        inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = 'CQ2'" +
+            "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
+            "        inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10'" +
+            "    left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1'" +
+            "    left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10' " +
+            "where" +
+            "    o.STATUS not in ('98', '99') and" +
+            "        o.REQUESTEDSHIPDATE >= trunc(sysdate) and" +
+            "        o.REQUESTEDSHIPDATE < trunc(sysdate) + 1";
 
     public List<OrderTrolley> getOrderTrolley() {
         List<OrderTrolley> result = jdbc.query(

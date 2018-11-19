@@ -19,6 +19,10 @@ public class ConsolidationTask {
         private long hour;
         private Map<String, Integer> data;
 
+        public HourlyStats(Date hour) {
+            this(hour, new HashMap<String, Integer>());
+        }
+
         public HourlyStats(Date hour, Map<String, Integer> data) {
             this.hour = hour.getTime();
             this.data = data;
@@ -47,7 +51,7 @@ public class ConsolidationTask {
     private Map<String, Integer> currentHourStats = null;
     private Map<String, Set<String>> previousHourData = null, currentHourData = null;
     private Date currentHour = null;
-    private boolean hasUpdate = false;
+    private boolean dataSent;
 
     private static Date getHour(Date d) {
         Calendar cal = Calendar.getInstance();
@@ -72,42 +76,97 @@ public class ConsolidationTask {
         historicalStats.offer(new HourlyStats(currentHour, currentHourStats));
     }
 
-    private void process(ConsolidationDao.OrderTrolley row) {
-        String key = row.getOrderKey();
-        String status = row.getStatus();
-        Set<String> cur = currentHourData.get(status);
-        if (cur == null) return;
-        Set<String> prev = previousHourData == null ? null : previousHourData.get(status);
-        if ((prev == null || !prev.contains(key)) && !cur.contains(key)) { // new order key
-            Integer count = currentHourStats.get(status);
-            if (count == null) count = 0;
-            currentHourStats.put(status, count + 1);
-            hasUpdate = true;
+    private void computeHourlyStats(Iterable<ConsolidationDao.OrderTrolley> rows) {
+        for (ConsolidationDao.OrderTrolley row : rows) {
+            String status = row.getStatus();
+            String orderKey = row.getOrderKey();
+            for (Map.Entry<String, Set<String>> entry : currentHourData.entrySet()) {
+                if (status.equals(entry.getKey()))
+                    entry.getValue().add(orderKey);
+                else
+                    entry.getValue().remove(orderKey);
+            }
         }
-        cur.add(key);
-    }
-
-    private void processAll(Iterable<ConsolidationDao.OrderTrolley> rows) {
-        hasUpdate = false;
-        for (ConsolidationDao.OrderTrolley row : rows)
-            process(row);
-        if (hasUpdate)
+        boolean updated = false;
+        for (String status : currentHourData.keySet()) {
+            Set<String> prev = previousHourData == null ? null : previousHourData.get(status);
+            if (prev == null) prev = Collections.emptySet();
+            Set<String> newKeys = new HashSet<>(currentHourData.get(status));
+            newKeys.removeAll(prev);
+            int count = newKeys.size();
+            if (currentHourStats.get(status) != count) {
+                currentHourStats.put(status, count);
+                updated = true;
+            }
+        }
+        if (updated) {
             webSocketHandler.broadcast("line:" + currentHour.getTime() + ":" + stringifyStats(currentHourStats));
+            dataSent = true;
+        }
     }
 
     private void computeCurrentStats(Iterable<ConsolidationDao.OrderTrolley> rows) {
-        Map<String, Set<String>> data = new HashMap<>();
-        for (ConsolidationDao.Status s : ConsolidationDao.Status.values()) {
-            currentStats.put(s.name(), 0);
-            data.put(s.name(), new HashSet<String>());
-        }
+        Map<String, Set<String>> orderKeysByStatus = new HashMap<>();
+        for (ConsolidationDao.Status s : ConsolidationDao.Status.values())
+            orderKeysByStatus.put(s.name(), new HashSet<String>());
         for (ConsolidationDao.OrderTrolley row : rows) {
-            Set<String> keys = data.get(row.getStatus());
+            Set<String> keys = orderKeysByStatus.get(row.getStatus());
             if (keys != null) keys.add(row.getOrderKey());
         }
-        for (Map.Entry<String, Set<String>> e : data.entrySet())
-            currentStats.put(e.getKey(), e.getValue().size());
-        webSocketHandler.broadcast("pie:" + stringifyStats(currentStats));
+        boolean updated = false;
+        for (Map.Entry<String, Set<String>> e : orderKeysByStatus.entrySet()) {
+            Integer count = e.getValue().size();
+            if (!count.equals(currentStats.get(e.getKey()))) {
+                currentStats.put(e.getKey(), count);
+                updated = true;
+            }
+        }
+        if (updated) {
+            webSocketHandler.broadcast("pie:" + stringifyStats(currentStats));
+            dataSent = true;
+        }
+    }
+
+    private void partiallyRecoverData(Date hour, Iterable<ConsolidationDao.OrderTrolley> rows) {
+        Map<Date, Map<String, Set<String>>> groupByHour = new HashMap<>();
+        for (ConsolidationDao.OrderTrolley row : rows) {
+            Date h = new Date(row.getOpTime().getTime());
+            h = getHour(h);
+            boolean isNewHour = false;
+            Map<String, Set<String>> statusOrders = groupByHour.get(h);
+            if (statusOrders == null) {
+                statusOrders = new HashMap<>();
+                isNewHour = true;
+            }
+            Set<String> orders = statusOrders.get(row.getStatus());
+            if (orders == null) {
+                orders = new HashSet<>();
+                orders.add(row.getOrderKey());
+                statusOrders.put(row.getStatus(), orders);
+            } else {
+                orders.add(row.getOrderKey());
+            }
+            if (isNewHour) groupByHour.put(h, statusOrders);
+        }
+        List<HourlyStats> result = new ArrayList<>(24);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(hour);
+        for (int h = cal.get(Calendar.HOUR_OF_DAY) - 1; h >= 0; h--) {
+            cal.set(Calendar.HOUR_OF_DAY, h);
+            Map<String, Set<String>> statusOrders = groupByHour.get(cal.getTime());
+            HourlyStats stats = new HourlyStats(cal.getTime());
+            for (ConsolidationDao.Status status : ConsolidationDao.Status.values()) {
+                String statusName = status.name();
+                if (statusOrders == null || !statusOrders.containsKey(statusName)) {
+                    stats.getData().put(statusName, 0);
+                } else {
+                    stats.getData().put(statusName, statusOrders.get(statusName).size());
+                }
+            }
+            result.add(stats);
+        }
+        for (HourlyStats stats : result)
+            historicalStats.addFirst(stats);
     }
 
     private static String stringifyStats(Map<String, Integer> stats) {
@@ -137,11 +196,14 @@ public class ConsolidationTask {
 
         Date hour = getHour(new Date());
         table = dao.getOrderTrolley();
-        if (currentHour == null || hour.after(currentHour)) {
+        if (currentHour == null && historicalStats.isEmpty())
+            partiallyRecoverData(hour, table);
+        if (currentHour == null || hour.after(currentHour))
             nextHour(hour);
-        }
-        processAll(table);
+        dataSent = false;
+        computeHourlyStats(table);
         computeCurrentStats(table);
+        if (!dataSent) webSocketHandler.broadcast("heartbeat:" + System.currentTimeMillis());
 
     }
 

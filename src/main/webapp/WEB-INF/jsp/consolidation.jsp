@@ -135,7 +135,6 @@ function connect() {
 		if (arr.length) {
 			if (arr[0] == 'pie') {
 				piechart.update(deserializeMessage(arr[1], parseInt));
-				$.get('/consolidation/table.json', datatable.update);
 			} else if (arr[0] == 'line') {
 				var t = parseInt(arr[1]);
 				linechart.update(t, deserializeMessage(arr[2], parseInt));
@@ -147,17 +146,21 @@ function connect() {
 		$('#error-message').hide();
 		$.get('/consolidation/table.json', datatable.update);
 		$.get('/consolidation/history.json', linechart.load);
+		$.get('/consolidation/status.json', piechart.update);
 	};
 	ws.onclose = function(evt) {
 		var e = $('#error-message'), w = $(window);
 		e.css({
 			top: (w.height() - e.height()) / 2,
 			left: (w.width() - e.width()) / 2
-		}).show('slow');
+		}).show();
 		setTimeout(connect, 1000);
 	};
 }
 connect();
+setInterval(function() {
+    $.get('/consolidation/table.json', datatable.update);
+}, 5000);
 
 	</script>
 </html>

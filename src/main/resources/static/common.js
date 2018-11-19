@@ -68,6 +68,7 @@ var PieChart = function(id, name, translatedLabels) {
                 {
                     name: name,
                     type: 'pie',
+                    radius: '50%',
                     label: {
                         show: true,
                         color: COLOR_TEXT,
@@ -203,6 +204,12 @@ var LineChart = function(id, formatter, translatedLabels) {
     chart.setOption(option);
 
     return {
+        clear: function() {
+            data = [];
+            chart.setOption({
+                series: data
+            });
+        },
         update: function(t, value) {
             for (var key in value) {
                 var legend = key in translatedLabels ? translatedLabels[key] : key,
@@ -243,7 +250,7 @@ var LineChart = function(id, formatter, translatedLabels) {
             }
         },
         load: function(values) {
-            console.log(values);
+            data = [];
             for (var i = 0; i < values.length; i++) {
                 for (var key in values[i].data) {
                     var legend = key in translatedLabels ? translatedLabels[key] : key,
@@ -350,7 +357,9 @@ var DataTable = function(id, refreshRate, fields) {
     return {
         clear: function() {
             data = [];
+            renderData();
         },
+        render: renderData,
         update: function(values) {
             for (var i = 0; i < values.length; i++)
                 values[i].timeRemaining = calcRemainingTime(values[i].shipDate);
@@ -359,6 +368,10 @@ var DataTable = function(id, refreshRate, fields) {
                 if (!a.toCombine && b.toCombine) return 1;
                 if (a.timeRemaining < b.timeRemaining) return -1;
                 if (a.timeRemaining > b.timeRemaining) return 1;
+                if (a.trolleyId < b.trolleyId) return -1;
+                if (a.trolleyId > b.trolleyId) return 1;
+                if (a.orderKey < b.orderKey) return -1;
+                if (a.orderKey > b.orderKey) return 1;
                 return 0;
             });
             data = values;
