@@ -95,7 +95,7 @@ public class ConsolidationTask {
         return updated;
     }
 
-    private void computeHourlyStats(Iterable<ConsolidationDao.OrderTrolley> rows) {
+    private void computeHourlyStats(Iterable<ConsolidationDao.OrderTrolley> rows, boolean isNewHour) {
         for (ConsolidationDao.OrderTrolley row : rows) {
             String status = row.getStatus();
             String orderKey = row.getOrderKey();
@@ -106,7 +106,7 @@ public class ConsolidationTask {
                     entry.getValue().remove(orderKey);
             }
         }
-        if (_computeHourlyStats()) {
+        if (_computeHourlyStats() || isNewHour) {
             webSocketHandler.broadcast("line:" + currentHour.getTime() + ":" + stringifyStats(currentHourStats));
             dataSent = true;
         }
@@ -223,9 +223,12 @@ public class ConsolidationTask {
             historicalStats.clear();
             partiallyRecoverData(hour, table);
         } else {
-            if (hour.after(currentHour))
+            boolean isNewHour = false;
+            if (hour.after(currentHour)) {
                 nextHour(hour);
-            computeHourlyStats(table);
+                isNewHour = true;
+            }
+            computeHourlyStats(table, isNewHour);
         }
         computeCurrentStats(table);
         if (!dataSent) webSocketHandler.broadcast("heartbeat:" + System.currentTimeMillis());
