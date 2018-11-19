@@ -139,6 +139,8 @@ function connect() {
 				var t = parseInt(arr[1]);
 				linechart.update(t, deserializeMessage(arr[2], parseInt));
 				console.log(arr);
+			} else if (arr[0] == 'init') {
+				$.get('/consolidation/history.json', linechart.load);
 			}
 		}
 	};
@@ -162,7 +164,7 @@ function connect() {
 }
 connect();
 setInterval(function() {
-    $.get('/consolidation/table.json', datatable.update);
+	$.get('/consolidation/table.json', datatable.update);
 }, 5000);
 
 	</script>
