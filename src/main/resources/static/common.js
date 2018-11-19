@@ -85,6 +85,17 @@ var PieChart = function(id, name, translatedLabels) {
     chart.setOption(option);
 
     return {
+        rebind: function(id) {
+            chart.dispose();
+            chart = echarts.init(document.getElementById(id));
+            chart.setOption(option);
+        },
+        render: function() {
+            chart.setOption({
+                legend: { data: legends },
+                series: [{ data: data }]
+            });
+        },
         clear: function() {
             for (var i = 0; i < data.length; i++)
                 data[i].value = 0;
@@ -204,6 +215,17 @@ var LineChart = function(id, formatter, translatedLabels) {
     chart.setOption(option);
 
     return {
+        rebind: function(id) {
+            chart.dispose();
+            chart = echarts.init(document.getElementById(id));
+            chart.setOption(option);
+        },
+        render: function() {
+            chart.setOption({
+                legend: {data: legends},
+                series: data
+            });
+        },
         clear: function() {
             for (var i = 0; i < data.length; i++)
                 data[i].data = [];

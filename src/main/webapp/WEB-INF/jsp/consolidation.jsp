@@ -142,7 +142,6 @@ function connect() {
 			} else if (arr[0] == 'line') {
 				var t = parseInt(arr[1]);
 				linechart.update(t, deserializeMessage(arr[2], parseInt));
-				console.log(arr);
 			} else if (arr[0] == 'init') {
 				$.get('/consolidation/table.json', datatable.update).done(datatable.render);
 				$.get('/consolidation/history.json', linechart.load);
@@ -171,6 +170,18 @@ connect();
 setInterval(function() {
 	$.get('/consolidation/table.json', datatable.update);
 }, 5000);
-
+$(window).on('resize', function() {
+	var w = $(window),
+		estHeight = (w.height() - 200) / 3 - 80,
+		qPieChart = $('#pie-chart'),
+		qLineChart = $('#line-chart');
+	if (estHeight < 300) estHeight = 300;
+	qPieChart.height(estHeight);
+	qLineChart.height(estHeight);
+	piechart.rebind('pie-chart');
+	linechart.rebind('line-chart');
+	piechart.render();
+	linechart.render();
+});
 	</script>
 </html>
