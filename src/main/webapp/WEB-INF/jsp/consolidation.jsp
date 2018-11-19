@@ -144,7 +144,7 @@ function connect() {
 	};
 	ws.onopen = function(evt) {
 		$('#error-message').hide();
-		$.get('/consolidation/table.json', datatable.update);
+		$.get('/consolidation/table.json', datatable.update).done(datatable.render);
 		$.get('/consolidation/history.json', linechart.load);
 		$.get('/consolidation/status.json', piechart.update);
 	};
@@ -154,6 +154,9 @@ function connect() {
 			top: (w.height() - e.height()) / 2,
 			left: (w.width() - e.width()) / 2
 		}).show();
+		datatable.clear();
+		linechart.clear();
+		piechart.clear();
 		setTimeout(connect, 1000);
 	};
 }

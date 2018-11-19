@@ -205,7 +205,8 @@ var LineChart = function(id, formatter, translatedLabels) {
 
     return {
         clear: function() {
-            data = [];
+            for (var i = 0; i < data.length; i++)
+                data[i].data = [];
             chart.setOption({
                 series: data
             });
@@ -251,6 +252,7 @@ var LineChart = function(id, formatter, translatedLabels) {
         },
         load: function(values) {
             data = [];
+            legends = [];
             for (var i = 0; i < values.length; i++) {
                 for (var key in values[i].data) {
                     var legend = key in translatedLabels ? translatedLabels[key] : key,
