@@ -20,9 +20,9 @@
 				padding: 100px;
 			}
 
-            .panel-primary {
-                background-color: #001531;
-            }
+			.panel-primary {
+				background-color: #001531;
+			}
 
 			.panel-primary>.panel-heading {
 				color: #70cac7;
@@ -154,6 +154,20 @@ function updateData(done) {
 
 setInterval(updateData, 5000);
 updateData(datatable.render);
+
+$(window).on('resize', function() {
+	var w = $(window),
+		estHeight = (w.height() - 200) / 3 - 80,
+		qPieChart = $('#pie-chart'),
+		qLineChart = $('#line-chart');
+	if (estHeight < 300) estHeight = 300;
+	qPieChart.height(estHeight);
+	qLineChart.height(estHeight);
+	piechart.rebind('pie-chart');
+	linechart.rebind('line-chart');
+	piechart.render();
+	linechart.render();
+});
 
 	</script>
 </html>
