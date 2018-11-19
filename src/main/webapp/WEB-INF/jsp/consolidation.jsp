@@ -20,6 +20,10 @@
 				padding: 100px;
 			}
 
+			.panel-primary {
+				background-color: #001531;
+			}
+
 			.panel-primary>.panel-heading {
 				color: #70cac7;
 				background-color: #06131b;
