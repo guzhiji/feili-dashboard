@@ -19,6 +19,9 @@ public class ConsolidationTask {
         private long hour;
         private Map<String, Integer> data;
 
+        public HourlyStats() {
+        }
+
         public HourlyStats(Date hour) {
             this(hour, new HashMap<String, Integer>());
         }
@@ -67,7 +70,7 @@ public class ConsolidationTask {
         previousHourData = currentHourData;
         currentHourData = new HashMap<>();
         currentHourStats = new HashMap<>();
-        for (ConsolidationDao.Status s : ConsolidationDao.Status.values()) {
+        for (ConsolidationDao.Status s : ConsolidationDao.Status.valuesExceptOther()) {
             currentHourData.put(s.name(), new HashSet<String>());
             currentHourStats.put(s.name(), 0);
         }
@@ -162,25 +165,20 @@ public class ConsolidationTask {
             cal.set(Calendar.HOUR_OF_DAY, h);
             Map<String, Set<String>> statusOrders = groupByHour.get(cal.getTime());
             HourlyStats stats = new HourlyStats(cal.getTime());
-            for (ConsolidationDao.Status status : ConsolidationDao.Status.values()) {
+            if (i == 0) currentHourStats = stats.getData();
+            for (ConsolidationDao.Status status : ConsolidationDao.Status.valuesExceptOther()) {
                 String statusName = status.name();
                 if (statusOrders == null || !statusOrders.containsKey(statusName)) {
                     stats.getData().put(statusName, 0);
                     switch (i) {
-                        case 0:
-                            currentHourData.put(statusName, new HashSet<String>());
-                            currentHourStats = stats.getData();
-                            break;
+                        case 0: currentHourData.put(statusName, new HashSet<String>()); break;
                         case 1: previousHourData.put(statusName, new HashSet<String>()); break;
                     }
                 } else {
                     Set<String> orders = statusOrders.get(statusName);
                     stats.getData().put(statusName, orders.size());
                     switch (i) {
-                        case 0:
-                            currentHourData.put(statusName, orders);
-                            currentHourStats = stats.getData();
-                            break;
+                        case 0: currentHourData.put(statusName, orders); break;
                         case 1: previousHourData.put(statusName, orders); break;
                     }
                 }

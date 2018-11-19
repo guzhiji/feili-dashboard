@@ -13,7 +13,17 @@ import java.util.*;
 public class ConsolidationDao {
 
     public enum Status {
-        PICKED, SHIPPED, OTHER
+        PICKED, SHIPPED, OTHER;
+
+        public static Collection<Status> valuesExceptOther() {
+            List<Status> list = new ArrayList<>();
+            for (Status status : values()) {
+                if (!status.equals(Status.OTHER))
+                    list.add(status);
+            }
+            return list;
+        }
+
     }
 
     public class OrderTrolley {

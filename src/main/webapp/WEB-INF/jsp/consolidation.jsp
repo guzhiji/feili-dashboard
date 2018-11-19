@@ -144,6 +144,7 @@ function connect() {
 				linechart.update(t, deserializeMessage(arr[2], parseInt));
 				console.log(arr);
 			} else if (arr[0] == 'init') {
+				$.get('/consolidation/table.json', datatable.update).done(datatable.render);
 				$.get('/consolidation/history.json', linechart.load);
 			}
 		}
