@@ -217,20 +217,26 @@ public class ConsolidationTask {
     public void run() {
 
         Date hour = getHour(new Date());
-        table = dao.getOrderTrolley();
+        List<ConsolidationDao.OrderTrolley> tableData = dao.getOrderTrolley();
+        List<ConsolidationDao.OrderTrolley> data = new ArrayList(tableData.size());
+        for (ConsolidationDao.OrderTrolley item : tableData) {
+            if (!ConsolidationDao.Status.SHIPPED.name().equals(item.getStatus()))
+                data.add(item);
+        }
+        table = data;
         dataSent = false;
         if (currentHour == null) {
             historicalStats.clear();
-            partiallyRecoverData(hour, table);
+            partiallyRecoverData(hour, tableData);
         } else {
             boolean isNewHour = false;
             if (hour.after(currentHour)) {
                 nextHour(hour);
                 isNewHour = true;
             }
-            computeHourlyStats(table, isNewHour);
+            computeHourlyStats(tableData, isNewHour);
         }
-        computeCurrentStats(table);
+        computeCurrentStats(tableData);
         if (!dataSent) webSocketHandler.broadcast("heartbeat:" + System.currentTimeMillis());
 
     }
