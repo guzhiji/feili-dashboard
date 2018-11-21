@@ -385,19 +385,6 @@ var DataTable = function(id, refreshRate, fields) {
         },
         render: renderData,
         update: function(values) {
-            for (var i = 0; i < values.length; i++)
-                values[i].timeRemaining = calcRemainingTime(values[i].shipDate);
-            values.sort(function(a, b) {
-                if (a.toCombine && !b.toCombine) return -1;
-                if (!a.toCombine && b.toCombine) return 1;
-                if (a.timeRemaining < b.timeRemaining) return -1;
-                if (a.timeRemaining > b.timeRemaining) return 1;
-                if (a.trolleyId < b.trolleyId) return -1;
-                if (a.trolleyId > b.trolleyId) return 1;
-                if (a.orderKey < b.orderKey) return -1;
-                if (a.orderKey > b.orderKey) return 1;
-                return 0;
-            });
             data = values;
         }
     };

@@ -39,7 +39,7 @@
 			<div class="col-md-12">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						集货信息
+						台车信息
 					</div>
 					<div class="panel-body">
 						<table id="data-table" class="table table-striped">
@@ -89,6 +89,25 @@ var datatable = DataTable('data-table', 5000, [
 	function(row) { return formatDuration2(calcRemainingTime(row.shipDate)); }
 ]);
 
+function updateTableData(values) {
+	if (values.sort) {
+		for (var i = 0; i < values.length; i++)
+			values[i].timeRemaining = calcRemainingTime(values[i].shipDate);
+		values.sort(function (a, b) {
+			if (a.toCombine && !b.toCombine) return -1;
+			if (!a.toCombine && b.toCombine) return 1;
+			if (a.timeRemaining < b.timeRemaining) return -1;
+			if (a.timeRemaining > b.timeRemaining) return 1;
+			if (a.trolleyId < b.trolleyId) return -1;
+			if (a.trolleyId > b.trolleyId) return 1;
+			if (a.orderKey < b.orderKey) return -1;
+			if (a.orderKey > b.orderKey) return 1;
+			return 0;
+		});
+		datatable.update(values);
+	}
+}
+
 var ws = null;
 function connect() {
 	ws = new SockJS('/sockjs');
@@ -101,14 +120,14 @@ function connect() {
 				var t = parseInt(arr[1]);
 				linechart.update(t, deserializeMessage(arr[2], parseInt));
 			} else if (arr[0] == 'init') {
-				$.get('/consolidation/table.json', datatable.update).done(datatable.render);
+				$.get('/consolidation/table.json', updateTableData).done(datatable.render);
 				$.get('/consolidation/history.json', linechart.load);
 			}
 		}
 	};
 	ws.onopen = function(evt) {
 		$('#error-message').hide();
-		$.get('/consolidation/table.json', datatable.update).done(datatable.render);
+		$.get('/consolidation/table.json', updateTableData).done(datatable.render);
 		$.get('/consolidation/history.json', linechart.load);
 		$.get('/consolidation/status.json', piechart.update);
 	};
@@ -126,7 +145,7 @@ function connect() {
 }
 connect();
 setInterval(function() {
-	$.get('/consolidation/table.json', datatable.update);
+	$.get('/consolidation/table.json', updateTableData);
 }, 5000);
 $(window).on('resize', function() {
 	var w = $(window),
