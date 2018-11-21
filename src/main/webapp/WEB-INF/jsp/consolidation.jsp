@@ -6,53 +6,11 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>看板 - 集货</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/common.css" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/echarts.min.js"></script>
 		<script src="/common.js"></script>
-		<style>
-			html, body {
-				height: 100%;
-			}
-
-			body {
-				background-color: #061325;
-				padding: 100px;
-			}
-
-			.panel-primary {
-				background-color: #001531;
-			}
-
-			.panel-primary>.panel-heading {
-				color: #70cac7;
-				background-color: #06131b;
-			}
-
-			.panel-primary>.panel-body {
-				background-color: #001531;
-			}
-
-			.table {
-				color: #a5c8e6;
-			}
-			.table > thead > tr > th {
-				border-bottom: 2px solid #2f6899;
-			}
-			.table > tbody > tr > td {
-				border-bottom: 1px solid #2f6899;
-			}
-			.table-striped > tbody > tr:nth-of-type(2n+1) {
-				background-color: #032045;
-			}
-
-			#error-message {
-				position: fixed;
-				top: 100px;
-				display: none;
-				text-align: center;
-			}
-		</style>
 	</head>
 	<body>
 		<div class="row">
