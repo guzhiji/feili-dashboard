@@ -6,32 +6,18 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>看板 - 出货</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/common.css" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
-		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<style>
-			body {
-				background-color: #061325;
-				padding: 100px;
-			}
-
-			.panel-primary>.panel-heading {
-				color: #70cac7;
-				background-color: #06131b;
-			}
-
-			.panel-primary>.panel-body {
-				background-color: #001531;
-			}
-		</style>
+		<script src="/common.js"></script>
 	</head>
 	<body>
 		<div class="row">
 			<div class="col-md-4">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						出货量
+						出货状态
 					</div>
 					<div class="panel-body">
 						<div id="pie-chart" style="height: 300px;"></div>
@@ -41,16 +27,43 @@
 			<div class="col-md-8">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						出货量变化
+						预约号等待
 					</div>
 					<div class="panel-body">
-						<div id="line-chart" style="height: 300px;"></div>
+						<div id="bar-chart" style="height: 300px;"></div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div style="position: fixed; top: 100px; display: none; text-align: center;" id="error-message" class="alert alert-danger">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						台车信息
+					</div>
+					<div class="panel-body">
+						<table id="data-table" class="table table-striped">
+							<thead>
+								<tr>
+									<th>台车号</th>
+									<th>厂别</th>
+									<th>线别</th>
+									<th>料盒数量</th>
+									<th>预约流水号</th>
+									<th>状态</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="error-message" class="alert alert-danger">
 			服务器连接错误
 		</div>
 	</body>
+	<script type="text/javascript">
+	</script>
 </html>

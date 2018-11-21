@@ -89,6 +89,25 @@ var datatable = DataTable('data-table', 5000, [
 	function(row) { return formatDuration2(calcRemainingTime(row.shipDate)); }
 ]);
 
+function updateTableData(values) {
+	if (values.sort) {
+		for (var i = 0; i < values.length; i++)
+			values[i].timeRemaining = calcRemainingTime(values[i].shipDate);
+		values.sort(function (a, b) {
+			if (a.toCombine && !b.toCombine) return -1;
+			if (!a.toCombine && b.toCombine) return 1;
+			if (a.timeRemaining < b.timeRemaining) return -1;
+			if (a.timeRemaining > b.timeRemaining) return 1;
+			if (a.trolleyId < b.trolleyId) return -1;
+			if (a.trolleyId > b.trolleyId) return 1;
+			if (a.orderKey < b.orderKey) return -1;
+			if (a.orderKey > b.orderKey) return 1;
+			return 0;
+		});
+		datatable.update(values);
+	}
+}
+
 function showError() {
 	var e = $('#error-message'), w = $(window);
 	e.css({
@@ -105,7 +124,7 @@ function hideError() {
 }
 
 function updateData(done) {
-	$.get('/consolidation/table.json', datatable.update).done(hideError).done(done).fail(showError);
+	$.get('/consolidation/table.json', updateTableData).done(hideError).done(done).fail(showError);
 	$.get('/consolidation/status.json', piechart.update).done(hideError).fail(showError);
 	$.get('/consolidation/history.json', linechart.load).done(hideError).fail(showError);
 }
