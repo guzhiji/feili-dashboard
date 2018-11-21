@@ -76,15 +76,22 @@ public class ConsolidationTask {
 
         table = dao.getTable();
 
-        Set<String> statusList = new HashSet<>(currentStats.keySet());
+        Map<String, Long> cStats = new HashMap<>();
+        // zero all status
+        for (String status : currentStats.keySet())
+            cStats.put(status, 0L);
         for (ConsolidationDao.Status status : ConsolidationDao.Status.values())
-            statusList.add(status.name());
+            cStats.put(status.name(), 0L);
+        // aggregate status counts
         for (ConsolidationDao.StatusCount count : dao.getPie()) {
-            statusList.remove(count.getStatus());
-            currentStats.put(count.getStatus(), count.getCount());
+            Long c = cStats.get(count.getStatus());
+            if (c == null) c = 0L;
+            c += count.getCount();
+            cStats.put(count.getStatus(), c);
         }
-        for (String status : statusList)
-            currentStats.put(status, 0L);
+        // copy to currentStats
+        for (Map.Entry<String, Long> entry : cStats.entrySet())
+            currentStats.put(entry.getKey(), entry.getValue());
 
         Map<Long, HourlyStats> groupByHour = new HashMap<>();
         for (ConsolidationDao.TimelyStatusCount count : dao.getLine()) {

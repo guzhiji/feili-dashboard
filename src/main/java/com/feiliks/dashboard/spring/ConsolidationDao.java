@@ -239,7 +239,7 @@ public class ConsolidationDao {
             return Status.OTHER.name();
     }
 
-    private final static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy.MM.dd HH");
+    private final static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy-MM-dd HH");
 
     private long convertTime(String time) {
         try {
