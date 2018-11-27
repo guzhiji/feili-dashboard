@@ -26,7 +26,7 @@ public class ConsolidationDao {
 
     }
 
-    public class OrderTrolley {
+    public static class OrderTrolley {
         private String trolleyId;
         private String orderKey;
         private String status;

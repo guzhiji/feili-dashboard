@@ -10,7 +10,7 @@ import java.util.*;
 public class ConsolidationTask {
 
     @Autowired
-    private WebSocketHandler webSocketHandler;
+    private WebSocketHandler wsConsolidationHandler;
 
     @Autowired
     private ConsolidationDao dao;
@@ -107,7 +107,7 @@ public class ConsolidationTask {
             }
         }
         if (_computeHourlyStats() || isNewHour) {
-            webSocketHandler.broadcast("line:" + currentHour.getTime() + ":" + stringifyStats(currentHourStats));
+            wsConsolidationHandler.broadcast("line:" + currentHour.getTime() + ":" + stringifyStats(currentHourStats));
             dataSent = true;
         }
     }
@@ -129,7 +129,7 @@ public class ConsolidationTask {
             }
         }
         if (updated) {
-            webSocketHandler.broadcast("pie:" + stringifyStats(currentStats));
+            wsConsolidationHandler.broadcast("pie:" + stringifyStats(currentStats));
             dataSent = true;
         }
     }
@@ -187,7 +187,7 @@ public class ConsolidationTask {
         }
         for (HourlyStats stats : result)
             historicalStats.addFirst(stats);
-        webSocketHandler.broadcast("init:" + System.currentTimeMillis());
+        wsConsolidationHandler.broadcast("init:" + System.currentTimeMillis());
         dataSent = true;
     }
 
@@ -218,7 +218,7 @@ public class ConsolidationTask {
 
         Date hour = getHour(new Date());
         List<ConsolidationDao.OrderTrolley> tableData = dao.getOrderTrolley();
-        List<ConsolidationDao.OrderTrolley> data = new ArrayList(tableData.size());
+        List<ConsolidationDao.OrderTrolley> data = new ArrayList<>(tableData.size());
         for (ConsolidationDao.OrderTrolley item : tableData) {
             if (!ConsolidationDao.Status.SHIPPED.name().equals(item.getStatus()))
                 data.add(item);
@@ -237,7 +237,7 @@ public class ConsolidationTask {
             computeHourlyStats(tableData, isNewHour);
         }
         computeCurrentStats(tableData);
-        if (!dataSent) webSocketHandler.broadcast("heartbeat:" + System.currentTimeMillis());
+        if (!dataSent) wsConsolidationHandler.broadcast("heartbeat:" + System.currentTimeMillis());
 
     }
 

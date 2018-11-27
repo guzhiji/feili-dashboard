@@ -305,6 +305,131 @@ var LineChart = function(id, formatter, translatedLabels) {
     };
 };
 
+var SingleBarChart = function(id, name, yAxisLabelFormatter) {
+    var chart = echarts.init(document.getElementById(id)),
+        bars = [],
+        data = [],
+        option = {
+            color: COLOR_ORDER,
+            animation: false,
+            legend: {
+                textStyle: {
+                    color: COLOR_TEXT
+                },
+                data: [name]
+            },
+            tooltip: {
+                show: true,
+                formatter: '{b}: {c}'
+            },
+            yAxis: {
+                splitLine: {
+                    lineStyle: {
+                        color: [COLOR_DARK_LINE]
+                    }
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: COLOR_DARK_LINE
+                    }
+                },
+                axisLabel: {
+                    color: COLOR_TEXT,
+                    formatter: yAxisLabelFormatter
+                }
+            },
+            xAxis: {
+                splitLine: {
+                    lineStyle: {
+                        color: [COLOR_DARK_LINE]
+                    }
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: COLOR_DARK_LINE
+                    }
+                },
+                axisLabel: {
+                    color: COLOR_TEXT
+                },
+                data: bars
+            },
+            series: [
+                {
+                    name: name,
+                    type: 'bar',
+                    itemStyle: {
+                        opacity: 0.9
+                    },
+                    data: data
+                }
+            ]
+        };
+
+    chart.setOption(option);
+
+    return {
+        rebind: function(id) {
+            chart.dispose();
+            chart = echarts.init(document.getElementById(id));
+            chart.setOption(option);
+        },
+        render: function() {
+            chart.setOption({
+                xAxis: {data: bars},
+                series: [{data: data}]
+            });
+        },
+        clear: function() {
+            bars = [];
+            data = [];
+            chart.setOption({
+                xAxis: {data: bars},
+                series: [{data: data}]
+            });
+        },
+        load: function(values) {
+            bars = [];
+            data = [];
+            if (values) {
+                for (var i = 0; i < values.length; i++) {
+                    bars.push(values[i].key);
+                    data.push(values[i].value);
+                }
+            }
+            chart.setOption({
+                xAxis: {data: bars},
+                series: [{data: data}]
+            });
+        },
+        update: function(key, value) {
+            var p = bars.indexOf(key);
+            if (p == -1) {
+                bars.push(key);
+                data.push(value);
+                chart.setOption({
+                    xAxis: {data: bars},
+                    series: [{data: data}]
+                });
+            } else {
+                data[p] = value;
+                chart.setOption({series: [{data: data}]});
+            }
+        },
+        remove: function(key) {
+            var p = bars.indexOf(key);
+            if (p > -1) {
+                bars.splice(p, 1);
+                data.splice(p, 1);
+                chart.setOption({
+                    xAxis: {data: bars},
+                    series: [{data: data}]
+                });
+            }
+        }
+    };
+};
+
 var DataTable = function(id, refreshRate, fields) {
     var table = $('#' + id),
         page = 0,

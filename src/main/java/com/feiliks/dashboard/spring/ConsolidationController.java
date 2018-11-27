@@ -14,9 +14,6 @@ import java.util.Map;
 public class ConsolidationController {
 
     @Autowired
-    private ConsolidationDao dao;
-
-    @Autowired
     private ConsolidationTask task;
 
     @GetMapping

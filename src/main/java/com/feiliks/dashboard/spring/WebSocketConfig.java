@@ -13,18 +13,27 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private WebSocketHandler _webSocketHandler = null;
+    private WebSocketHandler _wsConsolidationHandler = null;
+    private WebSocketHandler _wsShipmentHandler = null;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(webSocketHandler(), "/sockjs").withSockJS();
+        webSocketHandlerRegistry.addHandler(wsConsolidationHandler(), "/sockjs/consolidation").withSockJS();
+        webSocketHandlerRegistry.addHandler(wsShipmentHandler(), "/sockjs/shipment").withSockJS();
     }
 
     @Bean
-    public WebSocketHandler webSocketHandler() {
-        if (_webSocketHandler == null)
-            _webSocketHandler = new WebSocketHandler();
-        return _webSocketHandler;
+    public WebSocketHandler wsConsolidationHandler() {
+        if (_wsConsolidationHandler == null)
+            _wsConsolidationHandler = new WebSocketHandler();
+        return _wsConsolidationHandler;
+    }
+
+    @Bean
+    public WebSocketHandler wsShipmentHandler() {
+        if (_wsShipmentHandler == null)
+            _wsShipmentHandler = new WebSocketHandler();
+        return _wsShipmentHandler;
     }
 
 }

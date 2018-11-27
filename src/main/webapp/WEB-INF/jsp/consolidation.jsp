@@ -110,7 +110,7 @@ function updateTableData(values) {
 
 var ws = null;
 function connect() {
-	ws = new SockJS('/sockjs');
+	ws = new SockJS('/sockjs/consolidation');
 	ws.onmessage = function(evt) {
 		var arr = evt.data.split(':');
 		if (arr.length) {
