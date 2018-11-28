@@ -110,7 +110,10 @@ public class ShipmentDao {
 
         @Override
         public String toString() {
-            return key + ':' + start + ':' + factory + '-' + line;
+            String r = key + ':' + start + ':';
+            if ((factory != null && !factory.isEmpty()) || (line != null && !line.isEmpty()))
+                r += (factory == null ? "" : factory) + '-' + (line == null ? "" : line);
+            return r;
         }
 
         @Override

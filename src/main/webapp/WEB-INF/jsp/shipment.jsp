@@ -76,7 +76,7 @@ var STATUS_MAP = {
 		UNFINISHED: '未完成'};
 
 var piechart = PieChart('pie-chart', '单数', STATUS_TRANS);
-var barchart = SingleBarChart('bar-chart', '等待时间', '{value}');
+var barchart = SingleBarChart('bar-chart', '等待时间', formatDuration);
 var datatable = DataTable('data-table', 5000, [
 	function(row) { return row.trolleyId; },
 	function(row) { return row.factory || '-'; },
@@ -103,12 +103,20 @@ function updateTableData(values) {
 			if (a.factory > b.factory) return 1;
 			if (a.line < b.line) return -1;
 			if (a.line > b.line) return 1;
+			if (a.trolleyId < b.trolleyId) return -1;
+			if (a.trolleyId > b.trolleyId) return 1;
 			return 0;
 		});
 		datatable.update(values);
 	}
 }
 
+function uptoNow(value) {
+	return new Date().getTime() - new Date(value).getTime();
+}
+
+var barData = {};
+var connected = false;
 var ws = null;
 function connect() {
 	ws = new SockJS('/sockjs/shipment');
@@ -118,25 +126,32 @@ function connect() {
 			if (arr[0] == 'pie') {
 				piechart.update(deserializeMessage(arr[1], parseInt));
 			} else if (arr[0] == 'bar') {
-				var key = arr[2] + '(' + arr[4] + ')';
+				var key = arr[2];
 				if (arr[1] == 'add') {
-					var value = new Date().getTime() - new Date(arr[3]).getTime();
-					barchart.update(key, value);
+					var value = parseInt(arr[3]),
+						label = key + (arr[4] ? '\n(' + arr[4] + ')' : ''),
+						diff = uptoNow(value);
+					barData[key] = value;
+					barchart.update(key, label, diff);
 				} else if (arr[1] == 'remove') {
 					barchart.remove(key);
+					if (key in barData) delete barData[key];
 				}
 			}
 		}
 	};
 	ws.onopen = function(evt) {
+		connected = true;
 		$('#error-message').hide();
 		$.get('/shipment/table.json', updateTableData).done(datatable.render);
 		$.get('/shipment/appointments.json', function(data) {
+			barData = {};
 			barchart.load(data.map(function(item) {
-				return {
-					key: item.key + '(' + item.factory + '-' + item.line + ')',
-					value: new Date().getTime() - new Date(item.start).getTime()
-				};
+				var label = item.key;
+				if (item.factory || item.line)
+					label += '\n(' + (item.factory || '') + '-' + (item.line || '') + ')';
+				barData[item.key]  = item.start;
+				return {key: item.key, label: label, value: uptoNow(item.start)};
 			}));
 		});
 		$.get('/shipment/status.json', piechart.update);
@@ -150,12 +165,20 @@ function connect() {
 		datatable.clear();
 		barchart.clear();
 		piechart.clear();
+		connected = false;
 		setTimeout(connect, 1000);
 	};
 }
 connect();
 setInterval(function() {
-	$.get('/shipment/table.json', updateTableData);
+	if (connected) {
+		for (var key in barData)
+			barchart.update(key, null, uptoNow(barData[key]));
+	}
+}, 1000);
+setInterval(function() {
+	if (connected)
+		$.get('/shipment/table.json', updateTableData);
 }, 5000);
 $(window).on('resize', function() {
 	var w = $(window),

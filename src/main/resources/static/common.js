@@ -9,7 +9,7 @@ function calcRemainingTime(t) {
 }
 
 function formatDuration(ms) {
-    var l = Math.round(ms / 1000), t, r;
+    var l = Math.round((ms > 0 ? ms : 0) / 1000), t, r;
     if (l < 60)
         return l + '秒';
     l /= 60;
@@ -307,7 +307,8 @@ var LineChart = function(id, formatter, translatedLabels) {
 
 var SingleBarChart = function(id, name, yAxisLabelFormatter) {
     var chart = echarts.init(document.getElementById(id)),
-        bars = [],
+        bars = {},
+        labels = [],
         data = [],
         option = {
             color: COLOR_ORDER,
@@ -352,7 +353,7 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
                 axisLabel: {
                     color: COLOR_TEXT
                 },
-                data: bars
+                data: labels
             },
             series: [
                 {
@@ -376,53 +377,59 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
         },
         render: function() {
             chart.setOption({
-                xAxis: {data: bars},
+                xAxis: {data: labels},
                 series: [{data: data}]
             });
         },
         clear: function() {
-            bars = [];
+            bars = {};
+            labels = [];
             data = [];
             chart.setOption({
-                xAxis: {data: bars},
+                xAxis: {data: labels},
                 series: [{data: data}]
             });
         },
         load: function(values) {
-            bars = [];
+            bars = {};
+            labels = [];
             data = [];
             if (values) {
                 for (var i = 0; i < values.length; i++) {
-                    bars.push(values[i].key);
-                    data.push(values[i].value);
+                    var item = values[i];
+                    bars[item.key] = labels.length;
+                    labels.push(item.label || item.key);
+                    data.push(item.value);
                 }
             }
             chart.setOption({
-                xAxis: {data: bars},
+                xAxis: {data: labels},
                 series: [{data: data}]
             });
         },
-        update: function(key, value) {
-            var p = bars.indexOf(key);
-            if (p == -1) {
-                bars.push(key);
-                data.push(value);
-                chart.setOption({
-                    xAxis: {data: bars},
-                    series: [{data: data}]
-                });
+        update: function(key, label, value) {
+            if (key in bars) {
+                if (label) labels[bars[key]] = label;
+                data[bars[key]] = value;
             } else {
-                data[p] = value;
-                chart.setOption({series: [{data: data}]});
+                var p = labels.length;
+                bars[key] = p;
+                labels.push(label || key);
+                data.push(value);
             }
+            chart.setOption({
+                xAxis: {data: labels},
+                series: [{data: data}]
+            });
         },
         remove: function(key) {
-            var p = bars.indexOf(key);
-            if (p > -1) {
-                bars.splice(p, 1);
+            if (key in bars) {
+                var p = bars[key];
+                labels.splice(p, 1);
                 data.splice(p, 1);
+                delete bars[key];
                 chart.setOption({
-                    xAxis: {data: bars},
+                    xAxis: {data: labels},
                     series: [{data: data}]
                 });
             }
