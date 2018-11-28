@@ -14,7 +14,7 @@ import java.util.List;
 public class ShipmentDao {
 
     public enum Status {
-        UNFINISHED, WAITING, APPOINTMENT;
+        UNFINISHED, WAITING, APPOINTMENT
     }
 
     public static class Trolley {

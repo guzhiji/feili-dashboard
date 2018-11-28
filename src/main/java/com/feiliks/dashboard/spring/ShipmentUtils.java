@@ -16,37 +16,59 @@ class ShipmentUtils {
         Set<String> aptOrders = new HashSet<>();
         Set<String> waitOrders = new HashSet<>();
         Set<String> unfnOrders = new HashSet<>();
-        Set<String> lkShipTrolleys = new HashSet<>();
+        Map<String, ShipmentDao.Status> trolleyStatus = new HashMap<>();
         for (ShipmentDao.Trolley t : trolleyList) {
             String tid = t.getTrolleyId();
-            lkShipTrolleys.add(tid);
-            Set<ShipmentDao.TrolleyOrder> orders = groupByTrolley.get(tid);
+            ShipmentDao.Status s = trolleyStatus.get(tid);
             if (t.getAppointmentKey() != null &&
                 !t.getAppointmentKey().isEmpty()) {
-                t.status = ShipmentDao.Status.APPOINTMENT.name();
-                if (orders != null) {
-                    for (ShipmentDao.TrolleyOrder o : orders)
-                        aptOrders.add(o.getOrderKey());
+                // appointment status
+                if (s == null) {
+                    trolleyStatus.put(tid, ShipmentDao.Status.APPOINTMENT);
                 }
             } else if (isWaiting(groupByTrolley, groupByOrder,
-                new HashSet<String>(), tid)) {
-                t.status = ShipmentDao.Status.WAITING.name();
-                if (orders != null) {
-                    for (ShipmentDao.TrolleyOrder o : orders)
-                        waitOrders.add(o.getOrderKey());
+                    new HashSet<String>(), tid)) {
+                // waiting status
+                if (s == null || s.ordinal() > ShipmentDao.Status.WAITING.ordinal()) {
+                    trolleyStatus.put(tid, ShipmentDao.Status.WAITING);
                 }
             } else {
-                t.status = ShipmentDao.Status.UNFINISHED.name();
+                // unfinished status
+                if (s == null || s.ordinal() > ShipmentDao.Status.UNFINISHED.ordinal()) {
+                    trolleyStatus.put(tid, ShipmentDao.Status.UNFINISHED);
+                }
+            }
+        }
+        for (ShipmentDao.Trolley t : trolleyList) {
+            String tid = t.getTrolleyId();
+            Set<ShipmentDao.TrolleyOrder> orders = groupByTrolley.get(tid);
+            ShipmentDao.Status s = trolleyStatus.get(tid);
+            if (s != null) {
+                // set trolley status
+                t.status = s.name();
                 if (orders != null) {
-                    for (ShipmentDao.TrolleyOrder o : orders)
-                        unfnOrders.add(o.getOrderKey());
+                    // count orders by status
+                    switch (s) {
+                        case APPOINTMENT:
+                            for (ShipmentDao.TrolleyOrder o : orders)
+                                aptOrders.add(o.getOrderKey());
+                            break;
+                        case WAITING:
+                            for (ShipmentDao.TrolleyOrder o : orders)
+                                waitOrders.add(o.getOrderKey());
+                            break;
+                        case UNFINISHED:
+                            for (ShipmentDao.TrolleyOrder o : orders)
+                                unfnOrders.add(o.getOrderKey());
+                            break;
+                    }
                 }
             }
         }
 
         for (ShipmentDao.TrolleyOrder to : trolleyOrders) {
             String tid = to.getTrolleyId();
-            if (lkShipTrolleys.contains(tid)) continue;
+            if (trolleyStatus.containsKey(tid)) continue;
             // trolleys outside LKSHIP
             Set<ShipmentDao.TrolleyOrder> orders = groupByTrolley.get(tid);
             if (orders == null) continue;
