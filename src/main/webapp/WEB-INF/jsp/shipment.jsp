@@ -111,10 +111,6 @@ function updateTableData(values) {
 	}
 }
 
-function uptoNow(value) {
-	return new Date().getTime() - new Date(value).getTime();
-}
-
 var barData = {};
 var connected = false;
 var ws = null;
@@ -137,6 +133,8 @@ function connect() {
 					barchart.remove(key);
 					if (key in barData) delete barData[key];
 				}
+			} else if (arr[0] == 'basetime') {
+				setBaseTime(arr[1]);
 			}
 		}
 	};

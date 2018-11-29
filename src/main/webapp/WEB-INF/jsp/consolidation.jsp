@@ -108,6 +108,7 @@ function updateTableData(values) {
 	}
 }
 
+var connected = false;
 var ws = null;
 function connect() {
 	ws = new SockJS('/sockjs/consolidation');
@@ -122,10 +123,13 @@ function connect() {
 			} else if (arr[0] == 'init') {
 				$.get('/consolidation/table.json', updateTableData).done(datatable.render);
 				$.get('/consolidation/history.json', linechart.load);
+			} else if (arr[0] == 'basetime') {
+				setBaseTime(arr[1]);
 			}
 		}
 	};
 	ws.onopen = function(evt) {
+		connected = true;
 		$('#error-message').hide();
 		$.get('/consolidation/table.json', updateTableData).done(datatable.render);
 		$.get('/consolidation/history.json', linechart.load);
@@ -140,12 +144,13 @@ function connect() {
 		datatable.clear();
 		linechart.clear();
 		piechart.clear();
+		connected = false;
 		setTimeout(connect, 1000);
 	};
 }
 connect();
 setInterval(function() {
-	$.get('/consolidation/table.json', updateTableData);
+	if (connected) $.get('/consolidation/table.json', updateTableData);
 }, 5000);
 $(window).on('resize', function() {
 	var w = $(window),

@@ -2,10 +2,24 @@ var LINECHART_MAX = 24,
     COLOR_ORDER = ['#963c3e','#3b5579', '#4e9845', '#ab9f52', '#729e8a','#749f83', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
     COLOR_TEXT = '#a5c8e6', COLOR_DARK_LINE = '#395273';
 
+var timeDiff = 0;
+
+function setBaseTime(t) {
+    timeDiff = new Date(parseInt(t)) - new Date();
+}
+
+function now() {
+    return new Date().getTime() + timeDiff;
+}
+
 function calcRemainingTime(t) {
     if (typeof t != 'number' && !t)
         return Infinity;
-    return new Date(t) - new Date();
+    return new Date(t).getTime() - now();
+}
+
+function uptoNow(value) {
+    return now() - new Date(value).getTime();
 }
 
 function formatDuration(ms) {
