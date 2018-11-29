@@ -50,16 +50,29 @@ class ShipmentUtils {
                     // count orders by status
                     switch (s) {
                         case APPOINTMENT:
-                            for (ShipmentDao.TrolleyOrder o : orders)
-                                aptOrders.add(o.getOrderKey());
+                            for (ShipmentDao.TrolleyOrder o : orders) {
+                                String okey = o.getOrderKey();
+                                if (!waitOrders.contains(okey) &&
+                                        !unfnOrders.contains(okey))
+                                    aptOrders.add(okey);
+                            }
                             break;
                         case WAITING:
-                            for (ShipmentDao.TrolleyOrder o : orders)
-                                waitOrders.add(o.getOrderKey());
+                            for (ShipmentDao.TrolleyOrder o : orders) {
+                                String okey = o.getOrderKey();
+                                if (unfnOrders.contains(okey))
+                                    continue;
+                                aptOrders.remove(okey);
+                                waitOrders.add(okey);
+                            }
                             break;
                         case UNFINISHED:
-                            for (ShipmentDao.TrolleyOrder o : orders)
-                                unfnOrders.add(o.getOrderKey());
+                            for (ShipmentDao.TrolleyOrder o : orders) {
+                                String okey = o.getOrderKey();
+                                aptOrders.remove(okey);
+                                waitOrders.remove(okey);
+                                unfnOrders.add(okey);
+                            }
                             break;
                     }
                 }
