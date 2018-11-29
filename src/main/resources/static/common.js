@@ -307,7 +307,7 @@ var LineChart = function(id, formatter, translatedLabels) {
 
 var SingleBarChart = function(id, name, yAxisLabelFormatter) {
     var chart = echarts.init(document.getElementById(id)),
-        bars = {},
+        bars = [],
         labels = [],
         data = [],
         option = {
@@ -369,69 +369,59 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
 
     chart.setOption(option);
 
+    function renderData() {
+        chart.setOption({
+            xAxis: {data: labels},
+            series: [{data: data}]
+        });
+    }
+
     return {
         rebind: function(id) {
             chart.dispose();
             chart = echarts.init(document.getElementById(id));
             chart.setOption(option);
         },
-        render: function() {
-            chart.setOption({
-                xAxis: {data: labels},
-                series: [{data: data}]
-            });
-        },
+        render: renderData,
         clear: function() {
-            bars = {};
+            bars = [];
             labels = [];
             data = [];
-            chart.setOption({
-                xAxis: {data: labels},
-                series: [{data: data}]
-            });
+            renderData();
         },
         load: function(values) {
-            bars = {};
+            bars = [];
             labels = [];
             data = [];
             if (values) {
                 for (var i = 0; i < values.length; i++) {
                     var item = values[i];
-                    bars[item.key] = labels.length;
+                    bars.push(item.key);
                     labels.push(item.label || item.key);
                     data.push(item.value);
                 }
             }
-            chart.setOption({
-                xAxis: {data: labels},
-                series: [{data: data}]
-            });
+            renderData();
         },
         update: function(key, label, value) {
-            if (key in bars) {
-                if (label) labels[bars[key]] = label;
-                data[bars[key]] = value;
-            } else {
-                var p = labels.length;
-                bars[key] = p;
+            var p = bars.indexOf(key);
+            if (p == -1) {
+                bars.push(key);
                 labels.push(label || key);
                 data.push(value);
+            } else {
+                if (label) labels[p] = label;
+                data[p] = value;
             }
-            chart.setOption({
-                xAxis: {data: labels},
-                series: [{data: data}]
-            });
+            renderData();
         },
         remove: function(key) {
-            if (key in bars) {
-                var p = bars[key];
+            var p = bars.indexOf(key);
+            if (p > -1) {
+                bars.splice(p, 1);
                 labels.splice(p, 1);
                 data.splice(p, 1);
-                delete bars[key];
-                chart.setOption({
-                    xAxis: {data: labels},
-                    series: [{data: data}]
-                });
+                renderData();
             }
         }
     };
