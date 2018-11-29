@@ -72,8 +72,12 @@ class ShipmentUtils {
             // trolleys outside LKSHIP
             Set<ShipmentDao.TrolleyOrder> orders = groupByTrolley.get(tid);
             if (orders == null) continue;
-            for (ShipmentDao.TrolleyOrder to2 : orders)
-                unfnOrders.add(to2.getOrderKey());
+            for (ShipmentDao.TrolleyOrder to2 : orders) {
+                String okey = to2.getOrderKey();
+                aptOrders.remove(okey);
+                waitOrders.remove(okey);
+                unfnOrders.add(okey);
+            }
         }
         orderStats.put(ShipmentDao.Status.APPOINTMENT.name(), aptOrders.size());
         orderStats.put(ShipmentDao.Status.WAITING.name(), waitOrders.size());

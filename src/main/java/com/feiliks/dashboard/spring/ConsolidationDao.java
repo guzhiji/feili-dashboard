@@ -15,13 +15,17 @@ public class ConsolidationDao {
     public enum Status {
         PICKED, SHIPPED, OTHER;
 
+        private static List<Status> listWithoutOther = null;
         public static Collection<Status> valuesExceptOther() {
-            List<Status> list = new ArrayList<>();
-            for (Status status : values()) {
-                if (!status.equals(Status.OTHER))
-                    list.add(status);
+            if (listWithoutOther == null) {
+                List<Status> list = new ArrayList<>();
+                for (Status status : values()) {
+                    if (!status.equals(Status.OTHER))
+                        list.add(status);
+                }
+                listWithoutOther = Collections.unmodifiableList(list);
             }
-            return list;
+            return listWithoutOther;
         }
 
     }
