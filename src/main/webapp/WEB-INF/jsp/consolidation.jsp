@@ -13,6 +13,7 @@
 		<script src="/common.js"></script>
 	</head>
 	<body>
+		<h1>集货看板</h1>
 		<div class="row">
 			<div class="col-md-4">
 				<div class="panel panel-primary">
@@ -130,7 +131,7 @@ function connect() {
 	};
 	ws.onopen = function(evt) {
 		connected = true;
-		$('#error-message').hide();
+		$('#error-message').fadeOut();
 		$.get('/consolidation/table.json', updateTableData).done(datatable.render);
 		$.get('/consolidation/history.json', linechart.load);
 		$.get('/consolidation/status.json', piechart.update);
@@ -140,7 +141,7 @@ function connect() {
 		e.css({
 			top: (w.height() - e.height()) / 2,
 			left: (w.width() - e.width()) / 2
-		}).show();
+		}).fadeIn();
 		datatable.clear();
 		linechart.clear();
 		piechart.clear();

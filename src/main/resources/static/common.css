@@ -4,7 +4,15 @@ html, body {
 
 body {
     background-color: #061325;
-    padding: 100px;
+    padding: 50px 100px 100px 100px;
+}
+
+body > h1 {
+    text-align: center;
+    color: #a5c8e6;
+    font-size: 30px;
+    padding: 0;
+    margin: 10px 0;
 }
 
 .panel-primary {
