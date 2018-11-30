@@ -12,6 +12,8 @@ import java.util.*;
 @Repository
 public class ConsolidationDao {
 
+    public final static String PERFMON_KEY = "consolidation:order-trolley";
+
     public enum Status {
         PICKED, SHIPPED, OTHER;
 
@@ -128,65 +130,71 @@ public class ConsolidationDao {
             "        o.REQUESTEDSHIPDATE < trunc(sysdate) + 1";
 
     public List<OrderTrolley> getOrderTrolley() {
-        List<OrderTrolley> result = jdbc.query(
-                sqlOrderTrolley,
-                new RowMapper<OrderTrolley>() {
-                    @Override
-                    public OrderTrolley mapRow(ResultSet resultSet, int i) throws SQLException {
-                        OrderTrolley o = new OrderTrolley();
-                        o.trolleyId = resultSet.getString(1);
-                        o.orderKey = resultSet.getString(2);
-                        o.status = resultSet.getString(3);
-                        o.isToCombine = false;
-                        o.isAsrs = !"0".equals(resultSet.getString(4));
-                        Date shipDate = resultSet.getTimestamp(5);
-                        o.shipDate = shipDate == null ? 0L : shipDate.getTime();
-                        o.storer = resultSet.getString(6);
-                        o.storerName = resultSet.getString(7);
-                        if (o.storerName != null)
-                            o.storerName = o.storerName.trim();
-                        o.consignee = resultSet.getString(8);
-                        o.consigneeName = resultSet.getString(9);
-                        if (o.consigneeName != null)
-                            o.consigneeName = o.consigneeName.trim();
-                        o.factory = resultSet.getString(10);
-                        if (o.factory != null)
-                            o.factory = o.factory.trim();
-                        o.line = resultSet.getString(11);
-                        if (o.line != null)
-                            o.line = o.line.trim();
-                        o.opTime = resultSet.getTimestamp(12);
-                        return o;
-                    }
-                });
+        long timerStart = System.currentTimeMillis();
+        try {
+            List<OrderTrolley> result = jdbc.query(
+                    sqlOrderTrolley,
+                    new RowMapper<OrderTrolley>() {
+                        @Override
+                        public OrderTrolley mapRow(ResultSet resultSet, int i) throws SQLException {
+                            OrderTrolley o = new OrderTrolley();
+                            o.trolleyId = resultSet.getString(1);
+                            o.orderKey = resultSet.getString(2);
+                            o.status = resultSet.getString(3);
+                            o.isToCombine = false;
+                            o.isAsrs = !"0".equals(resultSet.getString(4));
+                            Date shipDate = resultSet.getTimestamp(5);
+                            o.shipDate = shipDate == null ? 0L : shipDate.getTime();
+                            o.storer = resultSet.getString(6);
+                            o.storerName = resultSet.getString(7);
+                            if (o.storerName != null)
+                                o.storerName = o.storerName.trim();
+                            o.consignee = resultSet.getString(8);
+                            o.consigneeName = resultSet.getString(9);
+                            if (o.consigneeName != null)
+                                o.consigneeName = o.consigneeName.trim();
+                            o.factory = resultSet.getString(10);
+                            if (o.factory != null)
+                                o.factory = o.factory.trim();
+                            o.line = resultSet.getString(11);
+                            if (o.line != null)
+                                o.line = o.line.trim();
+                            o.opTime = resultSet.getTimestamp(12);
+                            return o;
+                        }
+                    });
 
-        Map<String, List<OrderTrolley>> asrsMap = new HashMap<>();
-        for (OrderTrolley ot : result) {
+            Map<String, List<OrderTrolley>> asrsMap = new HashMap<>();
+            for (OrderTrolley ot : result) {
 
-            ot.status = convertStatus(ot.getStatus());
+                ot.status = convertStatus(ot.getStatus());
 
-            if (!asrsMap.containsKey(ot.getOrderKey())) {
-                List<OrderTrolley> ots = new LinkedList<>();
-                ots.add(ot);
-                asrsMap.put(ot.getOrderKey(), ots);
-            } else {
-                asrsMap.get(ot.getOrderKey()).add(ot);
+                if (!asrsMap.containsKey(ot.getOrderKey())) {
+                    List<OrderTrolley> ots = new LinkedList<>();
+                    ots.add(ot);
+                    asrsMap.put(ot.getOrderKey(), ots);
+                } else {
+                    asrsMap.get(ot.getOrderKey()).add(ot);
+                }
+
             }
 
-        }
-
-        for (List<OrderTrolley> ots : asrsMap.values()) {
-            boolean asrs = ots.get(0).isAsrs();
-            for (OrderTrolley ot : ots) {
-                if (asrs != ot.isAsrs()) {
-                    for (OrderTrolley ot2 : ots)
-                        ot2.isToCombine = true;
-                    break;
+            for (List<OrderTrolley> ots : asrsMap.values()) {
+                boolean asrs = ots.get(0).isAsrs();
+                for (OrderTrolley ot : ots) {
+                    if (asrs != ot.isAsrs()) {
+                        for (OrderTrolley ot2 : ots)
+                            ot2.isToCombine = true;
+                        break;
+                    }
                 }
             }
-        }
 
-        return result;
+            return result;
+        } finally {
+            PerfMonitor.getInstance(PERFMON_KEY)
+                    .measure(System.currentTimeMillis() - timerStart);
+        }
     }
 
     private String convertStatus(String s) {

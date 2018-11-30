@@ -13,6 +13,10 @@ import java.util.List;
 @Repository
 public class ShipmentDao {
 
+    public final static String PERFMON_TROLLEYS = "shipment:trolleys";
+    public final static String PERFMON_TROLLEY_ORDER = "shipment:trolley-order";
+    public final static String PERFMON_APPOINTMENTS = "shipment:appointments";
+
     public enum Status {
         UNFINISHED, WAITING, APPOINTMENT
     }
@@ -186,63 +190,79 @@ public class ShipmentDao {
             "order by start_time";
 
     public List<Trolley> getTrolleys() {
-        return jdbc.query(
-                sqlTrolleys,
-                new RowMapper<Trolley>() {
-                    @Override
-                    public Trolley mapRow(ResultSet resultSet, int i) throws SQLException {
-                        Trolley t = new Trolley();
-                        t.trolleyId = resultSet.getString(1);
-                        t.factory = resultSet.getString(2);
-                        if (t.factory != null)
-                            t.factory = t.factory.trim();
-                        t.line = resultSet.getString(3);
-                        if (t.line != null)
-                            t.line = t.line.trim();
-                        t.boxQty = resultSet.getInt(4);
-                        t.appointmentKey = resultSet.getString(5);
-                        return t;
-                    }
-                }
-        );
-
+        long timerStart = System.currentTimeMillis();
+        try {
+            return jdbc.query(
+                    sqlTrolleys,
+                    new RowMapper<Trolley>() {
+                        @Override
+                        public Trolley mapRow(ResultSet resultSet, int i) throws SQLException {
+                            Trolley t = new Trolley();
+                            t.trolleyId = resultSet.getString(1);
+                            t.factory = resultSet.getString(2);
+                            if (t.factory != null)
+                                t.factory = t.factory.trim();
+                            t.line = resultSet.getString(3);
+                            if (t.line != null)
+                                t.line = t.line.trim();
+                            t.boxQty = resultSet.getInt(4);
+                            t.appointmentKey = resultSet.getString(5);
+                            return t;
+                        }
+                    });
+        } finally {
+            PerfMonitor.getInstance(PERFMON_TROLLEYS)
+                    .measure(System.currentTimeMillis() - timerStart);
+        }
     }
 
     public List<TrolleyOrder> getTrolleyOrders() {
-        return jdbc.query(
-                sqlTrolleyOrders,
-                new RowMapper<TrolleyOrder>() {
-                    @Override
-                    public TrolleyOrder mapRow(ResultSet resultSet, int i) throws SQLException {
-                        TrolleyOrder to = new TrolleyOrder();
-                        to.trolleyId = resultSet.getString(1);
-                        to.orderKey = resultSet.getString(2);
-                        to.orderStatus = resultSet.getString(3);
-                        to.putawayZone = resultSet.getString(4);
-                        return to;
-                    }
-                });
+        long timerStart = System.currentTimeMillis();
+        try {
+            return jdbc.query(
+                    sqlTrolleyOrders,
+                    new RowMapper<TrolleyOrder>() {
+                        @Override
+                        public TrolleyOrder mapRow(ResultSet resultSet, int i) throws SQLException {
+                            TrolleyOrder to = new TrolleyOrder();
+                            to.trolleyId = resultSet.getString(1);
+                            to.orderKey = resultSet.getString(2);
+                            to.orderStatus = resultSet.getString(3);
+                            to.putawayZone = resultSet.getString(4);
+                            return to;
+                        }
+                    });
+        } finally {
+            PerfMonitor.getInstance(PERFMON_TROLLEY_ORDER)
+                    .measure(System.currentTimeMillis() - timerStart);
+        }
     }
 
     public List<Appointment> getAppointments() {
-        return jdbc.query(
-                sqlAppointments,
-                new RowMapper<Appointment>() {
-                    @Override
-                    public Appointment mapRow(ResultSet resultSet, int i) throws SQLException {
-                        Appointment a = new Appointment();
-                        a.key = resultSet.getString(1);
-                        a.factory = resultSet.getString(2);
-                        if (a.factory != null)
-                            a.factory = a.factory.trim();
-                        a.line = resultSet.getString(3);
-                        if (a.line != null)
-                            a.line = a.line.trim();
-                        Date start = resultSet.getTimestamp(4);
-                        a.start = start == null ? null : start.getTime();
-                        return a;
-                    }
-                });
+        long timerStart = System.currentTimeMillis();
+        try {
+            return jdbc.query(
+                    sqlAppointments,
+                    new RowMapper<Appointment>() {
+                        @Override
+                        public Appointment mapRow(ResultSet resultSet, int i) throws SQLException {
+                            Appointment a = new Appointment();
+                            a.key = resultSet.getString(1);
+                            a.factory = resultSet.getString(2);
+                            if (a.factory != null)
+                                a.factory = a.factory.trim();
+                            a.line = resultSet.getString(3);
+                            if (a.line != null)
+                                a.line = a.line.trim();
+                            Date start = resultSet.getTimestamp(4);
+                            a.start = start == null ? null : start.getTime();
+                            return a;
+                        }
+                    });
+        } finally {
+            PerfMonitor.getInstance(PERFMON_APPOINTMENTS)
+                    .measure(System.currentTimeMillis() - timerStart);
+        }
     }
 
 }
