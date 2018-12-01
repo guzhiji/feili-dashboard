@@ -7,17 +7,53 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/performance")
 public class PerformanceController {
 
-    @GetMapping("/data/{target}")
-    public ResponseEntity<Collection<Map.Entry<Long, Long>>> getMeasureData(
-            @PathVariable("target") String target) {
-        return ResponseEntity.ok(
-                PerfMonitor.getInstance(target).getMeasureData());
+    private final static String[] MONITOR_TARGETS = {
+            ConsolidationDao.PERFMON_KEY,
+            ShipmentDao.PERFMON_TROLLEYS,
+            ShipmentDao.PERFMON_TROLLEY_ORDER,
+            ShipmentDao.PERFMON_APPOINTMENTS
+    };
+
+    @GetMapping
+    public String show() {
+        return "performance";
+    }
+
+    @GetMapping("/data/realtime.json")
+    public ResponseEntity<Map<String, Collection<Map.Entry<Long, Long>>>> getMeasureData() {
+        Map<String, Collection<Map.Entry<Long, Long>>> data = new HashMap<>();
+        for (String t : MONITOR_TARGETS) {
+            if (PerfMonitor.exists(t))
+                data.put(t, PerfMonitor.getInstance(t).getMeasureData());
+        }
+        return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/data/minutely.json")
+    public ResponseEntity<Map<String, Collection<PerfMonitor.AggInfo>>> getMinutelyData() {
+        Map<String, Collection<PerfMonitor.AggInfo>> data = new HashMap<>();
+        for (String t : MONITOR_TARGETS) {
+            if (PerfMonitor.exists(t))
+                data.put(t, PerfMonitor.getInstance(t).getMinutelyData());
+        }
+        return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/data/hourly.json")
+    public ResponseEntity<Map<String, Collection<PerfMonitor.AggInfo>>> getHourlyData() {
+        Map<String, Collection<PerfMonitor.AggInfo>> data = new HashMap<>();
+        for (String t : MONITOR_TARGETS) {
+            if (PerfMonitor.exists(t))
+                data.put(t, PerfMonitor.getInstance(t).getHourlyData());
+        }
+        return ResponseEntity.ok(data);
     }
 
 }

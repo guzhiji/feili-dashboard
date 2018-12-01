@@ -18,7 +18,7 @@
 			<div class="col-md-4">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						集货量
+						集货订单状态
 					</div>
 					<div class="panel-body">
 						<div id="pie-chart" style="height: 300px;"></div>
@@ -28,7 +28,7 @@
 			<div class="col-md-8">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						集货量变化
+						今日集货订单量
 					</div>
 					<div class="panel-body">
 						<div id="line-chart" style="height: 300px;"></div>

@@ -197,7 +197,7 @@ public class PerfMonitor {
         return minutelyData;
     }
 
-    public void measure(long n) {
+    public long measure(long n) {
         long t = System.currentTimeMillis();
 
         long h = toHour(t);
@@ -225,6 +225,7 @@ public class PerfMonitor {
         if (measureData.size() > MAX_SIZE)
             measureData.poll();
         measureData.offer(new AbstractMap.SimpleImmutableEntry<>(t, n));
+        return t;
     }
 
 }

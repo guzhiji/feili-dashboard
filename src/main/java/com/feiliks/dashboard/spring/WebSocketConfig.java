@@ -15,11 +15,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private WebSocketHandler _wsConsolidationHandler = null;
     private WebSocketHandler _wsShipmentHandler = null;
+    private WebSocketHandler _wsPerformanceHandler = null;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         webSocketHandlerRegistry.addHandler(wsConsolidationHandler(), "/sockjs/consolidation").withSockJS();
         webSocketHandlerRegistry.addHandler(wsShipmentHandler(), "/sockjs/shipment").withSockJS();
+        webSocketHandlerRegistry.addHandler(wsPerformanceHandler(), "/sockjs/performance").withSockJS();
     }
 
     @Bean
@@ -34,6 +36,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
         if (_wsShipmentHandler == null)
             _wsShipmentHandler = new WebSocketHandler();
         return _wsShipmentHandler;
+    }
+
+    @Bean
+    public WebSocketHandler wsPerformanceHandler() {
+        if (_wsPerformanceHandler == null)
+            _wsPerformanceHandler = new WebSocketHandler();
+        return _wsPerformanceHandler;
     }
 
 }

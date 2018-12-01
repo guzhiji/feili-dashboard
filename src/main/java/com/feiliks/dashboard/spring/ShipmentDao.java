@@ -13,9 +13,9 @@ import java.util.List;
 @Repository
 public class ShipmentDao {
 
-    public final static String PERFMON_TROLLEYS = "shipment:trolleys";
-    public final static String PERFMON_TROLLEY_ORDER = "shipment:trolley-order";
-    public final static String PERFMON_APPOINTMENTS = "shipment:appointments";
+    public final static String PERFMON_TROLLEYS = "shipment!trolleys";
+    public final static String PERFMON_TROLLEY_ORDER = "shipment!trolley-order";
+    public final static String PERFMON_APPOINTMENTS = "shipment!appointments";
 
     public enum Status {
         UNFINISHED, WAITING, APPOINTMENT
@@ -142,6 +142,9 @@ public class ShipmentDao {
     @Autowired
     private JdbcTemplate jdbc;
 
+    @Autowired
+    private PerfMonService perfMon;
+
     private final static String sqlTrolleys = "select distinct" +
             "    dd.DROPID trolley_id," +
             "    o.CONSIGNEEKEY factory," +
@@ -211,8 +214,7 @@ public class ShipmentDao {
                         }
                     });
         } finally {
-            PerfMonitor.getInstance(PERFMON_TROLLEYS)
-                    .measure(System.currentTimeMillis() - timerStart);
+            perfMon.measure(PERFMON_TROLLEYS, timerStart);
         }
     }
 
@@ -233,8 +235,7 @@ public class ShipmentDao {
                         }
                     });
         } finally {
-            PerfMonitor.getInstance(PERFMON_TROLLEY_ORDER)
-                    .measure(System.currentTimeMillis() - timerStart);
+            perfMon.measure(PERFMON_TROLLEY_ORDER, timerStart);
         }
     }
 
@@ -260,8 +261,7 @@ public class ShipmentDao {
                         }
                     });
         } finally {
-            PerfMonitor.getInstance(PERFMON_APPOINTMENTS)
-                    .measure(System.currentTimeMillis() - timerStart);
+            perfMon.measure(PERFMON_APPOINTMENTS, timerStart);
         }
     }
 

@@ -12,7 +12,7 @@ import java.util.*;
 @Repository
 public class ConsolidationDao {
 
-    public final static String PERFMON_KEY = "consolidation:order-trolley";
+    public final static String PERFMON_KEY = "consolidation!order-trolley";
 
     public enum Status {
         PICKED, SHIPPED, OTHER;
@@ -103,6 +103,9 @@ public class ConsolidationDao {
     @Autowired
     private JdbcTemplate jdbc;
 
+    @Autowired
+    private PerfMonService perfMon;
+
     private final static String sqlOrderTrolley = "select distinct " +
             "    dd.DROPID trolley_id," +
             "    o.ORDERKEY order_key," +
@@ -192,8 +195,7 @@ public class ConsolidationDao {
 
             return result;
         } finally {
-            PerfMonitor.getInstance(PERFMON_KEY)
-                    .measure(System.currentTimeMillis() - timerStart);
+            perfMon.measure(PERFMON_KEY, timerStart);
         }
     }
 

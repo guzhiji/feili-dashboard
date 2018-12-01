@@ -18,7 +18,7 @@
 			<div class="col-md-4">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						出货状态
+						出货订单状态
 					</div>
 					<div class="panel-body">
 						<div id="pie-chart" style="height: 300px;"></div>
@@ -28,7 +28,7 @@
 			<div class="col-md-8">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						预约号等待
+						预约号计时
 					</div>
 					<div class="panel-body">
 						<div id="bar-chart" style="height: 300px;"></div>
