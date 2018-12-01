@@ -208,8 +208,8 @@ public class PerfMonitor {
                 hourlyData.add(currentHour.getInfo());
             }
             currentHour = new Agg(h);
-            currentHour.add(n);
         }
+        currentHour.add(n);
 
         long m = toMinute(t);
         if (currentMinute == null || currentMinute.getTime() != m) {
@@ -219,8 +219,8 @@ public class PerfMonitor {
                 minutelyData.add(currentMinute.getInfo());
             }
             currentMinute = new Agg(m);
-            currentMinute.add(n);
         }
+        currentMinute.add(n);
 
         if (measureData.size() > MAX_SIZE)
             measureData.poll();
