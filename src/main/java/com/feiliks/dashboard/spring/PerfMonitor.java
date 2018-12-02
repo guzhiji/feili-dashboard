@@ -50,7 +50,9 @@ public class PerfMonitor {
             return data.size();
         }
 
-        public float mean() {
+        public Float mean() {
+            if (data.isEmpty())
+                return null;
             long total = 0L;
             for (Long value : data)
                 total += value;
@@ -58,11 +60,19 @@ public class PerfMonitor {
         }
 
         public Long min() {
-            return data.first();
+            try {
+                return data.first();
+            } catch (NoSuchElementException ex) {
+                return null;
+            }
         }
 
         public Long max() {
-            return data.last();
+            try {
+                return data.last();
+            } catch (NoSuchElementException ex) {
+                return null;
+            }
         }
 
         public Float percentile(int percentage) {
@@ -94,6 +104,8 @@ public class PerfMonitor {
         }
 
         public AggInfo getInfo() {
+            if (data.isEmpty())
+                return null;
             AggInfo out = new AggInfo();
             out.time = time;
             out.min = min();
@@ -205,7 +217,9 @@ public class PerfMonitor {
             if (currentHour != null) {
                 if (hourlyData.size() > MAX_SIZE)
                     hourlyData.poll();
-                hourlyData.add(currentHour.getInfo());
+                AggInfo aggInfo = currentHour.getInfo();
+                if (aggInfo != null)
+                    hourlyData.add(aggInfo);
             }
             currentHour = new Agg(h);
         }
@@ -216,7 +230,9 @@ public class PerfMonitor {
             if (currentMinute != null) {
                 if (minutelyData.size() > MAX_SIZE)
                     minutelyData.poll();
-                minutelyData.add(currentMinute.getInfo());
+                AggInfo aggInfo = currentMinute.getInfo();
+                if (aggInfo != null)
+                    minutelyData.add(aggInfo);
             }
             currentMinute = new Agg(m);
         }

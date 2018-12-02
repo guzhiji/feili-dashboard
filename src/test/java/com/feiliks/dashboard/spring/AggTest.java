@@ -14,6 +14,34 @@ public class AggTest {
     }
 
     @Test
+    public void testEmpty() {
+        PerfMonitor.Agg a = prepare(new long[0]);
+        Assert.assertNull(a.mean());
+        Assert.assertNull(a.min());
+        Assert.assertNull(a.max());
+        Assert.assertNull(a.percentile(50));
+        Assert.assertNull(a.getInfo());
+    }
+
+    @Test
+    public void testOne() {
+        PerfMonitor.Agg a = prepare(new long[] { 5 });
+        Assert.assertEquals(5F, a.mean(), 0);
+        Assert.assertEquals(5F, a.min(), 0);
+        Assert.assertEquals(5F, a.max(), 0);
+        Assert.assertEquals(5F, a.percentile(50), 0);
+    }
+
+    @Test
+    public void testTwo() {
+        PerfMonitor.Agg a = prepare(new long[] { 5, 6 });
+        Assert.assertEquals(5.5F, a.mean(), 0);
+        Assert.assertEquals(5F, a.min(), 0);
+        Assert.assertEquals(6F, a.max(), 0);
+        Assert.assertEquals(5.5F, a.percentile(50), 0);
+    }
+
+    @Test
     public void testMaxMin() {
         PerfMonitor.Agg a = prepare(new long[] {2, 4, 1, 5, 3});
         Assert.assertEquals(1L, a.min().longValue());
