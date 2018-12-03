@@ -261,5 +261,14 @@ $('#hourly-chart-mode > li > a').on('click', function(e) {
     renderHourlyData();
 });
 
+$(window).on('resize', function() {
+    realtimechart.rebind('realtime-line-chart');
+    minutelychart.rebind('minutely-line-chart');
+    hourlychart.rebind('hourly-line-chart');
+    realtimechart.render();
+    minutelychart.render();
+    hourlychart.render();
+});
+
     </script>
 </html>
