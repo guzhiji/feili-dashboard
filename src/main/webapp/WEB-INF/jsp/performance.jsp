@@ -202,6 +202,7 @@ function connect() {
                 if (min != currentMinute) {
                     currentMinute = min;
                     loadMinutelyData();
+                    loadHourlyData();
                 }
                 if (hr != currentHour) {
                     currentHour = hr;

@@ -4,27 +4,27 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>看板</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/common.css" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<style>
 			body {
-				background-color: #061325;
-				padding: 100px;
-			}
-		
-			.panel-primary>.panel-heading {
-				color: #70cac7;
-				background-color: #06131b;
-			}
-		
-			.panel-primary>.panel-body {
-				background-color: #001531;
+				padding-top: 0;
 			}
 		</style>
 	</head>
 	<body>
 
-        <a href="/consolidation" class="btn btn-primary">集货</a>
-        <a href="/shipment" class="btn btn-primary">出货</a>
+		<nav class="navbar navbar-inverse">
+			<div class="container">
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="/consolidation">集货</a></li>
+						<li><a href="/shipment">出货</a></li>
+						<li><a href="/performance">数据库性能</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
 	</body>
 </html>
