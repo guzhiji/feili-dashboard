@@ -16,5 +16,9 @@ if [ ! -d "$logpath" ] ; then
     mkdir "$logpath"
 fi
 
-java -jar -Dspring.config.location="./config.properties" -Dlogging.path="$logpath" "$war"
+java -jar -Dspring.config.location="./config.properties" -Dlogging.path="$logpath" "$war" 2>&1 > /dev/null &
+
+pid=$!
+echo process $pid started
+echo $pid > ./pid
 
