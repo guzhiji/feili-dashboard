@@ -16,27 +16,27 @@ public class ConsolidationTask {
     private ConsolidationDao dao;
 
     public static class HourlyStats {
-        private long hour;
+        private long time;
         private Map<String, Integer> data;
 
         public HourlyStats() {
         }
 
-        public HourlyStats(Date hour) {
-            this(hour, new HashMap<String, Integer>());
+        public HourlyStats(Date time) {
+            this(time, new HashMap<String, Integer>());
         }
 
-        public HourlyStats(Date hour, Map<String, Integer> data) {
-            this.hour = hour.getTime();
+        public HourlyStats(Date time, Map<String, Integer> data) {
+            this.time = time.getTime();
             this.data = data;
         }
 
-        public long getHour() {
-            return hour;
+        public long getTime() {
+            return time;
         }
 
-        public void setHour(long hour) {
-            this.hour = hour;
+        public void setTime(long time) {
+            this.time = time;
         }
 
         public Map<String, Integer> getData() {

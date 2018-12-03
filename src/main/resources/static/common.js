@@ -302,7 +302,7 @@ var LineChart = function(id, max_len, formatter, showPoints, translatedLabels) {
                         legends.push(legend);
                         var s = createSeries(legend);
                         s.data.push([
-                            new Date(values[i].hour),
+                            new Date(values[i].time),
                             values[i].data[key]
                         ]);
                         data.push(s);
@@ -310,7 +310,7 @@ var LineChart = function(id, max_len, formatter, showPoints, translatedLabels) {
                         if (data[p].data.length >= max_len)
                             data[p].data.shift();
                         data[p].data.push([
-                            new Date(values[i].hour),
+                            new Date(values[i].time),
                             values[i].data[key]
                         ]);
                     }

@@ -41,6 +41,25 @@ body > h1 {
     background-color: #032045;
 }
 
+.nav-pills {
+    margin-bottom: 10px;
+}
+
+.nav-pills > li > a {
+    padding: 5px 8px;
+}
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:focus,
+.nav-pills > li.active > a:hover {
+    color: #a5c8e6;
+}
+
+.nav-pills > li > a:focus,
+.nav-pills > li > a:hover {
+    background-color: #81a4a1;
+}
+
 #error-message {
     position: fixed;
     top: 100px;

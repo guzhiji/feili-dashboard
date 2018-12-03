@@ -31,13 +31,13 @@
                         查询延迟分钟级历史数据
                     </div>
                     <div class="panel-body">
-                        <ul class="nav nav-pills" role="tablist">
-                            <li role="presentation" class="active"><a href="#">平均值</a></li>
-                            <li role="presentation"><a href="#">中位数</a></li>
-                            <li role="presentation"><a href="#">90%值</a></li>
-                            <li role="presentation"><a href="#">10%值</a></li>
-                            <li role="presentation"><a href="#">最大值</a></li>
-                            <li role="presentation"><a href="#">最小值</a></li>
+                        <ul id="minutely-chart-mode" class="nav nav-pills" role="tablist">
+                            <li role="presentation" class="active mode-mean"><a href="#">平均值</a></li>
+                            <li role="presentation" class="mode-median"><a href="#">中位数</a></li>
+                            <li role="presentation" class="mode-ninetiethPercentile"><a href="#">90%值</a></li>
+                            <li role="presentation" class="mode-tenthPercentile"><a href="#">10%值</a></li>
+                            <li role="presentation" class="mode-max"><a href="#">最大值</a></li>
+                            <li role="presentation" class="mode-min"><a href="#">最小值</a></li>
                         </ul>
                         <div id="minutely-line-chart" style="height: 300px;"></div>
                     </div>
@@ -49,13 +49,13 @@
                         查询延迟小时级历史数据
                     </div>
                     <div class="panel-body">
-                        <ul class="nav nav-pills" role="tablist">
-                            <li role="presentation" class="active"><a href="#">平均值</a></li>
-                            <li role="presentation"><a href="#">中位数</a></li>
-                            <li role="presentation"><a href="#">90%值</a></li>
-                            <li role="presentation"><a href="#">10%值</a></li>
-                            <li role="presentation"><a href="#">最大值</a></li>
-                            <li role="presentation"><a href="#">最小值</a></li>
+                        <ul id="hourly-chart-mode" class="nav nav-pills" role="tablist">
+                            <li role="presentation" class="active mode-mean"><a href="#">平均值</a></li>
+                            <li role="presentation" class="mode-median"><a href="#">中位数</a></li>
+                            <li role="presentation" class="mode-ninetiethPercentile"><a href="#">90%值</a></li>
+                            <li role="presentation" class="mode-tenthPercentile"><a href="#">10%值</a></li>
+                            <li role="presentation" class="mode-max"><a href="#">最大值</a></li>
+                            <li role="presentation" class="mode-min"><a href="#">最小值</a></li>
                         </ul>
                         <div id="hourly-line-chart" style="height: 300px;"></div>
                     </div>
@@ -68,6 +68,21 @@
     </body>
     <script type="text/javascript">
 
+function toMinute(t) {
+    var d = new Date(t);
+    d.setMilliseconds(0);
+    d.setSeconds(0);
+    return d.getTime();
+}
+
+function toHour(t) {
+    var d = new Date(t);
+    d.setMilliseconds(0);
+    d.setSeconds(0);
+    d.setMinutes(0);
+    return d.getTime();
+}
+
 var sources = {
     'consolidation!order-trolley': '集货：订单-台车',
     'shipment!trolleys': '出货：台车',
@@ -77,6 +92,81 @@ var sources = {
 var realtimechart = LineChart('realtime-line-chart', 60, '{value}', false, sources);
 var minutelychart = LineChart('minutely-line-chart', 60, '{value}', false, sources);
 var hourlychart = LineChart('hourly-line-chart', 60, '{value}', false, sources);
+var modes = ['mean', 'median', 'ninetiethPercentile',
+        'tenthPercentile', 'max', 'min'],
+    minutelyMode = 'mean', hourlyMode = 'mean',
+    minutelyData = [], hourlyData = [],
+    currentMinute = null, currentHour = null;
+
+function preprocessRealtimeData(data) {
+    var out = [], series, dataItem;
+    for (var key in data) {
+        series = data[key];
+        for (var i = 0; i < series.length; i++) {
+            for (var t in series[i]) {
+                dataItem = {};
+                dataItem[key] = series[i][t];
+                out.push({
+                    time: parseInt(t),
+                    data: dataItem
+                });
+            }
+        }
+    }
+    return out;
+}
+
+function preprocessAggData(data, mode) {
+    var out = [], dataTime = [], dataItems = {}, series;
+    var i = 0, hasData;
+    do {
+        hasData = false;
+        for (var key in data) {
+            series = data[key];
+            if (i in series) {
+                hasData = true;
+                if (series[i].time in dataItems) {
+                    dataItems[series[i].time][key] = series[i][mode];
+                } else {
+                    var dataItem = {};
+                    dataItem[key] = series[i][mode];
+                    dataItems[series[i].time] = dataItem;
+                    dataTime.push(series[i].time);
+                }
+            }
+        }
+        i++;
+    } while (hasData);
+    for (i = 0; i < dataTime.length; i++) {
+        out.push({
+            time: dataTime[i],
+            data: dataItems[dataTime[i]]
+        });
+    }
+    return out;
+}
+
+function renderMinutelyData() {
+    minutelychart.load(preprocessAggData(minutelyData, minutelyMode));
+}
+
+function renderHourlyData() {
+    hourlychart.load(preprocessAggData(hourlyData, hourlyMode));
+}
+
+function loadMinutelyData() {
+    $.get('/performance/data/minutely.json', function(data) {
+        minutelyData = data;
+        renderMinutelyData();
+    });
+}
+
+function loadHourlyData() {
+    $.get('/performance/data/hourly.json', function(data) {
+        hourlyData = data;
+        renderHourlyData();
+    });
+}
 
 var connected = false;
 var ws = null;
@@ -87,16 +177,31 @@ function connect() {
         if (arr.length) {
             if (arr[0] in sources) {
                 var t = parseInt(arr[1]),
+                    min = toMinute(t),
+                    hr = toHour(t),
                     m = parseInt(arr[2]),
                     p = {};
                 p[arr[0]] = m;
                 realtimechart.update(t, p);
+                if (min != currentMinute) {
+                    currentMinute = min;
+                    loadMinutelyData();
+                }
+                if (hr != currentHour) {
+                    currentHour = hr;
+                    loadHourlyData();
+                }
             }
         }
     };
     ws.onopen = function (evt) {
         connected = true;
         $('#error-message').fadeOut();
+        $.get('/performance/data/realtime.json', function(data) {
+            realtimechart.load(preprocessRealtimeData(data));
+        });
+        loadMinutelyData();
+        loadHourlyData();
     };
     ws.onclose = function (evt) {
         var e = $('#error-message'), w = $(window);
@@ -110,6 +215,34 @@ function connect() {
     };
 }
 connect();
+
+$('#minutely-chart-mode > li > a').on('click', function(e) {
+    e.preventDefault();
+    var listItem = $(this).parent();
+    listItem.parent().find('>li').removeClass('active');
+    listItem.addClass('active');
+    for (var m = 0; m < modes.length; m++) {
+        if (listItem.hasClass('mode-' + modes[m])) {
+            minutelyMode = modes[m];
+            break;
+        }
+    }
+    renderMinutelyData();
+});
+
+$('#hourly-chart-mode > li > a').on('click', function(e) {
+    e.preventDefault();
+    var listItem = $(this).parent();
+    listItem.parent().find('>li').removeClass('active');
+    listItem.addClass('active');
+    for (var m = 0; m < modes.length; m++) {
+        if (listItem.hasClass('mode-' + modes[m])) {
+            hourlyMode = modes[m];
+            break;
+        }
+    }
+    renderHourlyData();
+});
 
     </script>
 </html>
