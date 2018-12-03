@@ -1,5 +1,4 @@
-var LINECHART_MAX = 24,
-    COLOR_ORDER = ['#963c3e','#3b5579', '#4e9845', '#ab9f52', '#729e8a','#749f83', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
+var COLOR_ORDER = ['#963c3e','#3b5579', '#4e9845', '#ab9f52', '#729e8a','#749f83', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
     COLOR_TEXT = '#a5c8e6', COLOR_DARK_LINE = '#395273';
 
 var timeDiff = 0;
@@ -142,7 +141,7 @@ var PieChart = function(id, name, translatedLabels) {
     };
 };
 
-var LineChart = function(id, formatter, translatedLabels) {
+var LineChart = function(id, max_len, formatter, showPoints, translatedLabels) {
     var chart = echarts.init(document.getElementById(id)),
         legends = [],
         data = [],
@@ -196,7 +195,7 @@ var LineChart = function(id, formatter, translatedLabels) {
             yAxis: [
                 {
                     type: 'value',
-                    interval: 1,
+                    minInterval: 1,
                     splitLine: {
                         lineStyle: {
                             color: [COLOR_DARK_LINE]
@@ -216,14 +215,20 @@ var LineChart = function(id, formatter, translatedLabels) {
             serise: data
         };
 
-    function createSerie(name) {
-        return {
+    function createSeries(name) {
+        var series = {
             name: name,
             type: 'line',
-            symbolSize: 8,
             itemStyle: { normal: { areaStyle: { type: 'default' } } },
             data: []
         };
+        if (showPoints) {
+            series.symbol = 'circle';
+            series.symbolSize = 8;
+        } else {
+            series.symbol = 'none';
+        }
+        return series;
     }
 
     chart.setOption(option);
@@ -253,7 +258,7 @@ var LineChart = function(id, formatter, translatedLabels) {
                     p = legends.indexOf(legend);
                 if (p == -1) {
                     legends.push(legend);
-                    var s = createSerie(legend);
+                    var s = createSeries(legend);
                     s.data.push([
                         new Date(t),
                         value[key]
@@ -273,7 +278,7 @@ var LineChart = function(id, formatter, translatedLabels) {
                         }
                     }
                     if (!matchesPrev) {
-                        if (l >= LINECHART_MAX)
+                        if (l >= max_len)
                             data[p].data.shift();
                         data[p].data.push([
                             new Date(t),
@@ -295,14 +300,14 @@ var LineChart = function(id, formatter, translatedLabels) {
                         p = legends.indexOf(legend);
                     if (p == -1) {
                         legends.push(legend);
-                        var s = createSerie(legend);
+                        var s = createSeries(legend);
                         s.data.push([
                             new Date(values[i].hour),
                             values[i].data[key]
                         ]);
                         data.push(s);
                     } else {
-                        if (data[p].data.length >= LINECHART_MAX)
+                        if (data[p].data.length >= max_len)
                             data[p].data.shift();
                         data[p].data.push([
                             new Date(values[i].hour),

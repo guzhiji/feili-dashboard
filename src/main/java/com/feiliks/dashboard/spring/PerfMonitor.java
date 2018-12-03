@@ -4,7 +4,7 @@ import java.util.*;
 
 public class PerfMonitor {
 
-    private final static int MAX_SIZE = 1000;
+    private final static int MAX_SIZE = 60;
     private final static Map<String, PerfMonitor> MONITORS = new HashMap<>();
 
     public static Set<String> getMonitors() {
