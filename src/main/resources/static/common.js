@@ -141,7 +141,7 @@ var PieChart = function(id, name, translatedLabels) {
     };
 };
 
-var LineChart = function(id, max_len, formatter, showPoints, translatedLabels) {
+var LineChart = function(id, max_len, formatter, xFormatter, showPoints, translatedLabels) {
     var chart = echarts.init(document.getElementById(id)),
         legends = [],
         data = [],
@@ -231,6 +231,8 @@ var LineChart = function(id, max_len, formatter, showPoints, translatedLabels) {
         return series;
     }
 
+    if (xFormatter)
+        option.xAxis[0].axisLabel.formatter = xFormatter;
     chart.setOption(option);
 
     return {

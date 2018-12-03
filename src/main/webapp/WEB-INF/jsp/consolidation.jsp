@@ -74,7 +74,7 @@ var piechart = PieChart('pie-chart', '单数', {
 	SHIPPED: '已发货',
 	OTHER: '其它'
 });
-var linechart = LineChart('line-chart', 24, '{value}', true, {
+var linechart = LineChart('line-chart', 24, '{value}', null, true, {
 	PICKED: '已拣货',
 	SHIPPED: '已发货',
 	OTHER: '其它'
