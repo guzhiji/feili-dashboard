@@ -105,9 +105,9 @@ var sources = {
     'shipment!trolley-order': '出货：台车-订单',
     'shipment!appointments': '出货：预约'
 };
-var realtimechart = LineChart('realtime-line-chart', 60, '{value}', formatTime, false, sources);
-var minutelychart = LineChart('minutely-line-chart', 60, '{value}', null, false, sources);
-var hourlychart = LineChart('hourly-line-chart', 60, '{value}', null, false, sources);
+var realtimechart = LineChart('realtime-line-chart', 120, '{value}', formatTime, false, sources);
+var minutelychart = LineChart('minutely-line-chart', 120, '{value}', null, false, sources);
+var hourlychart = LineChart('hourly-line-chart', 120, '{value}', null, false, sources);
 var modes = ['mean', 'median', 'ninetiethPercentile',
         'tenthPercentile', 'max', 'min'],
     minutelyMode = 'mean', hourlyMode = 'mean',

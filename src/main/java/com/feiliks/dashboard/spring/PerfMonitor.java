@@ -4,7 +4,7 @@ import java.util.*;
 
 public class PerfMonitor {
 
-    private final static int MAX_SIZE = 60;
+    private final static int MAX_SIZE = 120;
     private final static Map<String, PerfMonitor> MONITORS = new HashMap<>();
 
     public static Set<String> getMonitors() {
@@ -215,7 +215,7 @@ public class PerfMonitor {
         long h = toHour(t);
         if (currentHour == null || currentHour.getTime() != h) {
             if (currentHour != null) {
-                if (hourlyData.size() > MAX_SIZE)
+                if (hourlyData.size() >= MAX_SIZE)
                     hourlyData.poll();
                 AggInfo aggInfo = currentHour.getInfo();
                 if (aggInfo != null)
@@ -228,7 +228,7 @@ public class PerfMonitor {
         long m = toMinute(t);
         if (currentMinute == null || currentMinute.getTime() != m) {
             if (currentMinute != null) {
-                if (minutelyData.size() > MAX_SIZE)
+                if (minutelyData.size() >= MAX_SIZE)
                     minutelyData.poll();
                 AggInfo aggInfo = currentMinute.getInfo();
                 if (aggInfo != null)
