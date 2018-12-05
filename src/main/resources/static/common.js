@@ -95,7 +95,36 @@ var PieChart = function(id, name, translatedLabels) {
             ]
         };
 
+    function update(values) {
+        for (var key in values) {
+            var label = key in translatedLabels ? translatedLabels[key] : key,
+                which = legends.indexOf(label);
+            if (which == -1) {
+                legends.push(label);
+                data.push({
+                    name: label,
+                    value: values[key]
+                });
+                chart.setOption({
+                    legend: {data: legends},
+                    series: [{data: data}]
+                });
+            } else {
+                data[which].value = values[key];
+                chart.setOption({
+                    series: [{data: data}]
+                });
+            }
+        }
+    }
+
     chart.setOption(option);
+    (function() {
+        var initialData = {};
+        for (var key in translatedLabels)
+            initialData[key] = 0;
+        update(initialData);
+    })();
 
     return {
         rebind: function(id) {
@@ -116,28 +145,7 @@ var PieChart = function(id, name, translatedLabels) {
                 series: [{data: data}]
             });
         },
-        update: function(values) {
-            for (var key in values) {
-                var label = key in translatedLabels ? translatedLabels[key] : key,
-                    which = legends.indexOf(label);
-                if (which == -1) {
-                    legends.push(label);
-                    data.push({
-                        name: label,
-                        value: values[key]
-                    });
-                    chart.setOption({
-                        legend: {data: legends},
-                        series: [{data: data}]
-                    });
-                } else {
-                    data[which].value = values[key];
-                    chart.setOption({
-                        series: [{data: data}]
-                    });
-                }
-            }
-        }
+        update: update
     };
 };
 
