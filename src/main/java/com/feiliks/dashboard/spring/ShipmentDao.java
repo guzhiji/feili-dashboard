@@ -58,6 +58,7 @@ public class ShipmentDao {
         private String trolleyId;
         private String orderKey;
         private String orderStatus;
+        private String appointmentKey;
         private String putawayZone;
 
         public TrolleyOrder() {}
@@ -83,6 +84,10 @@ public class ShipmentDao {
 
         public String getOrderStatus() {
             return orderStatus;
+        }
+
+        public String getAppointmentKey() {
+            return appointmentKey;
         }
 
         public String getPutawayZone() {
@@ -171,13 +176,16 @@ public class ShipmentDao {
             "    dd.DROPID trolley_id," +
             "    o.ORDERKEY order_key," +
             "    o.STATUS order_status," +
+            "    trim(o.APPOINTMENTKEY) appt_key," +
             "    l.PUTAWAYZONE " +
             "from ORDERS o" +
             "    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
             "    inner join LOC l on l.LOC = p.LOC" +
             "    inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY='CQ2'" +
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
-            "    inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10'";
+            "    inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10' " +
+            "where" +
+            "    o.STATUS not in ('98', '99', '95')";
 
     private final static String sqlAppointments = "select distinct" +
             "    a.APPOINTMENTKEY appointment_key," +
@@ -230,7 +238,8 @@ public class ShipmentDao {
                             to.trolleyId = resultSet.getString(1);
                             to.orderKey = resultSet.getString(2);
                             to.orderStatus = resultSet.getString(3);
-                            to.putawayZone = resultSet.getString(4);
+                            to.appointmentKey = resultSet.getString(4);
+                            to.putawayZone = resultSet.getString(5);
                             return to;
                         }
                     });

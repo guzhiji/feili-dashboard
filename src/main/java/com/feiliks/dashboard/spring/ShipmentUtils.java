@@ -79,8 +79,12 @@ class ShipmentUtils {
             }
         }
 
+        // find extra orders on trolleys outside LKSHIP
         for (ShipmentDao.TrolleyOrder to : trolleyOrders) {
             String tid = to.getTrolleyId();
+            // orders with appointment keys are not 'UNFINISHED'
+            if (to.getAppointmentKey() != null) continue;
+            // skip trolleys inside LKSHIP
             if (trolleyStatus.containsKey(tid)) continue;
             // trolleys outside LKSHIP
             Set<ShipmentDao.TrolleyOrder> orders = groupByTrolley.get(tid);
