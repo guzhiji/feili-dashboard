@@ -3,6 +3,7 @@ package com.feiliks.dashboard.spring;
 
 import com.feiliks.dashboard.SysInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 public class BackgroundTask {
 
     @Autowired
-    private WebSocketHandler webSocketHandler;
+    private SimpMessagingTemplate messaging;
 
     private Map<String, Long[]> lastCpuTime = null;
     private Map<String, Long[]> lastRxTx = null;
@@ -21,7 +22,8 @@ public class BackgroundTask {
     private double lastDiskIOTime;
 
     private void broadcast(String type, String msg) {
-        webSocketHandler.broadcast(type + ":" + System.currentTimeMillis() + ":" + msg);
+        messaging.convertAndSend("/dashboard",
+                type + ':' + System.currentTimeMillis() + ':' + msg);
     }
 
     @Scheduled(fixedDelay = 2000)

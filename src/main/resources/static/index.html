@@ -425,88 +425,85 @@ var diskBar = UtilizationBar('disk-bar-chart', {
 var diskTimeLine = TimeLine('disktime-line-chart', {}, millisFormatter);
 var diskRLine = TimeLine('diskr-line-chart', {}, sizeFormatter);
 var diskWLine = TimeLine('diskw-line-chart', {}, sizeFormatter);
-var ws = null;
+var stomp = null;
 
 function connect() {
-	if (window.WebSocket) {
-		ws = new WebSocket('ws://localhost:8080/websocket');
-	} else {
-		ws = new SockJS('/sockjs');
-	}
-	ws.onmessage = function (evt) {
-		var arr = evt.data.split(':');
-		if (arr.length) {
-			var t = parseInt(arr[1]);
-			if (arr[0] == 'cpu') {
-				var cpus = arr[2].split(',');
-				var data = {};
-				for (var i = 0; i < cpus.length; i++) {
-					if (cpus[i].indexOf('=') == -1) continue;
-					var cpu = cpus[i].split('=');
-					if (cpu[0] == 'cpu') {
-						cpuUsagePie.update(parseFloat(cpu[1]), 100 - parseFloat(cpu[1]));
-					} else {
-						data[cpu[0]] = parseFloat(cpu[1]);
-					}
-				}
-				cpuUsageLine.update(t, data);
-			} else if (arr[0] == 'mem') {
-				var mem = arr[2].split(','),
-				used = parseInt(mem[0]),
-				free = parseInt(mem[1]);
-				memoryUsagePie.update(used, free);
-				memoryUsageLine.update(t, {utilization: Math.round(used / (used + free) * 10000) / 100});
-			} else if (arr[0] == 'net') {
-				var ifaces = arr[2].split(';'),
-					rx = {}, tx = {};
-				for (var i = 0; i < ifaces.length; i++) {
-					if (ifaces[i].indexOf('=') == -1) continue;
-					var iface = ifaces[i].split('='),
-						values = iface[1].split(',');
-					rx[iface[0]] = parseInt(values[0]);
-					tx[iface[0]] = parseInt(values[1]);
-				}
-				netRxLine.update(t, rx);
-				netTxLine.update(t, tx);
-			} else if (arr[0] == 'diskio') {
-				var disks = arr[2].split(';'),
-					r = {}, w = {}, dt = {};
-				for (var i = 0; i < disks.length; i++) {
-					if (disks[i].indexOf('=') == -1) continue;
-					var disk = disks[i].split('='),
-						values = disk[1].split(',');
-					r[disk[0]] = 512 * parseInt(values[0]);
-					w[disk[0]] = 512 * parseInt(values[1]);
-					dt[disk[0]] = parseInt(values[2]);
-				}
-				diskRLine.update(t, r);
-				diskWLine.update(t, w);
-				diskTimeLine.update(t, dt);
-			} else if (arr[0] == 'disk') {
-				var disks = arr[2].split(';'), d = {};
-				for (var i = 0; i < disks.length; i++) {
-					if (disks[i].indexOf('=') == -1) continue;
-					var disk = disks[i].split('='),
-						values = disk[1].split(','),
-						used = parseInt(values[0]),
-						free = parseInt(values[1]);
-					d[disk[0]] = used / (used + free) * 100;
-				}
-				diskBar.update(d);
-			}
-		}
-	};
-	ws.onopen = function(evt) {
+	var ws = new SockJS('/sockjs');
+	stomp = Stomp.over(ws);
+	stomp.connect({}, function() {
 		$('#error-message').hide();
-	};
-	ws.onclose = function (evt) {
+		stomp.subscribe('/dashboard', function(msg) {
+			var arr = msg.body.split(':');
+			if (arr.length) {
+				var t = parseInt(arr[1]);
+				if (arr[0] == 'cpu') {
+					var cpus = arr[2].split(',');
+					var data = {};
+					for (var i = 0; i < cpus.length; i++) {
+						if (cpus[i].indexOf('=') == -1) continue;
+						var cpu = cpus[i].split('=');
+						if (cpu[0] == 'cpu') {
+							cpuUsagePie.update(parseFloat(cpu[1]), 100 - parseFloat(cpu[1]));
+						} else {
+							data[cpu[0]] = parseFloat(cpu[1]);
+						}
+					}
+					cpuUsageLine.update(t, data);
+				} else if (arr[0] == 'mem') {
+					var mem = arr[2].split(','),
+					used = parseInt(mem[0]),
+					free = parseInt(mem[1]);
+					memoryUsagePie.update(used, free);
+					memoryUsageLine.update(t, {utilization: Math.round(used / (used + free) * 10000) / 100});
+				} else if (arr[0] == 'net') {
+					var ifaces = arr[2].split(';'),
+						rx = {}, tx = {};
+					for (var i = 0; i < ifaces.length; i++) {
+						if (ifaces[i].indexOf('=') == -1) continue;
+						var iface = ifaces[i].split('='),
+							values = iface[1].split(',');
+						rx[iface[0]] = parseInt(values[0]);
+						tx[iface[0]] = parseInt(values[1]);
+					}
+					netRxLine.update(t, rx);
+					netTxLine.update(t, tx);
+				} else if (arr[0] == 'diskio') {
+					var disks = arr[2].split(';'),
+						r = {}, w = {}, dt = {};
+					for (var i = 0; i < disks.length; i++) {
+						if (disks[i].indexOf('=') == -1) continue;
+						var disk = disks[i].split('='),
+							values = disk[1].split(',');
+						r[disk[0]] = 512 * parseInt(values[0]);
+						w[disk[0]] = 512 * parseInt(values[1]);
+						dt[disk[0]] = parseInt(values[2]);
+					}
+					diskRLine.update(t, r);
+					diskWLine.update(t, w);
+					diskTimeLine.update(t, dt);
+				} else if (arr[0] == 'disk') {
+					var disks = arr[2].split(';'), d = {};
+					for (var i = 0; i < disks.length; i++) {
+						if (disks[i].indexOf('=') == -1) continue;
+						var disk = disks[i].split('='),
+							values = disk[1].split(','),
+							used = parseInt(values[0]),
+							free = parseInt(values[1]);
+						d[disk[0]] = used / (used + free) * 100;
+					}
+					diskBar.update(d);
+				}
+			}
+		});
+	},
+	function () {
 		var e = $('#error-message'), w = $(window);
 		e.css({
 			top: (w.height() - e.height()) / 2,
 			left: (w.width() - e.width()) / 2
 		}).show();
 		setTimeout(connect, 1000);
-	};
+	});
 }
 connect();
 
