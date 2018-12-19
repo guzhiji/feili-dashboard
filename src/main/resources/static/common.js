@@ -239,9 +239,68 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
         return series;
     }
 
+    function update(t, value) {
+        for (var key in value) {
+            var legend = key in translatedLabels ? translatedLabels[key] : key,
+                p = legends.indexOf(legend);
+            if (p == -1) {
+                legends.push(legend);
+                var s = createSeries(legend);
+                s.data.push([
+                    new Date(t),
+                    value[key]
+                ]);
+                data.push(s);
+                chart.setOption({
+                    legend: {data: legends},
+                    series: data
+                });
+            } else {
+                var l = data[p].data.length, matchesPrev = false;
+                if (l > 0) {
+                    var d = data[p].data[l - 1]; // previous data point
+                    if (d[0].getTime() == t) {
+                        d[1] = value[key];
+                        matchesPrev = true;
+                    }
+                }
+                if (!matchesPrev) {
+                    if (l >= max_len)
+                        data[p].data.shift();
+                    data[p].data.push([
+                        new Date(t),
+                        value[key]
+                    ]);
+                }
+                chart.setOption({
+                    series: data
+                });
+            }
+        }
+    }
+
+    function initData() {
+        legends = [];
+        data = [];
+        for (var key in translatedLabels) {
+            var legend = translatedLabels[key];
+            legends.push(legend);
+            data.push(createSeries(legend));
+        }
+    }
+
+    function renderData() {
+        chart.setOption({
+            legend: {data: legends},
+            series: data
+        });
+    }
+
     if (xFormatter)
         option.xAxis[0].axisLabel.formatter = xFormatter;
     chart.setOption(option);
+    initData();
+    renderData();
 
     return {
         rebind: function(id) {
@@ -249,12 +308,7 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
             chart = echarts.init(document.getElementById(id));
             chart.setOption(option);
         },
-        render: function() {
-            chart.setOption({
-                legend: {data: legends},
-                series: data
-            });
-        },
+        render: renderData,
         clear: function() {
             for (var i = 0; i < data.length; i++)
                 data[i].data = [];
@@ -262,48 +316,9 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
                 series: data
             });
         },
-        update: function(t, value) {
-            for (var key in value) {
-                var legend = key in translatedLabels ? translatedLabels[key] : key,
-                    p = legends.indexOf(legend);
-                if (p == -1) {
-                    legends.push(legend);
-                    var s = createSeries(legend);
-                    s.data.push([
-                        new Date(t),
-                        value[key]
-                    ]);
-                    data.push(s);
-                    chart.setOption({
-                        legend: {data: legends},
-                        series: data
-                    });
-                } else {
-                    var l = data[p].data.length, matchesPrev = false;
-                    if (l > 0) {
-                        var d = data[p].data[l - 1]; // previous data point
-                        if (d[0].getTime() == t) {
-                            d[1] = value[key];
-                            matchesPrev = true;
-                        }
-                    }
-                    if (!matchesPrev) {
-                        if (l >= max_len)
-                            data[p].data.shift();
-                        data[p].data.push([
-                            new Date(t),
-                            value[key]
-                        ]);
-                    }
-                    chart.setOption({
-                        series: data
-                    });
-                }
-            }
-        },
+        update: update,
         load: function(values) {
-            data = [];
-            legends = [];
+            initData();
             for (var i = 0; i < values.length; i++) {
                 for (var key in values[i].data) {
                     var legend = key in translatedLabels ? translatedLabels[key] : key,
@@ -326,10 +341,7 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
                     }
                 }
             }
-            chart.setOption({
-                legend: {data: legends},
-                series: data
-            });
+            renderData();
         }
     };
 };

@@ -70,7 +70,7 @@ public class ConsolidationTask {
         previousHourData = currentHourData;
         currentHourData = new HashMap<>();
         currentHourStats = new HashMap<>();
-        for (ConsolidationDao.Status s : ConsolidationDao.Status.valuesExceptOther()) {
+        for (ConsolidationDao.Status s : ConsolidationDao.Status.values()) {
             currentHourData.put(s.name(), new HashSet<String>());
             currentHourStats.put(s.name(), 0);
         }
@@ -166,7 +166,7 @@ public class ConsolidationTask {
             Map<String, Set<String>> statusOrders = groupByHour.get(cal.getTime());
             HourlyStats stats = new HourlyStats(cal.getTime());
             if (i == 0) currentHourStats = stats.getData();
-            for (ConsolidationDao.Status status : ConsolidationDao.Status.valuesExceptOther()) {
+            for (ConsolidationDao.Status status : ConsolidationDao.Status.values()) {
                 String statusName = status.name();
                 if (statusOrders == null || !statusOrders.containsKey(statusName)) {
                     stats.getData().put(statusName, 0);
