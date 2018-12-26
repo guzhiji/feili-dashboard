@@ -18,6 +18,7 @@
 
 		<svg id="asrs-view"></svg>
 
+		<div id="colors"></div>
 		<script type="text/javascript">
 
 var asrs = asrsView({
@@ -29,10 +30,22 @@ var asrs = asrsView({
 	rowGroupMargin: 30, // pixels
 	pilerColor: '#0e83e4',
 	trackColor: '#0e83e4',
-	locBorderColor: '#0f4dcb',
-	emptyLocColor: '#b8ddfc'
+	locBorderColor: '#112348',
+	locBlinkColor: '#fffc36',
+	locEmptyColor: '#b8ddfc',
+	locUtilizationColors: colorRange('#4c91cb', '#ae4369', 10),
+	locMaxUtilization: 10
 });
+setInterval(function() {
+	asrs.store(Math.floor(Math.random() * 10), Math.floor(Math.random() * 10));
+}, 500);
 
+var colors = colorRange('#4c91cb', '#ae4369', 10);
+for (var i in colors) {
+	var c = document.createElement('div');
+	c.setAttribute('style', 'height: 20px; background-color:'+ colors[i]);
+	document.getElementById('colors').appendChild(c);
+}
 
 		</script>
 	</body>
