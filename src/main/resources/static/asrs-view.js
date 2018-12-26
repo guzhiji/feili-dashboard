@@ -93,15 +93,22 @@ function asrsView(config) {
         elPiler.appendChild(elPilerInner);
         elPiler.appendChild(elPilerMain);
         elPiler.appendChild(elPilerLoc);
-        return elPiler;
+        return [elPiler, elPilerLoc];
     }
 
     function AsrsPiler(pos) {
+        /*
         this.el = makeSVG('use', {
             svgHref: '#asrs-piler',
             transform: 'translate(' + (padding / 2 + locWidth * pos) +
                 ', ' + (locWidth + rowMargin) + ')'
         });
+        */
+        var els = createPiler({
+            transform: 'translate(' + (padding / 2 + locWidth * pos) +
+                ', ' + (locWidth + rowMargin) + ')'
+        });
+        this.el = els[0];
         this.pos = pos;
         var self = this;
         this.queue = [];
@@ -170,8 +177,10 @@ function asrsView(config) {
             }
         };
         this.load = function() {
+            els[1].setAttribute('fill', config.locUtilizationColors[0]);
         };
         this.unload = function() {
+            els[1].setAttribute('fill', config.locEmptyColor);
         };
     }
 
@@ -277,9 +286,11 @@ function asrsView(config) {
         + config.rowGroupMargin * (config.rowGroups - 1)));
 
     (function() {
+        /*
         var elDefs = makeSVG('defs', {});
         elDefs.appendChild(createPiler({id: 'asrs-piler'}));
         asrsView.appendChild(elDefs);
+        */
         for (var i = 0; i < config.rowGroups; i++) {
             asrsView.appendChild(createRowGroup({
                 transform: 'translate(0, ' + (((locWidth + rowMargin) * 3
