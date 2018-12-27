@@ -69,6 +69,16 @@
 	</body>
 	<script type="text/javascript">
 
+function estimateChartSizes() {
+	var w = $(window),
+		estHeight = (w.height() - 200) / 3 - 80,
+		qPieChart = $('#pie-chart'),
+		qLineChart = $('#line-chart');
+	if (estHeight < 300) estHeight = 300;
+	qPieChart.height(estHeight);
+	qLineChart.height(estHeight);
+}
+estimateChartSizes();
 var piechart = PieChart('pie-chart', '单数', {
 	PICKED: '已拣货',
 	SHIPPED: '已发货',
@@ -154,13 +164,7 @@ setInterval(function() {
 	if (connected) $.get('/consolidation/table.json', updateTableData);
 }, 5000);
 $(window).on('resize', function() {
-	var w = $(window),
-		estHeight = (w.height() - 200) / 3 - 80,
-		qPieChart = $('#pie-chart'),
-		qLineChart = $('#line-chart');
-	if (estHeight < 300) estHeight = 300;
-	qPieChart.height(estHeight);
-	qLineChart.height(estHeight);
+	estimateChartSizes();
 	piechart.rebind('pie-chart');
 	linechart.rebind('line-chart');
 	piechart.render();

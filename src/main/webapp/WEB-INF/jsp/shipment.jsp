@@ -76,6 +76,16 @@ var STATUS_MAP = {
 		WAITING: '等待',
 		UNFINISHED: '未完成'};
 
+function estimateChartSizes() {
+	var w = $(window),
+		estHeight = (w.height() - 200) / 3 - 80,
+		qBarChart = $('#bar-chart'),
+		qPieChart = $('#pie-chart');
+	if (estHeight < 300) estHeight = 300;
+	qPieChart.height(estHeight);
+	qBarChart.height(estHeight);
+}
+estimateChartSizes();
 var piechart = PieChart('pie-chart', '单数', STATUS_TRANS);
 var barchart = SingleBarChart('bar-chart', '等待时间', formatDuration);
 var datatable = DataTable('data-table', 5000, [
@@ -180,13 +190,7 @@ setInterval(function() {
 		$.get('/shipment/table.json', updateTableData);
 }, 5000);
 $(window).on('resize', function() {
-	var w = $(window),
-		estHeight = (w.height() - 200) / 3 - 80,
-		qBarChart = $('#bar-chart'),
-		qPieChart = $('#pie-chart');
-	if (estHeight < 300) estHeight = 300;
-	qPieChart.height(estHeight);
-	qBarChart.height(estHeight);
+	estimateChartSizes();
 	piechart.rebind('pie-chart');
 	piechart.render();
 	barchart.rebind('bar-chart');
