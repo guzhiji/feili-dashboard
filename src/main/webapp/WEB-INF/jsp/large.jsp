@@ -14,11 +14,11 @@
 		<script src="/asrs-view.js"></script>
 		<style>
 h1 {
-    text-align: center;
-    color: #a5c8e6;
-    font-size: 30px;
-    padding: 0;
-    margin: 10px 0;
+	text-align: center;
+	color: #a5c8e6;
+	font-size: 30px;
+	padding: 0;
+	margin: 10px 0;
 }
 svg#asrs-view {
 	margin: auto;
@@ -64,6 +64,16 @@ svg#asrs-view {
 		</div>
 		<script type="text/javascript">
 
+function estimateAsrsView() {
+	var w = $(window),
+		estAsrsH = (w.height() - 153) / 2 - 80,
+		estAsrsW = $('#dash-col-2').width(),
+		asrsSvg = $('#asrs-view');
+	asrsSvg.attr('width', estAsrsW);
+	asrsSvg.attr('height', estAsrsH < 200 ? 200 : estAsrsH);
+}
+estimateAsrsView();
+
 var asrs = asrsView({
 	viewId: 'asrs-view',
 	cols: 100,
@@ -77,6 +87,7 @@ var asrs = asrsView({
 	locEmptyColor: '#b8ddfc',
 	locUtilizationColors: colorRange('#4c91cb', '#ae4369', 10)
 });
+
 setInterval(function() {
 	asrs.store(Math.floor(Math.random() * 100), Math.floor(Math.random() * 32));
 }, 500);
@@ -92,15 +103,10 @@ for (var i in colors) {
 }
 
 $(window).on('resize', function() {
-	var w = $(window),
-		estAsrsH = (w.height()) / 2 - 80,
-		estAsrsW = $('#dash-col-2').width(),
-		asrsSvg = $('#asrs-view');
-	console.log('estimated size:', estAsrsW, estAsrsH);
-	asrsSvg.attr('width', estAsrsW);
-	asrsSvg.attr('height', estAsrsH);
+	estimateAsrsView();
 	asrs.resize();
 });
+
 		</script>
 	</body>
 </html>
