@@ -37,8 +37,7 @@ function asrsView(config) {
             "svgHref": xlinkns
         };
 
-    function makeSVG(tag, attributes) {
-        var elem = document.createElementNS(svgns, tag);
+    function setSVG(elem, attributes) {
         for (var attribute in attributes) {
             var name = (attribute in ATTR_MAP ? ATTR_MAP[attribute] : attribute);
             var value = attributes[attribute];
@@ -47,6 +46,11 @@ function asrsView(config) {
             else
                 elem.setAttribute(name, value);
         }
+    }
+
+    function makeSVG(tag, attributes) {
+        var elem = document.createElementNS(svgns, tag);
+        setSVG(elem, attributes);
         return elem;
     }
 
@@ -57,9 +61,11 @@ function asrsView(config) {
         viewWidth,
         asrsView = document.getElementById(config.viewId),
         asrsArray = [],
-        asrsPilers = [];
+        asrsPilers = [],
+        asrsRowGroups = [];
 
     function calcViewHeight() {
+        // 3 = 2 rows + 1 piler
         return (locWidth + rowMargin) * 3
             * config.rowPairsPerGroup * config.rowGroups
             + config.rowGroupMargin * (config.rowGroups - 1);
@@ -103,60 +109,113 @@ function asrsView(config) {
         }
     }
 
-    locWidth = calcLocWidth();
-    locCornerRadius = locWidth / 3 > 5 ? 5: (locWidth / 3);
-    viewWidth = calcViewWidth();
-    asrsView.setAttribute('width', viewWidth);
-    asrsView.setAttribute('height', calcViewHeight());
-
-    function createPiler(attrs) {
-        var d = 2 * 4 > locWidth / 2 ? 1 : 2;
-        var elPiler = makeSVG('g', attrs || {});
-        var elPilerInner = makeSVG('rect', {
-            x: 0,
-            y: 2 * d,
-            rx: 2,
-            ry: 2,
-            width: padding + locWidth * 2,
-            height: locWidth - 4 * d,
-            fill: config.pilerColor,
-            'stroke-width': 0
-        });
-        var elPilerMain = makeSVG('rect', {
-            x: padding / 2,
-            y: d,
-            rx: 2,
-            ry: 2,
-            width: locWidth * 2,
-            height: locWidth - 2 * d,
-            fill: config.pilerColor,
-            'stroke-width': 0
-        });
-        var elPilerLoc = makeSVG('rect', {
-            x: padding / 2,
-            y: 0,
-            rx: locCornerRadius,
-            ry: locCornerRadius,
-            width: locWidth,
-            height: locWidth,
-            fill: config.locEmptyColor,
-            stroke: config.locBorderColor,
-            'stroke-width': 1
-        });
-        elPiler.appendChild(elPilerInner);
-        elPiler.appendChild(elPilerMain);
-        elPiler.appendChild(elPilerLoc);
-        return [elPiler, elPilerLoc];
+    function setViewSize() {
+        locWidth = calcLocWidth();
+        locCornerRadius = locWidth / 3 > 5 ? 5: (locWidth / 3);
+        viewWidth = calcViewWidth();
+        asrsView.setAttribute('width', viewWidth);
+        asrsView.setAttribute('height', calcViewHeight());
     }
+    setViewSize();
 
     function AsrsPiler(pos) {
-        var els = createPiler({
-            transform: 'translate(' + (padding / 2 + locWidth * pos) +
-                ', ' + (locWidth + rowMargin) + ')'
-        });
-        this.el = els[0];
+
+        this.loaded = false;
+        function _resize() {
+            var x = padding / 2 + locWidth * pos;
+            var y = locWidth + rowMargin;
+            var d = 2 * 4 > locWidth / 2 ? 1 : 2;
+            this.elPilerAttrs = {transform: 'translate(' +
+                    x + ', ' + y + ')'};
+            this.elPilerInnerAttrs = {
+                x: 0,
+                y: 2 * d,
+                rx: 2,
+                ry: 2,
+                width: padding + locWidth * 2,
+                height: locWidth - 4 * d,
+                fill: config.pilerColor,
+                'stroke-width': 0
+            };
+            this.elPilerMainAttrs = {
+                x: padding / 2,
+                y: d,
+                rx: 2,
+                ry: 2,
+                width: locWidth * 2,
+                height: locWidth - 2 * d,
+                fill: config.pilerColor,
+                'stroke-width': 0
+            };
+            this.elPilerLocAttrs = {
+                x: padding / 2,
+                y: 0,
+                rx: locCornerRadius,
+                ry: locCornerRadius,
+                width: locWidth,
+                height: locWidth,
+                fill: this.loaded ?
+                    config.locUtilizationColors[0] :
+                    config.locEmptyColor,
+                stroke: config.locBorderColor,
+                'stroke-width': 1
+            };
+        }
+        _resize.call(this);
+
+        var el = makeSVG('g', this.elPilerAttrs);
+        this.elInner = makeSVG('rect', this.elPilerInnerAttrs);
+        this.elMain = makeSVG('rect', this.elPilerMainAttrs);
+        this.elLoc = makeSVG('rect', this.elPilerLocAttrs);
+        el.appendChild(this.elInner);
+        el.appendChild(this.elMain);
+        el.appendChild(this.elLoc);
+        this.el = el;
         this.pos = pos;
+
+        this.resize = function() {
+            _resize.call(this);
+            setSVG(this.el, this.elPilerAttrs);
+            setSVG(this.elInner, this.elPilerInnerAttrs);
+            setSVG(this.elMain, this.elPilerMainAttrs);
+            setSVG(this.elLoc, this.elPilerLocAttrs);
+        };
+
+        this.load = function() {
+            this.loaded = true;
+            this.elLoc.setAttribute('fill', config.locUtilizationColors[0]);
+        };
+
+        this.unload = function() {
+            this.loaded = false;
+            this.elLoc.setAttribute('fill', config.locEmptyColor);
+        };
+
         var self = this;
+        this.moveTo = function(pos, done) {
+            var opos = self.pos;
+            if (pos != opos) {
+                var animation = self.el.animate({transform: [
+                    'translate(' + (padding / 2 + locWidth * opos) + 'px,' +
+                        (locWidth + rowMargin) + 'px)',
+                    'translate(' + (padding / 2 + locWidth * pos) + 'px,' +
+                        (locWidth + rowMargin) + 'px)'
+                ]}, {
+                    duration: 2000,
+                    easing: 'ease-in-out'
+                });
+                animation.onfinish = function() {
+                    self.el.setAttribute('transform',
+                        'translate(' + (padding / 2 + locWidth * pos) +
+                            ', ' + (locWidth + rowMargin) + ')');
+                    self.pos = pos;
+                    if (done) done();
+                };
+            } else if (done) {
+                done();
+            }
+        };
+
         this.queue = [];
         this.currentWork = null;
         this.timer = setInterval(function() {
@@ -199,50 +258,40 @@ function asrsView(config) {
                 }
             }
         }, 100);
-        this.moveTo = function(pos, done) {
-            var opos = self.pos;
-            if (pos != opos) {
-                var animation = self.el.animate({transform: [
-                    'translate(' + (padding / 2 + locWidth * opos) + 'px,' +
-                        (locWidth + rowMargin) + 'px)',
-                    'translate(' + (padding / 2 + locWidth * pos) + 'px,' +
-                        (locWidth + rowMargin) + 'px)'
-                ]}, {
-                    duration: 2000,
-                    easing: 'ease-in-out'
-                });
-                animation.onfinish = function() {
-                    self.el.setAttribute('transform',
-                        'translate(' + (padding / 2 + locWidth * pos) +
-                            ', ' + (locWidth + rowMargin) + ')');
-                    self.pos = pos;
-                    if (done) done();
-                };
-            } else if (done) {
-                done();
-            }
-        };
-        this.load = function() {
-            els[1].setAttribute('fill', config.locUtilizationColors[0]);
-        };
-        this.unload = function() {
-            els[1].setAttribute('fill', config.locEmptyColor);
-        };
+
     }
 
-    function AsrsLoc(i, y, piler) {
-        this.el = makeSVG('rect', {
-            x: padding + i * locWidth,
-            y: y,
-            rx: locCornerRadius,
-            ry: locCornerRadius,
-            width: locWidth,
-            height: locWidth,
-            fill: config.locEmptyColor,
-            stroke: config.locBorderColor
-        });
+    function AsrsLoc(i, whichRow, piler) {
         this.piler = piler;
         this.value = 0;
+
+        function getLocColor(value) {
+            if (value == 0)
+                return config.locEmptyColor;
+            return config.locUtilizationColors[value - 1];
+        }
+
+        function _resize() {
+            this.elAttrs = {
+                x: padding + i * locWidth,
+                y: whichRow == 0 ? 0 : ((locWidth + rowMargin) * 2),
+                rx: locCornerRadius,
+                ry: locCornerRadius,
+                width: locWidth,
+                height: locWidth,
+                fill: getLocColor(this.value),
+                stroke: config.locBorderColor
+            };
+        }
+        _resize.call(this);
+
+        this.el = makeSVG('rect', this.elAttrs);
+
+        this.resize = function() {
+            _resize.call(this);
+            setSVG(this.el, this.elAttrs);
+        };
+
         this.blink = function() {
             this.el.animate({stroke: [
                 config.locBorderColor,
@@ -252,6 +301,7 @@ function asrsView(config) {
                 iterations: 8
             });
         };
+
         this.canAdd = function() {
             return this.value in config.locUtilizationColors;
         };
@@ -263,60 +313,100 @@ function asrsView(config) {
             }
             return false;
         };
+
         this.canRemove = function() {
             return this.value > 0;
         };
         this.remove = function() {
             if (this.canRemove()) {
                 this.value--;
-                if (this.value == 0) {
-                    this.el.setAttribute('fill', config.locEmptyColor);
-                } else {
-                    this.el.setAttribute('fill',
-                        config.locUtilizationColors[this.value - 1]);
-                }
+                this.el.setAttribute('fill', getLocColor(this.value));
                 return true;
             }
             return false;
         };
+
     }
 
-    function createRowPair(attrs) {
-        var row1 = [], row2 = [];
-        var elRowPair = makeSVG('g', attrs || {});
-        var piler = new AsrsPiler(0);
-        var elRowTrack = makeSVG('line', {
-            x1: 0,
-            y1: 1.5 * locWidth + rowMargin,
-            x2: viewWidth,
-            y2: 1.5 * locWidth + rowMargin,
-            stroke: config.trackColor,
-            'stroke-width': 1
-        });
-        elRowPair.appendChild(elRowTrack);
-        elRowPair.appendChild(piler.el);
-        for (var i = 0; i < config.cols; i++) {
-            var loc1 = new AsrsLoc(i, 0, piler),
-                loc2 = new AsrsLoc(i, (locWidth + rowMargin) * 2, piler);
-            elRowPair.appendChild(loc1.el);
-            elRowPair.appendChild(loc2.el);
-            row1.push(loc1);
-            row2.push(loc2);
+    function AsrsRowPair(n) {
+
+        function _resize() {
+            this.elAttrs = {transform: 'translate(0, ' +
+                ((locWidth + rowMargin) * n * 3) + ')'};
+            this.elRowTrackAttrs = {
+                x1: 0,
+                y1: 1.5 * locWidth + rowMargin,
+                x2: viewWidth,
+                y2: 1.5 * locWidth + rowMargin,
+                stroke: config.trackColor,
+                'stroke-width': 1
+            };
         }
-        asrsPilers.push(piler);
-        asrsArray.push(row1);
-        asrsArray.push(row2);
-        return elRowPair;
+        _resize.call(this);
+
+        (function() {
+            var row1 = [], row2 = [];
+            var piler = new AsrsPiler(0);
+            var el = makeSVG('g', this.elAttrs);
+            this.elRowTrack = makeSVG('line', this.elRowTrackAttrs);
+            el.appendChild(this.elRowTrack);
+            el.appendChild(piler.el);
+            for (var i = 0; i < config.cols; i++) {
+                var loc1 = new AsrsLoc(i, 0, piler),
+                    loc2 = new AsrsLoc(i, 1, piler);
+                el.appendChild(loc1.el);
+                el.appendChild(loc2.el);
+                row1.push(loc1);
+                row2.push(loc2);
+            }
+            this.el = el;
+            this.piler = piler;
+            this.row1 = row1;
+            this.row2 = row2;
+            asrsPilers.push(piler);
+            asrsArray.push(row1);
+            asrsArray.push(row2);
+        }.bind(this))();
+
+        this.resize = function() {
+            var i;
+            _resize.call(this);
+            setSVG(this.el, this.elAttrs);
+            setSVG(this.elRowTrack, this.elRowTrackAttrs);
+            this.piler.resize();
+            for (i = 0; i < this.row1.length; i++) this.row1[i].resize();
+            for (i = 0; i < this.row2.length; i++) this.row2[i].resize();
+        };
+
     }
 
-    function createRowGroup(attrs) {
-        var elGroup = makeSVG('g', attrs || {});
-        for (var i = 0; i < config.rowPairsPerGroup; i++) {
-            elGroup.appendChild(createRowPair({
-                transform: 'translate(0, ' + ((locWidth + rowMargin) * i * 3) + ')'
-            }));
+    function AsrsRowGroup(n) {
+        function _resize() {
+            this.elAttrs = {
+                transform: 'translate(0, ' + (((locWidth + rowMargin) * 3
+                * config.rowPairsPerGroup
+                + config.rowGroupMargin) * n) + ')'};
         }
-        return elGroup;
+        _resize.call(this);
+
+        this.el = makeSVG('g', this.elAttrs);
+
+        (function() {
+            var pairs = [];
+            for (var i = 0; i < config.rowPairsPerGroup; i++) {
+                var p = new AsrsRowPair(i);
+                this.el.appendChild(p.el);
+                pairs.push(p);
+            }
+            this.pairs = pairs;
+        }.bind(this))();
+
+        this.resize = function() {
+            _resize.call(this);
+            setSVG(this.el, this.elAttrs);
+            for (var i = 0; i < this.pairs.length; i++) this.pairs[i].resize();
+        };
+
     }
 
     function locate(x, y) {
@@ -325,13 +415,17 @@ function asrsView(config) {
         return null;
     }
 
+    function resize() {
+        setViewSize();
+        for (var i = 0; i < asrsRowGroups.length; i++)
+            asrsRowGroups[i].resize();
+    }
+
     (function() {
         for (var i = 0; i < config.rowGroups; i++) {
-            asrsView.appendChild(createRowGroup({
-                transform: 'translate(0, ' + (((locWidth + rowMargin) * 3
-                * config.rowPairsPerGroup
-                + config.rowGroupMargin) * i) + ')'
-            }));
+            var g = new AsrsRowGroup(i);
+            asrsView.appendChild(g.el);
+            asrsRowGroups.push(g);
         }
     })();
 
@@ -341,6 +435,7 @@ function asrsView(config) {
         getArray: function() { return asrsArray; },
         getPilers: function() { return asrsPilers; },
         locate: locate,
+        resize: resize,
         retrieve: function(x, y) {
             var loc = locate(x, y);
             if (loc != null) {

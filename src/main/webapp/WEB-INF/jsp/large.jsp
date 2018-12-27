@@ -38,7 +38,7 @@ svg#asrs-view {
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-6" id="dash-col-2">
 				<h1>立库概况</h1>
 				<hr />
 				<svg id="asrs-view" width="500" height="500"></svg>
@@ -91,6 +91,16 @@ for (var i in colors) {
 	document.getElementById('colors').appendChild(c);
 }
 
+$(window).on('resize', function() {
+	var w = $(window),
+		estAsrsH = (w.height()) / 2 - 80,
+		estAsrsW = $('#dash-col-2').width(),
+		asrsSvg = $('#asrs-view');
+	console.log('estimated size:', estAsrsW, estAsrsH);
+	asrsSvg.attr('width', estAsrsW);
+	asrsSvg.attr('height', estAsrsH);
+	asrs.resize();
+});
 		</script>
 	</body>
 </html>
