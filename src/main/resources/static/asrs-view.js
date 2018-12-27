@@ -52,9 +52,62 @@ function asrsView(config) {
 
     var padding = 10,
         rowMargin = 2,
-        locWidth = (config.viewWidth - padding * 2) / (config.cols + 1),
+        locWidth,
+        locCornerRadius,
+        viewWidth,
+        asrsView = document.getElementById(config.viewId),
         asrsArray = [],
         asrsPilers = [];
+
+    function calcViewHeight() {
+        return (locWidth + rowMargin) * 3
+            * config.rowPairsPerGroup * config.rowGroups
+            + config.rowGroupMargin * (config.rowGroups - 1);
+    }
+
+    function calcViewWidth() {
+        return locWidth * (config.cols + 1) + padding * 2;
+    }
+
+    function calcLocWidthByViewHeight(h) {
+        var noGroupMargin = h - config.rowGroupMargin * (config.rowGroups - 1);
+        var rowHeight = noGroupMargin / config.rowGroups / config.rowPairsPerGroup / 3;
+        return rowHeight - rowMargin;
+    }
+
+    function calcLocWidthByViewWidth(w) {
+        return (w - padding * 2) / (config.cols + 1);
+    }
+
+    function calcLocWidth() {
+        var w, h, lw1, lw2;
+        if (asrsView.hasAttribute('width')) {
+            w = asrsView.getAttribute('width');
+            lw1 = calcLocWidthByViewWidth(w);
+            if (asrsView.hasAttribute('height')) {
+                // both
+                h = asrsView.getAttribute('height');
+                lw2 = calcLocWidthByViewHeight(h);
+                return lw1 < lw2 ? lw1 : lw2;
+            } else {
+                // width only
+                return lw1;
+            }
+        } else if (asrsView.hasAttribute('height')) {
+            // height only
+            h = asrsView.getAttribute('height');
+            return calcLocWidthByViewHeight(h);
+        } else {
+            // no sizing properties => use default
+            return 10;
+        }
+    }
+
+    locWidth = calcLocWidth();
+    locCornerRadius = locWidth / 3 > 5 ? 5: (locWidth / 3);
+    viewWidth = calcViewWidth();
+    asrsView.setAttribute('width', viewWidth);
+    asrsView.setAttribute('height', calcViewHeight());
 
     function createPiler(attrs) {
         var d = 2 * 4 > locWidth / 2 ? 1 : 2;
@@ -82,8 +135,8 @@ function asrsView(config) {
         var elPilerLoc = makeSVG('rect', {
             x: padding / 2,
             y: 0,
-            rx: 5,
-            ry: 5,
+            rx: locCornerRadius,
+            ry: locCornerRadius,
             width: locWidth,
             height: locWidth,
             fill: config.locEmptyColor,
@@ -97,13 +150,6 @@ function asrsView(config) {
     }
 
     function AsrsPiler(pos) {
-        /*
-        this.el = makeSVG('use', {
-            svgHref: '#asrs-piler',
-            transform: 'translate(' + (padding / 2 + locWidth * pos) +
-                ', ' + (locWidth + rowMargin) + ')'
-        });
-        */
         var els = createPiler({
             transform: 'translate(' + (padding / 2 + locWidth * pos) +
                 ', ' + (locWidth + rowMargin) + ')'
@@ -188,8 +234,8 @@ function asrsView(config) {
         this.el = makeSVG('rect', {
             x: padding + i * locWidth,
             y: y,
-            rx: 5,
-            ry: 5,
+            rx: locCornerRadius,
+            ry: locCornerRadius,
             width: locWidth,
             height: locWidth,
             fill: config.locEmptyColor,
@@ -242,9 +288,10 @@ function asrsView(config) {
         var elRowTrack = makeSVG('line', {
             x1: 0,
             y1: 1.5 * locWidth + rowMargin,
-            x2: config.viewWidth,
+            x2: viewWidth,
             y2: 1.5 * locWidth + rowMargin,
-            stroke: config.trackColor
+            stroke: config.trackColor,
+            'stroke-width': 1
         });
         elRowPair.appendChild(elRowTrack);
         elRowPair.appendChild(piler.el);
@@ -278,19 +325,7 @@ function asrsView(config) {
         return null;
     }
 
-    var asrsView = document.getElementById(config.viewId);
-    asrsView.setAttribute('width', config.viewWidth);
-    asrsView.setAttribute('height',
-        ((locWidth + rowMargin) * 3
-        * config.rowPairsPerGroup * config.rowGroups
-        + config.rowGroupMargin * (config.rowGroups - 1)));
-
     (function() {
-        /*
-        var elDefs = makeSVG('defs', {});
-        elDefs.appendChild(createPiler({id: 'asrs-piler'}));
-        asrsView.appendChild(elDefs);
-        */
         for (var i = 0; i < config.rowGroups; i++) {
             asrsView.appendChild(createRowGroup({
                 transform: 'translate(0, ' + (((locWidth + rowMargin) * 3

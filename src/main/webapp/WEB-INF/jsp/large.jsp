@@ -12,33 +12,77 @@
 		<script src="/echarts.min.js"></script>
 		<script src="/common.js"></script>
 		<script src="/asrs-view.js"></script>
+		<style>
+h1 {
+    text-align: center;
+    color: #a5c8e6;
+    font-size: 30px;
+    padding: 0;
+    margin: 10px 0;
+}
+svg#asrs-view {
+	margin: auto;
+	display: block;
+}
+		</style>
 	</head>
 	<body>
-		<h1>看板</h1>
-
-		<svg id="asrs-view"></svg>
-
-		<div id="colors"></div>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						入库信息
+					</div>
+					<div class="panel-body">
+						abcabc
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<h1>立库概况</h1>
+				<hr />
+				<svg id="asrs-view" width="500" height="500"></svg>
+				<hr />
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						日常拣货订单总量
+					</div>
+					<div class="panel-body">
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div id="colors"></div>
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						出库信息
+					</div>
+					<div class="panel-body">
+					</div>
+				</div>
+			</div>
+		</div>
 		<script type="text/javascript">
 
 var asrs = asrsView({
 	viewId: 'asrs-view',
-	viewWidth: 1000, // pixels
 	cols: 100,
-	rowPairsPerGroup: 4,
-	rowGroups: 4,
+	rowPairsPerGroup: 6,
+	rowGroups: 1,
 	rowGroupMargin: 30, // pixels
 	pilerColor: '#0e83e4',
 	trackColor: '#0e83e4',
 	locBorderColor: '#112348',
 	locBlinkColor: '#fffc36',
 	locEmptyColor: '#b8ddfc',
-	locUtilizationColors: colorRange('#4c91cb', '#ae4369', 10),
-	locMaxUtilization: 10
+	locUtilizationColors: colorRange('#4c91cb', '#ae4369', 10)
 });
 setInterval(function() {
-	asrs.store(Math.floor(Math.random() * 10), Math.floor(Math.random() * 10));
+	asrs.store(Math.floor(Math.random() * 100), Math.floor(Math.random() * 32));
 }, 500);
+setInterval(function() {
+	asrs.retrieve(Math.floor(Math.random() * 100), Math.floor(Math.random() * 32));
+}, 200);
 
 var colors = colorRange('#4c91cb', '#ae4369', 10);
 for (var i in colors) {
