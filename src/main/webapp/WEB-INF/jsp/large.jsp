@@ -16,9 +16,12 @@
 h1 {
 	text-align: center;
 	color: #a5c8e6;
-	font-size: 30px;
+	font-size: 3.5em;
 	padding: 0;
 	margin: 10px 0;
+}
+.panel-primary > .panel-heading {
+	font-size: 2.5em;
 }
 svg#asrs-view {
 	margin: auto;
