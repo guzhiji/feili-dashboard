@@ -16,7 +16,7 @@
 		<h1>出货看板</h1>
 		<div class="row">
 			<div class="col-md-4">
-				<div class="panel panel-primary">
+				<div class="panel panel-success">
 					<div class="panel-heading">
 						出货订单状态
 					</div>
@@ -26,7 +26,7 @@
 				</div>
 			</div>
 			<div class="col-md-8">
-				<div class="panel panel-primary">
+				<div class="panel panel-success">
 					<div class="panel-heading">
 						预约号计时
 					</div>
@@ -38,7 +38,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<div class="panel panel-primary">
+				<div class="panel panel-success">
 					<div class="panel-heading">
 						台车信息
 					</div>

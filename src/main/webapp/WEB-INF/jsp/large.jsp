@@ -13,105 +13,13 @@
 		<script src="/common.js"></script>
 		<script src="/asrs-view.js"></script>
 		<style>
-body {
-	background-color: #030708;
-}
-h1 {
-	text-align: center;
-	color: #a5c8e6;
-	font-size: 3.5em;
-	padding: 0;
-	margin: 10px 0;
-	text-shadow: 5px 5px 15px #334d71;
-}
 
-.panel-primary {
-	background-color: #112a30;
-	border: 0;
-	border-radius: 10px;
-}
-.panel-primary > .panel-heading {
-	font-size: 2.5em;
-	text-shadow: 2px 2px 8px #0e2227;
-	background-color: #245c6b;
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
-}
-.panel-primary > .panel-body {
-	border-radius: 10px;
-	background-color: #112a30;
-}
 #block-pick-info > .panel-body,
 #block-in-kpi > .panel-body {
 	padding: 3em;
 
 }
 
-.panel-warning {
-	background-color: #0e172d;
-	color: #fff;
-	font-size: 2em;
-	border-width: 0;
-    box-shadow: 2px 2px 15px #3d296c;
-}
-.panel-warning > .panel-heading {
-	background-color: #081518;
-	border: 0;
-	color: #9ddfe7;
-}
-
-.panel-info {
-	background-color: #50382d;
-	border-color: #452617;
-	border-top-left-radius: 20px;
-	border-top-right-radius: 20px;
-}
-.panel-info > .panel-heading {
-	background-color: #452617;
-	border-color: #452617;
-	border-top-left-radius: 20px;
-	border-top-right-radius: 20px;
-	text-align: center;
-	font-size: 2.5em;
-	color: #ddd;
-	text-shadow: 2px 2px #684e4e;
-}
-.panel-info > .panel-footer {
-	background-color: #452617;
-	border-color: #452617;
-	font-size: 2em;
-}
-.panel-info > .panel-footer .list-group > .list-group-item {
-	border-radius: 10px;
-	margin: 15px 0;
-	padding: 2em;
-	box-shadow: 5px 5px 14px #310e0e;
-	background-color: #1e1414;
-	border-width: 0;
-	color: #ffddd4;
-}
-
-.panel-default {
-	background-color: #288faa;
-	border-color: #288faa;
-	border-radius: 15px;
-	border-width: 5px;
-	margin-top: 50px;
-}
-.panel-default > .panel-body {
-	padding: 5em;
-	background-color: #1b0008;
-	border-color: #288faa;
-	border-radius: 12px;
-}
-.panel-default > .panel-footer {
-	background-color: #288faa;
-	border-color: #288faa;
-	color: #aee8ff;
-	font-size: 2.5em;
-	text-align: center;
-	text-shadow: 2px 2px 16px #1f5d6b;
-}
 svg#asrs-view {
 	margin: auto;
 	display: block;
@@ -122,7 +30,7 @@ svg#asrs-view {
 	<body>
 		<div class="row">
 			<div class="col-md-3">
-				<div class="panel panel-primary" id="block-in-kpi">
+				<div class="panel panel-success" id="block-in-kpi">
 					<div class="panel-heading">
 						入库KPI
 					</div>
@@ -254,7 +162,7 @@ svg#asrs-view {
 						总容量：x箱 实箱数：y箱
 					</div>
 				</div>
-				<div class="panel panel-primary" id="block-pick-info">
+				<div class="panel panel-success" id="block-pick-info">
 					<div class="panel-heading">
 						拣货信息
 					</div>
@@ -320,7 +228,7 @@ svg#asrs-view {
 				</div>
 			</div>
 			<div class="col-md-3">
-				<div class="panel panel-primary" id="block-error-info">
+				<div class="panel panel-success" id="block-error-info">
 					<div class="panel-body">
 						<div class="panel panel-warning">
 							<div class="panel-heading">
