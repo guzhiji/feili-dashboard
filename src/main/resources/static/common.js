@@ -65,6 +65,33 @@ function deserializeMessage(str, valueFormatter) {
     return data;
 }
 
+function estimateBaseFontSize() {
+    var w = $(window),
+        width = w.width(),
+        f = $('h1'),
+        fh = f.height();
+    if (width >= 3800)
+        return (fh / 3.5).toFixed(1);
+    if (width >= 1900)
+        return (fh / 2.5).toFixed(1);
+    if (width >= 1200)
+        return (fh / 1.5).toFixed(1);
+    return fh;
+}
+
+function estimateChartFontSize() {
+    var w = $(window),
+        width = w.width(),
+        base = estimateBaseFontSize();
+    if (width >= 3800)
+        return (base * 1.8).toFixed(0);
+    if (width >= 1900)
+        return (base * 1).toFixed(0);
+    if (width >= 1200)
+        return (base * 0.8).toFixed(0);
+    return base * 0.5;
+}
+
 var PieChart = function(id, name, translatedLabels) {
     var chart = echarts.init(document.getElementById(id)),
         legends = [],
@@ -118,6 +145,23 @@ var PieChart = function(id, name, translatedLabels) {
         }
     }
 
+    function updateFontSize(size) {
+        chart.setOption({
+            legend: {
+                textStyle: {
+                    fontSize: size
+                }
+            },
+            series: [
+                {
+                    label: {
+                        fontSize: size
+                    }
+                }
+            ]
+        });
+    }
+
     chart.setOption(option);
     (function() {
         var initialData = {};
@@ -145,6 +189,7 @@ var PieChart = function(id, name, translatedLabels) {
                 series: [{data: data}]
             });
         },
+        updateFontSize: updateFontSize,
         update: update
     };
 };
@@ -296,6 +341,35 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
         });
     }
 
+    function updateFontSize(size) {
+        chart.setOption({
+            legend: {
+                textStyle: {
+                    fontSize: size
+                }
+            },
+            tooltip: {
+                textStyle: {
+                    fontSize: size
+                }
+            },
+            xAxis: [
+                {
+                    axisLabel: {
+                        fontSize: size
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    axisLabel: {
+                        fontSize: size
+                    }
+                }
+            ]
+        });
+    }
+
     if (xFormatter)
         option.xAxis[0].axisLabel.formatter = xFormatter;
     chart.setOption(option);
@@ -316,6 +390,7 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
                 series: data
             });
         },
+        updateFontSize: updateFontSize,
         update: update,
         load: function(values) {
             initData();
@@ -410,6 +485,31 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
 
     chart.setOption(option);
 
+    function updateFontSize(size) {
+        chart.setOption({
+            legend: {
+                textStyle: {
+                    fontSize: size
+                }
+            },
+            tooltip: {
+                textStyle: {
+                    fontSize: size
+                }
+            },
+            yAxis: {
+                axisLabel: {
+                    fontSize: size
+                }
+            },
+            xAxis: {
+                axisLabel: {
+                    fontSize: size
+                }
+            }
+        });
+    }
+
     function renderData() {
         chart.setOption({
             xAxis: {data: labels},
@@ -430,6 +530,7 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
             data = [];
             renderData();
         },
+        updateFontSize: updateFontSize,
         load: function(values) {
             bars = [];
             labels = [];

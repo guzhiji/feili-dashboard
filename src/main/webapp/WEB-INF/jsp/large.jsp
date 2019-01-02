@@ -14,10 +14,23 @@
 		<script src="/asrs-view.js"></script>
 		<style>
 
-#block-pick-info > .panel-body,
-#block-in-kpi > .panel-body {
-	padding: 3em;
-
+@media screen and (min-width: 3800px) {
+	#block-pick-info > .panel-body,
+	#block-in-kpi > .panel-body {
+		padding: 3em;
+	}
+}
+@media screen and (min-width: 1900px) and (max-width: 3799px) {
+	#block-pick-info > .panel-body,
+	#block-in-kpi > .panel-body {
+		padding: 2em;
+	}
+}
+@media screen and (min-width: 1000px) and (max-width: 1899px) {
+	#block-pick-info > .panel-body,
+	#block-in-kpi > .panel-body {
+		padding: 2em;
+	}
 }
 
 svg#asrs-view {
@@ -271,43 +284,19 @@ svg#asrs-view {
 					<div class="panel-body">
 						<div id="pie-out-info" style="height: 400px;"></div>
 						<script>
-	var pieOutInfo = echarts.init(document.getElementById('pie-out-info'));
-	pieOutInfo.setOption({
-		tooltip: {
-			trigger: 'item',
-			formatter: "{a} <br/>{b}: {c} ({d}%)"
-		},
-		legend: {
-			textStyle: {
-				color: COLOR_TEXT,
-				fontSize: 25
-			},
-			// x: 'left',
-			data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
-		},
-		series: [
-			{
-				name: '访问来源',
-				type: 'pie',
-				radius: '50%',
-				label: {
-					color: COLOR_TEXT,
-					fontSize: 25
-				},
-				labelLine: {
-					normal: {
-						show: false
-					}
-				},
-				data: [
-					{ value: 335, name: '直接访问' },
-					{ value: 310, name: '邮件营销' },
-					{ value: 234, name: '联盟广告' },
-					{ value: 135, name: '视频广告' },
-					{ value: 1548, name: '搜索引擎' }
-				]
-			}
-		]
+	var pieOutInfo = PieChart('pie-out-info', '来源', {
+		direct: '直接访问',
+		mail: '邮件营销',
+		allies : '联盟广告',
+		video: '视频广告',
+		search: '搜索引擎'
+	});
+	pieOutInfo.update({
+		direct: 335,
+		mail: 310,
+		allies: 234,
+		video: 135,
+		search: 1558
 	});
 						</script>
 					</div>
@@ -335,7 +324,7 @@ function estimateAsrsView() {
 		estAsrsW = $('#block-asrs-view .panel-body').width(),
 		asrsSvg = $('#asrs-view');
 	asrsSvg.attr('width', estAsrsW);
-	asrsSvg.attr('height', estAsrsH < 200 ? 200 : estAsrsH);
+	asrsSvg.attr('height', estAsrsH < 600 ? 600 : estAsrsH);
 }
 estimateAsrsView();
 
@@ -361,8 +350,14 @@ setInterval(function() {
 }, 1000);
 
 $(window).on('resize', function() {
+
 	estimateAsrsView();
 	asrs.resize();
+
+	pieOutInfo.rebind('pie-out-info');
+	pieOutInfo.updateFontSize(estimateChartFontSize());
+
+	pieOutInfo.render();
 });
 
 		</script>

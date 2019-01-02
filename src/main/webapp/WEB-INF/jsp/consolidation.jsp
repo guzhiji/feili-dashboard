@@ -119,6 +119,10 @@ function updateTableData(values) {
 	}
 }
 
+var chartFontSize = estimateChartFontSize();
+piechart.updateFontSize(chartFontSize);
+linechart.updateFontSize(chartFontSize);
+
 var connected = false;
 var ws = null;
 function connect() {
@@ -164,9 +168,16 @@ setInterval(function() {
 	if (connected) $.get('/consolidation/table.json', updateTableData);
 }, 5000);
 $(window).on('resize', function() {
+
 	estimateChartSizes();
+
 	piechart.rebind('pie-chart');
 	linechart.rebind('line-chart');
+
+	var chartFontSize = estimateChartFontSize();
+	piechart.updateFontSize(chartFontSize);
+	linechart.updateFontSize(chartFontSize);
+
 	piechart.render();
 	linechart.render();
 });
