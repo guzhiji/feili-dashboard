@@ -217,15 +217,20 @@ $('#menu-theme-blue').on('click', function() {
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.addClass('panel-primary');
+	$('#context-menu').css('display', 'none');
+	return false;
 });
 $('#menu-theme-green').on('click', function() {
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.addClass('panel-success');
+	$('#context-menu').css('display', 'none');
+	return false;
 });
 $('#menu-refresh').on('click', function() {
 	window.location.reload();
+	return false;
 });
 $("body")
 	.on('click', function() {
