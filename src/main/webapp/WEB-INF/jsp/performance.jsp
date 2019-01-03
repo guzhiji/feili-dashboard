@@ -184,6 +184,11 @@ function loadHourlyData() {
     });
 }
 
+var chartFontSize = estimateChartFontSize();
+realtimechart.updateFontSize(chartFontSize);
+minutelychart.updateFontSize(chartFontSize);
+hourlychart.updateFontSize(chartFontSize);
+
 var connected = false;
 var ws = null;
 function connect() {
@@ -265,6 +270,12 @@ $(window).on('resize', function() {
     realtimechart.rebind('realtime-line-chart');
     minutelychart.rebind('minutely-line-chart');
     hourlychart.rebind('hourly-line-chart');
+
+    var chartFontSize = estimateChartFontSize();
+    realtimechart.updateFontSize(chartFontSize);
+    minutelychart.updateFontSize(chartFontSize);
+    hourlychart.updateFontSize(chartFontSize);
+
     realtimechart.render();
     minutelychart.render();
     hourlychart.render();

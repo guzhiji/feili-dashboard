@@ -49,50 +49,6 @@ svg#asrs-view {
 					</div>
 					<div class="panel-body">
 						<div id="line-in-kpi" style="height: 500px;"></div>
-						<script>
-		var lineInKpi = echarts.init(document.getElementById('line-in-kpi'));
-		lineInKpi.setOption({
-			xAxis: {
-				splitLine: {
-					lineStyle: {
-						color: [COLOR_DARK_LINE]
-					}
-				},
-				axisLine: {
-					lineStyle: {
-						color: COLOR_DARK_LINE
-					}
-				},
-				axisLabel: {
-					color: COLOR_TEXT,
-					fontSize: 25
-				},
-				type: 'category',
-				data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-			},
-			yAxis: {
-				type: 'value',
-				splitLine: {
-					lineStyle: {
-						color: [COLOR_DARK_LINE]
-					}
-				},
-				axisLine: {
-					lineStyle: {
-						color: COLOR_DARK_LINE
-					}
-				},
-				axisLabel: {
-					color: COLOR_TEXT,
-					fontSize: 25
-				}
-			},
-			series: [{
-				data: [820, 932, 901, 934, 1290, 1330, 1320],
-				type: 'line'
-			}]
-		});
-						</script>
 					</div>
 				</div>
 				<div class="panel panel-info" id="block-in-info">
@@ -101,50 +57,6 @@ svg#asrs-view {
 					</div>
 					<div class="panel-body">
 						<div id="line-in-info" style="height: 400px;"></div>
-						<script>
-		var lineInInfo = echarts.init(document.getElementById('line-in-info'));
-		lineInInfo.setOption({
-			xAxis: {
-				splitLine: {
-					lineStyle: {
-						color: [COLOR_DARK_LINE]
-					}
-				},
-				axisLine: {
-					lineStyle: {
-						color: COLOR_DARK_LINE
-					}
-				},
-				axisLabel: {
-					color: COLOR_TEXT,
-					fontSize: 25
-				},
-				type: 'category',
-				data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-			},
-			yAxis: {
-				type: 'value',
-				splitLine: {
-					lineStyle: {
-						color: [COLOR_DARK_LINE]
-					}
-				},
-				axisLine: {
-					lineStyle: {
-						color: COLOR_DARK_LINE
-					}
-				},
-				axisLabel: {
-					color: COLOR_TEXT,
-					fontSize: 25
-				}
-			},
-			series: [{
-				data: [820, 932, 901, 934, 1290, 1330, 1320],
-				type: 'line'
-			}]
-		});
-						</script>
 					</div>
 					<div class="panel-footer">
 						<div class="list-group">
@@ -184,6 +96,12 @@ svg#asrs-view {
 						<script>
 	var barPickInfo = echarts.init(document.getElementById('bar-pick-info'));
 	barPickInfo.setOption({
+		legend: {
+			textStyle: {
+				color: [COLOR_TEXT],
+				fontSize: 25
+			}
+		},
 		xAxis: [
 			{
 				splitLine: {
@@ -225,12 +143,12 @@ svg#asrs-view {
 		],
 		series: [
 			{
-				name: '直接访问',
+				name: '直接',
 				type: 'bar',
 				data: [10, 52, 200, 334, 390, 330, 220]
 			},
 			{
-				name: '直接访问2',
+				name: '间接',
 				type: 'bar',
 				data: [10, 52, 200, 334, 390, 330, 220]
 			}
@@ -283,22 +201,6 @@ svg#asrs-view {
 					</div>
 					<div class="panel-body">
 						<div id="pie-out-info" style="height: 400px;"></div>
-						<script>
-	var pieOutInfo = PieChart('pie-out-info', '来源', {
-		direct: '直接访问',
-		mail: '邮件营销',
-		allies : '联盟广告',
-		video: '视频广告',
-		search: '搜索引擎'
-	});
-	pieOutInfo.update({
-		direct: 335,
-		mail: 310,
-		allies: 234,
-		video: 135,
-		search: 1558
-	});
-						</script>
 					</div>
 					<div class="panel-footer">
 						<div class="list-group">
@@ -317,6 +219,53 @@ svg#asrs-view {
 			</div>
 		</div>
 		<script type="text/javascript">
+
+var estimatedChartFontSize = estimateChartFontSize();
+var pieOutInfo = PieChart('pie-out-info', '来源', {
+	direct: '直接访问',
+	mail: '邮件营销',
+	allies : '联盟广告',
+	video: '视频广告',
+	search: '搜索引擎'
+});
+pieOutInfo.update({
+	direct: 335,
+	mail: 310,
+	allies: 234,
+	video: 135,
+	search: 1558
+});
+pieOutInfo.updateFontSize(estimatedChartFontSize);
+var lineInKpi = LineChart('line-in-kpi', 10, '{value}', null, true, {
+	A: 'A'
+});
+(function () {
+	var data = [];
+	for (var i = 10; i >= 0; i--) {
+		data.push({
+			time: new Date().getTime() - 3600000 * i,
+			data: { A: Math.random() }
+		});
+	}
+	lineInKpi.load(data);
+	lineInKpi.updateFontSize(estimatedChartFontSize);
+})();
+var lineInInfo = LineChart('line-in-info', 10, '{value}', null, true, {
+	A: 'A',
+	B: 'B',
+	C: 'C'
+});
+(function () {
+	var data = [];
+	for (var i = 10; i >= 0; i--) {
+		data.push({
+			time: new Date().getTime() - 3600000 * i,
+			data: { A: Math.random(), B: Math.random(), C: Math.random() }
+		});
+	}
+	lineInInfo.load(data);
+	lineInInfo.updateFontSize(estimatedChartFontSize);
+})();
 
 function estimateAsrsView() {
 	var w = $(window),
@@ -355,9 +304,17 @@ $(window).on('resize', function() {
 	asrs.resize();
 
 	pieOutInfo.rebind('pie-out-info');
-	pieOutInfo.updateFontSize(estimateChartFontSize());
+	lineInKpi.rebind('line-in-kpi');
+	lineInInfo.rebind('line-in-info');
+
+	var estimatedChartFontSize = estimateChartFontSize();
+	pieOutInfo.updateFontSize(estimatedChartFontSize);
+	lineInKpi.updateFontSize(estimatedChartFontSize);
+	lineInInfo.updateFontSize(estimatedChartFontSize);
 
 	pieOutInfo.render();
+	lineInKpi.render();
+	lineInInfo.render();
 });
 
 		</script>

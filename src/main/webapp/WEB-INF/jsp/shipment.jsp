@@ -64,6 +64,12 @@
 		<div id="error-message" class="alert alert-danger">
 			服务器连接错误
 		</div>
+		<ul class="dropdown-menu" id="context-menu">
+			<li><a href="#" id="menu-theme-blue">蓝色风格</a></li>
+			<li><a href="#" id="menu-theme-green">绿色风格</a></li>
+			<li role="separator" class="divider"></li>
+			<li><a href="#" id="menu-refresh">刷新</a></li>
+		</ul>
 	</body>
 	<script type="text/javascript">
 
@@ -206,5 +212,32 @@ $(window).on('resize', function() {
 	piechart.render();
 	barchart.render();
 });
+$('#menu-theme-blue').on('click', function() {
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.addClass('panel-primary');
+});
+$('#menu-theme-green').on('click', function() {
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.addClass('panel-success');
+});
+$('#menu-refresh').on('click', function() {
+	window.location.reload();
+});
+$("body")
+	.on('click', function() {
+		$('#context-menu').css('display', 'none');
+	})
+	.on('contextmenu', function(e) {
+		$('#context-menu').css({
+			display: 'block',
+			left: e.pageX,
+			top: e.pageY
+		});
+		return false;
+	});
 	</script>
 </html>
