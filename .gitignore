@@ -1,4 +1,7 @@
 /target/
+/log/
+pid
+config.properties
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
