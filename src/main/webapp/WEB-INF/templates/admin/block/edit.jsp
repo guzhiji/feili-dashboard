@@ -5,7 +5,14 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
-        <title>test</title>
+        <title>
+            <c:if test="${mode == 'create'}">
+                看板单元块：创建
+            </c:if>
+            <c:if test="${mode == 'modify'}">
+                看板单元块：${entity.name}
+            </c:if>
+        </title>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -14,9 +21,19 @@
         <div class="container">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    看板单元块
+                    <c:if test="${mode == 'create'}">
+                        看板单元块：创建
+                    </c:if>
+                    <c:if test="${mode == 'modify'}">
+                        看板单元块：${entity.name}（#${entity.id}）
+                    </c:if>
                 </div>
                 <div class="panel-body">
+
+                    <c:if test="${flashMessage == 'block-no-data'}">
+                        <div class="alert alert-danger flash-message">请选择数据源或数据推送源</div>
+                    </c:if>
+
                     <form class="form-horizontal" id="form-block" method="POST"
                         action="${saveUrl}">
                         <div class="form-group">
@@ -60,7 +77,7 @@
                             <label for="select-data-renderer" class="col-md-2 control-label">数据展示方式</label>
                             <div class="col-md-10">
                                 <select name="dataRenderer" id="select-data-renderer" class="form-control">
-                                    <option>-</option>
+                                    <option value="">-</option>
                                     <c:forEach items="${dataRenderers}" var="dr">
                                         <c:choose>
                                             <c:when test="${dr == entity.dataRenderer}">
@@ -79,7 +96,7 @@
                             <label for="select-data-source" class="col-md-2 control-label">数据源</label>
                             <div class="col-md-10">
                                 <select name="dataSourceId" id="select-data-source" class="form-control">
-                                    <option>-</option>
+                                    <option value="">-</option>
                                     <c:forEach items="${dataSources}" var="ds">
                                         <c:choose>
                                             <c:when test="${ds.id == entity.dataSource.id}">
@@ -98,7 +115,7 @@
                             <label for="select-data-preprocessor" class="col-md-2 control-label">数据预处理方式</label>
                             <div class="col-md-10">
                                 <select name="dataPreprocessor" id="select-data-preprocessor" class="form-control">
-                                    <option>-</option>
+                                    <option value="">-</option>
                                     <c:forEach items="${dataPreprocessors}" var="dp">
                                         <c:choose>
                                             <c:when test="${dp == entity.dataPreprocessor}">
@@ -117,7 +134,7 @@
                             <label for="select-msg-notifier" class="col-md-2 control-label">数据推送源</label>
                             <div class="col-md-10">
                                 <select name="messageNotifierId" id="select-msg-notifier" class="form-control">
-                                    <option>-</option>
+                                    <option value="">-</option>
                                     <c:forEach items="${messageNotifiers}" var="mn">
                                         <c:choose>
                                             <c:when test="${mn.id == entity.messageNotifier.id}">
@@ -136,7 +153,7 @@
                             <label for="select-msg-handler" class="col-md-2 control-label">数据推送接收器</label>
                             <div class="col-md-10">
                                 <select name="messageHandler" id="select-msg-handler" class="form-control">
-                                    <option>-</option>
+                                    <option value="">-</option>
                                     <c:forEach items="${messageHandlers}" var="mh">
                                         <c:choose>
                                             <c:when test="${mh == entity.messageHandler}">
@@ -154,7 +171,12 @@
                     </form>
                 </div>
                 <div class="panel-footer">
-                    <button type="button" id="btn-save" class="btn btn-primary">创建单元块</button>
+                    <c:if test="${mode == 'create'}">
+                        <button type="button" id="btn-save" class="btn btn-primary">创建单元块</button>
+                    </c:if>
+                    <c:if test="${mode == 'modify'}">
+                        <button type="button" id="btn-save" class="btn btn-primary">修改单元块</button>
+                    </c:if>
                     <a class="btn btn-default" href="/admin/dashboards/${parent.id}/blocks">返回</a>
                 </div>
             </div>
@@ -163,6 +185,9 @@
 $('#btn-save').on('click', function() {
     $('#form-block').submit();
 });
+setTimeout(function() {
+    $('.flash-message').fadeOut();
+}, 3000);
         </script>
     </body>
 </html>

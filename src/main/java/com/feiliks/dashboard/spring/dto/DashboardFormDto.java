@@ -2,11 +2,24 @@ package com.feiliks.dashboard.spring.dto;
 
 import com.feiliks.dashboard.spring.entities.DashboardEntity;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+
 public class DashboardFormDto {
     private Long id;
+
+    @NotNull(message = "dashboard-pathkey-empty")
+    @NotBlank(message = "dashboard-pathkey-empty")
     private String pathKey;
+
+    @NotNull(message = "dashboard-name-empty")
+    @NotBlank(message = "dashboard-name-empty")
     private String name;
+
     private boolean active;
+
+    @NotNull(message = "dashboard-tpl-empty")
     private Long templateId;
 
     public DashboardEntity toEntity() {

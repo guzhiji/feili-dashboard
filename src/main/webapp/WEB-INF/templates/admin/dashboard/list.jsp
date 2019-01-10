@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
-        <title>test</title>
+        <title>看板</title>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -23,7 +23,23 @@
                     看板
                 </div>
                 <div class="panel-body">
-            
+
+                    <c:if test="${flashMessage == 'dashboard-saved'}">
+                        <div class="alert alert-success flash-message">看板已经保存</div>
+                    </c:if>
+                    <c:if test="${flashMessage == 'dashboard-deleted'}">
+                        <div class="alert alert-success flash-message">看板已经删除</div>
+                    </c:if>
+                    <c:if test="${flashMessage == 'dashboard-activated'}">
+                        <div class="alert alert-success flash-message">看板已经开启</div>
+                    </c:if>
+                    <c:if test="${flashMessage == 'dashboard-deactivated'}">
+                        <div class="alert alert-success flash-message">看板已经关闭</div>
+                    </c:if>
+                    <c:if test="${flashMessage == 'dashboard-not-activated'}">
+                        <div class="alert alert-danger flash-message">看板开启失败</div>
+                    </c:if>
+
                     <table class="table table-hover">
                         <thead>
                             <tr>
@@ -87,6 +103,7 @@
                     <div class="modal-body">
                     </div>
                     <div class="modal-footer">
+                        <form id="dialog-confirm-form" method="POST"></form>
                         <button type="button" class="btn btn-danger" id="dialog-confirm-btn"></button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                     </div>
@@ -103,16 +120,17 @@ $('.action-btn').on('click', function() {
         dialog = $('#dialog-confirm');
     dialog.find('.modal-title').text(desc);
     dialog.find('.modal-body').text(msg);
-    dialog.find('#dialog-confirm-btn')
-        .text(name)
+    dialog.find('#dialog-confirm-form').attr('action', url);
+    dialog.find('#dialog-confirm-btn').text(name)
         .off('click')
         .on('click', function() {
-            $.post(url, function() {
-                location.reload();
-            });
+            dialog.find('#dialog-confirm-form').submit();
         });
     dialog.modal();
 });
+setTimeout(function() {
+    $('.flash-message').fadeOut();
+}, 3000);
         </script>
     </body>
 </html>

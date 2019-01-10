@@ -2,10 +2,20 @@ package com.feiliks.dashboard.spring.dto;
 
 import com.feiliks.dashboard.spring.entities.TemplateEntity;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+
 public class TemplateDto {
 
     private Long id;
+
+    @NotNull(message = "template-name-empty")
+    @NotBlank(message = "template-name-empty")
     private String name;
+
+    @NotNull(message = "template-internalname-empty")
+    @NotBlank(message = "template-internalname-empty")
     private String internalName;
 
     public TemplateDto() {

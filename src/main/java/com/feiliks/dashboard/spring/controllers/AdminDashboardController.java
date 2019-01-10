@@ -11,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.*;
 
 
@@ -56,23 +59,38 @@ public class AdminDashboardController {
     }
 
     @PostMapping
-    public String createDashboard(DashboardFormDto formData) {
+    public String createDashboard(
+            @Valid DashboardFormDto formData,
+            BindingResult vresult,
+            RedirectAttributes ratts) {
+
+        if (vresult.hasErrors()) {
+            FieldError fe = vresult.getFieldError();
+            if (fe != null)
+                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+            return "redirect:/admin/dashboards/new";
+        }
+
         TemplateEntity template = tplRepo.findById(formData.getTemplateId())
                 .orElse(null);
-        if (template != null) {
-
-            DashboardEntity entity = formData.toEntity();
-            entity.setId(null);
-            entity.setTemplate(template);
-            dashboardRepo.save(entity);
-
+        if (template == null) {
+            ratts.addFlashAttribute("flashMessage", "dashboard-tpl-empty");
+            return "redirect:/admin/dashboards/new";
         }
+
+        DashboardEntity entity = formData.toEntity();
+        entity.setId(null);
+        entity.setTemplate(template);
+        dashboardRepo.save(entity);
+        ratts.addFlashAttribute("flashMessage", "dashboard-saved");
         return "redirect:/admin/dashboards";
+
     }
 
     @GetMapping("/new")
     public ModelAndView showDashboardEditor() {
         Map<String, Object> data = new HashMap<>();
+        data.put("mode", "create");
         data.put("saveUrl", "/admin/dashboards");
         data.put("templates", tplRepo.findAll());
         return new ModelAndView("admin/dashboard/edit", data);
@@ -85,6 +103,7 @@ public class AdminDashboardController {
         DashboardEntity entity = result.orElseThrow(NotFoundException::new);
 
         Map<String, Object> data = new HashMap<>();
+        data.put("mode", "modify");
         data.put("saveUrl", "/admin/dashboards/" + id);
         data.put("entity", entity);
         data.put("templates", tplRepo.findAll());
@@ -95,9 +114,18 @@ public class AdminDashboardController {
     @PostMapping("/{id}")
     public String modifyDashboard(
             @PathVariable long id,
-            DashboardFormDto formData,
+            @Valid DashboardFormDto formData,
+            BindingResult vresult,
             RedirectAttributes ratts)
             throws NotFoundException {
+
+        if (vresult.hasErrors()) {
+            FieldError fe = vresult.getFieldError();
+            if (fe != null)
+                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+            return "redirect:/admin/dashboards/" + id;
+        }
+
         DashboardEntity entity = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
         formData.toEntity(entity);
@@ -105,12 +133,14 @@ public class AdminDashboardController {
 
         TemplateEntity template = tplRepo.findById(formData.getTemplateId())
                 .orElse(null);
-        if (template != null) {
-
-            entity.setTemplate(template);
-            dashboardRepo.save(entity);
-            ratts.addFlashAttribute("success", "dashboard " + id + " saved");
+        if (template == null) {
+            ratts.addFlashAttribute("flashMessage", "dashboard-tpl-empty");
+            return "redirect:/admin/dashboards/" + id;
         }
+        entity.setTemplate(template);
+
+        dashboardRepo.save(entity);
+        ratts.addFlashAttribute("flashMessage", "dashboard-saved");
         return "redirect:/admin/dashboards";
     }
 
@@ -133,23 +163,33 @@ public class AdminDashboardController {
     @PostMapping("/{id}/blocks")
     public String createBlock(
             @PathVariable long id,
-            BlockFormDto data)
+            BlockFormDto formData,
+            RedirectAttributes ratts)
             throws NotFoundException {
         DashboardEntity parent = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
 
-        DataSourceEntity dataSourceEntity = dataSourceRepo.findById(
-                data.getDataSourceId()).orElse(null);
-        MessageNotifierEntity notifierEntity = notifierRepo.findById(
-                data.getMessageNotifierId()).orElse(null);
+        DataSourceEntity dataSourceEntity = null;
+        MessageNotifierEntity notifierEntity = null;
+        if (formData.getDataSourceId() != null)
+            dataSourceEntity = dataSourceRepo.findById(
+                    formData.getDataSourceId()).orElse(null);
+        if (formData.getMessageNotifierId() != null)
+            notifierEntity = notifierRepo.findById(
+                    formData.getMessageNotifierId()).orElse(null);
+        if (dataSourceEntity == null && notifierEntity == null) {
+            ratts.addFlashAttribute("flashMessage", "block-no-data");
+            return "redirect:/admin/dashboards/" + id + "/blocks/new";
+        }
 
-        BlockEntity entity = data.toEntity();
+        BlockEntity entity = formData.toEntity();
         entity.setDashboard(parent);
         entity.setDataSource(dataSourceEntity);
         entity.setMessageNotifier(notifierEntity);
 
         parent.getBlocks().add(entity);
         dashboardRepo.save(parent);
+        ratts.addFlashAttribute("flashMessage", "block-saved");
 
         return "redirect:/admin/dashboards/" + id + "/blocks";
     }
@@ -161,6 +201,7 @@ public class AdminDashboardController {
                 .orElseThrow(NotFoundException::new);
 
         Map<String, Object> data = new HashMap<>();
+        data.put("mode", "create");
         data.put("parent", entity);
         data.put("saveUrl", "/admin/dashboards/" + id + "/blocks");
 
@@ -173,15 +214,20 @@ public class AdminDashboardController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteDashboard(@PathVariable long id)
+    public String deleteDashboard(
+            @PathVariable long id,
+            RedirectAttributes ratts)
             throws NotFoundException {
-        deactivateDashboard(id);
+        deactivateDashboard(id, ratts);
         dashboardRepo.deleteById(id);
+        ratts.addFlashAttribute("flashMessage", "dashboard-deleted");
         return "redirect:/admin/dashboards";
     }
 
     @PostMapping("/{id}/activate")
-    public String activateDashboard(@PathVariable long id)
+    public String activateDashboard(
+            @PathVariable long id,
+            RedirectAttributes ratts)
             throws NotFoundException {
         DashboardEntity entity = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -208,16 +254,20 @@ public class AdminDashboardController {
             }
             entity.setActive(true);
             dashboardRepo.save(entity);
+            ratts.addFlashAttribute("flashMessage", "dashboard-activated");
         } catch (TaskActivationException e) {
             for (String javaClass : activated)
                 dashboardTaskService.deactivate(javaClass);
+            ratts.addFlashAttribute("flashMessage", "dashboard-not-activated");
         }
 
-        return "redirect:/admin/dashboards/" + id;
+        return "redirect:/admin/dashboards";
     }
 
     @PostMapping("/{id}/deactivate")
-    public String deactivateDashboard(@PathVariable long id)
+    public String deactivateDashboard(
+            @PathVariable long id,
+            RedirectAttributes ratts)
             throws NotFoundException {
         DashboardEntity entity = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -243,7 +293,8 @@ public class AdminDashboardController {
         for (String taskJavaClass : tasksToStop)
             dashboardTaskService.deactivate(taskJavaClass);
 
-        return "redirect:/admin/dashboards/" + id;
+        ratts.addFlashAttribute("flashMessage", "dashboard-deactivated");
+        return "redirect:/admin/dashboards";
     }
 
 }

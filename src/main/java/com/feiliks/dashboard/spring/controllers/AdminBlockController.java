@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class AdminBlockController {
         Map<String, Object> data = new HashMap<>();
         data.put("entity", entity);
         data.put("parent", entity.getDashboard());
+        data.put("mode", "modify");
         data.put("saveUrl", "/admin/blocks/" + id);
         String[] dataRenderers = {
                 "pie", "line", "bar"
@@ -55,25 +57,49 @@ public class AdminBlockController {
     @PostMapping("/{id}")
     public String modifyBlock(
             @PathVariable long id,
-            BlockFormDto data)
+            BlockFormDto formData,
+            RedirectAttributes ratts)
             throws NotFoundException {
 
         BlockEntity entity = blockRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
+        long dashboardId = entity.getDashboard().getId();
 
-        DataSourceEntity dataSourceEntity = dataSourceRepo.findById(
-                data.getDataSourceId()).orElse(null);
-        MessageNotifierEntity notifierEntity = notifierRepo.findById(
-                data.getMessageNotifierId()).orElse(null);
+        DataSourceEntity dataSourceEntity = null;
+        MessageNotifierEntity notifierEntity = null;
+        if (formData.getDataSourceId() != null)
+            dataSourceEntity = dataSourceRepo.findById(
+                    formData.getDataSourceId()).orElse(null);
+        if (formData.getMessageNotifierId() != null)
+            notifierEntity = notifierRepo.findById(
+                    formData.getMessageNotifierId()).orElse(null);
+        if (dataSourceEntity == null && notifierEntity == null) {
+            ratts.addFlashAttribute("flashMessage", "block-no-data");
+            return "redirect:/admin/blocks/" + id;
+        }
 
-        data.toEntity(entity);
+        formData.toEntity(entity);
         entity.setId(id);
         entity.setDataSource(dataSourceEntity);
         entity.setMessageNotifier(notifierEntity);
 
         blockRepo.save(entity);
+        ratts.addFlashAttribute("flashMessage", "block-saved");
 
-        return "redirect:/admin/dashboards/" + entity.getDashboard().getId() + "/blocks";
+        return "redirect:/admin/dashboards/" + dashboardId + "/blocks";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String deleteBlock(
+            @PathVariable long id,
+            RedirectAttributes ratts)
+            throws NotFoundException {
+        BlockEntity entity = blockRepo.findById(id)
+                .orElseThrow(NotFoundException::new);
+        long dashboardId = entity.getDashboard().getId();
+        blockRepo.deleteById(id);
+        ratts.addFlashAttribute("flashMessage", "block-deleted");
+        return "redirect:/admin/dashboards/" + dashboardId + "/blocks";
     }
 
 }
