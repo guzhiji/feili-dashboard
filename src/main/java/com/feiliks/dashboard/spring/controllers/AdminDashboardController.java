@@ -210,6 +210,9 @@ public class AdminDashboardController {
         };
         data.put("dataRenderers", dataRenderers);
 
+        data.put("dataSources", dataSourceRepo.findAll());
+        data.put("messageNotifiers", notifierRepo.findAll());
+
         return new ModelAndView("admin/block/edit", data);
     }
 

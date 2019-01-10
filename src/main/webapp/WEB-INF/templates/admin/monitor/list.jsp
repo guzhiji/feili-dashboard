@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
-        <title>看板</title>
+        <title>监视器</title>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -20,63 +20,42 @@
         <div class="container">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    看板
+                    监视器
                 </div>
                 <div class="panel-body">
 
-                    <c:if test="${flashMessage == 'dashboard-saved'}">
-                        <div class="alert alert-success flash-message">看板已经保存</div>
+                    <c:if test="${flashMessage == 'monitor-saved'}">
+                        <div class="alert alert-success flash-message">监视器已经保存</div>
                     </c:if>
-                    <c:if test="${flashMessage == 'dashboard-deleted'}">
-                        <div class="alert alert-success flash-message">看板已经删除</div>
-                    </c:if>
-                    <c:if test="${flashMessage == 'dashboard-activated'}">
-                        <div class="alert alert-success flash-message">看板已经开启</div>
-                    </c:if>
-                    <c:if test="${flashMessage == 'dashboard-deactivated'}">
-                        <div class="alert alert-success flash-message">看板已经关闭</div>
-                    </c:if>
-                    <c:if test="${flashMessage == 'dashboard-not-activated'}">
-                        <div class="alert alert-danger flash-message">看板开启失败</div>
+                    <c:if test="${flashMessage == 'monitor-deleted'}">
+                        <div class="alert alert-success flash-message">监视器已经删除</div>
                     </c:if>
 
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>看板名称</th>
-                                <th>看板路径</th>
+                                <th>监视器名称</th>
+                                <th>Java类</th>
+                                <th>执行频率</th>
                                 <th></th>
                             </tr>
-                        </head>
+                        </thead>
                         <tbody>
-                            <c:forEach items="${list}" var="board">
+                            <c:forEach items="${list}" var="monitor">
                             <tr>
-                                <td>${board.name}</td>
-                                <td><a href="/dashboard/${board.pathKey}" target="_blank">${board.pathKey}</a></td>
+                                <td>${monitor.name}</td>
+                                <td>${monitor.javaClass}</td>
+                                <td>${monitor.execRate}</td>
                                 <td class="row-actions">
-                                    <a class="btn btn-default" href="/admin/dashboards/${board.id}/blocks">
+                                    <a class="btn btn-default" href="/admin/monitors/${monitor.id}/data-sources">
                                         <span class="glyphicon glyphicon-eye-open"></span>
                                     </a>
-                                    <a class="btn btn-primary" href="/admin/dashboards/${board.id}">
+                                    <a class="btn btn-primary" href="/admin/monitors/${monitor.id}">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>
-                                    <c:if test="${board.active}">
-                                        <a class="btn btn-info action-btn" data-action-url="/admin/dashboards/${board.id}/deactivate"
-                                            data-action-desc="关闭看板：${board.name}" data-action-name="关闭"
-                                            data-action-msg="确认要关闭该看板吗？">
-                                            <span class="glyphicon glyphicon-stop"></span>
-                                        </a>
-                                    </c:if>
-                                    <c:if test="${not board.active}">
-                                        <a class="btn btn-info action-btn" data-action-url="/admin/dashboards/${board.id}/activate"
-                                            data-action-desc="开启看板：${board.name}" data-action-name="开启"
-                                            data-action-msg="确认要开启该看板吗？">
-                                            <span class="glyphicon glyphicon-play"></span>
-                                        </a>
-                                    </c:if>
-                                    <a class="btn btn-danger action-btn" data-action-url="/admin/dashboards/${board.id}/delete"
-                                        data-action-desc="删除看板：${board.name}" data-action-name="删除"
-                                        data-action-msg="确认要删除该看板吗？">
+                                    <a class="btn btn-danger action-btn" data-action-url="/admin/monitors/${monitor.id}/delete"
+                                        data-action-desc="删除监视器：${monitor.name}" data-action-name="删除"
+                                        data-action-msg="确认要删除该监视器吗？">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
                                 </td>
@@ -84,11 +63,11 @@
                             </c:forEach>
                         </tbody>
                     </table>
+
                 </div>
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="/admin/dashboards/new">创建看板</a>
-                    <a class="btn btn-default" href="/admin/templates">管理模板</a>
-                    <a class="btn btn-default" href="/admin/monitors">管理监视器</a>
+                    <a class="btn btn-primary" href="/admin/monitors/new">创建监视器</a>
+                    <a class="btn btn-default" href="/admin/dashboards">返回</a>
                 </div>
             </div>
         </div>
@@ -135,3 +114,4 @@ setTimeout(function() {
         </script>
     </body>
 </html>
+
