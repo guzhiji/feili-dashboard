@@ -10,11 +10,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
+
 
 @Service
 public class DashboardTaskService {
@@ -23,44 +22,21 @@ public class DashboardTaskService {
     private SimpMessagingTemplate messaging;
 
     @Autowired
-    private ThreadPoolTaskScheduler dashboardScheduler;
+    private ThreadPoolTaskScheduler monitorScheduler;
 
-    private final Map<String, Task> runningTasks = new HashMap<>();
+    private final Map<Long, MonitorTask> runningMonitors = new HashMap<>();
+    private final Map<Long, NotifierTask> runningNotifiers = new HashMap<>();
 
     public IMonitor getMonitorTask(MonitorEntity entity) {
-        if (entity == null)
-            return null;
-        return getMonitorTask(entity.getJavaClass());
-    }
-
-    public IMonitor getMonitorTask(String javaClass) {
-        Task task = runningTasks.get(javaClass);
-        if (task != null) {
-            Runnable runnable = task.getRunnable();
-            List<Class<?>> interfaces = Arrays.asList(
-                    runnable.getClass().getInterfaces());
-            if (interfaces.contains(IMonitor.class))
-                return (IMonitor) runnable;
-        }
-        return null;
+        MonitorTask task = runningMonitors.get(entity.getId());
+        if (task == null) return null;
+        return task.getRunnable();
     }
 
     public INotifier getNotifierTask(MessageNotifierEntity entity) {
-        if (entity == null)
-            return null;
-        return getNotifierTask(entity.getJavaClass());
-    }
-
-    public INotifier getNotifierTask(String javaClass) {
-        Task task = runningTasks.get(javaClass);
-        if (task != null) {
-            Runnable runnable = task.getRunnable();
-            List<Class<?>> interfaces = Arrays.asList(
-                    runnable.getClass().getInterfaces());
-            if (interfaces.contains(INotifier.class))
-                return (INotifier) runnable;
-        }
-        return null;
+        NotifierTask task = runningNotifiers.get(entity.getId());
+        if (task == null) return null;
+        return task.getRunnable();
     }
 
     private Runnable instantiateRunnable(String javaClass)
@@ -75,9 +51,9 @@ public class DashboardTaskService {
 
     public synchronized boolean activate(MonitorEntity monitor)
             throws TaskActivationException {
-        String javaClass = monitor.getJavaClass();
-        if (!runningTasks.containsKey(javaClass)) {
-            Runnable runnable = instantiateRunnable(javaClass);
+        if (!runningMonitors.containsKey(monitor.getId())) {
+            Runnable runnable = instantiateRunnable(
+                    monitor.getJavaClass());
             activate(runnable, monitor, null);
             return true;
         }
@@ -86,9 +62,9 @@ public class DashboardTaskService {
 
     public synchronized boolean activate(MessageNotifierEntity notifier)
             throws TaskActivationException {
-        String javaClass = notifier.getJavaClass();
-        if (!runningTasks.containsKey(javaClass)) {
-            Runnable runnable = instantiateRunnable(javaClass);
+        if (!runningMonitors.containsKey(notifier.getId())) {
+            Runnable runnable = instantiateRunnable(
+                    notifier.getJavaClass());
             activate(runnable, null, notifier);
             return true;
         }
@@ -97,9 +73,9 @@ public class DashboardTaskService {
 
     public synchronized boolean activate(MonitorEntity monitor, MessageNotifierEntity notifier)
             throws TaskActivationException {
-        String javaClass = monitor.getJavaClass();
-        if (!runningTasks.containsKey(javaClass)) {
-            Runnable runnable = instantiateRunnable(javaClass);
+        if (!runningMonitors.containsKey(monitor.getId())) {
+            Runnable runnable = instantiateRunnable(
+                    monitor.getJavaClass());
             activate(runnable, monitor, notifier);
             return true;
         }
@@ -108,70 +84,81 @@ public class DashboardTaskService {
 
     private void activate(Runnable runnable, MonitorEntity monitorEntity, MessageNotifierEntity notifierEntity)
             throws TaskActivationException {
-        String javaClass = runnable.getClass().getCanonicalName();
-        List<Class<?>> interfaces = Arrays.asList(
-                runnable.getClass().getInterfaces());
-        Task task = new Task(runnable);
-        boolean supported = false;
-        if (interfaces.contains(IMonitor.class)) {
-            supported = true;
+
+        Class<?> javaClass = runnable.getClass();
+        String className = runnable.getClass().getCanonicalName();
+
+        boolean activated = false;
+        if (IMonitor.class.isAssignableFrom(javaClass)) {
             if (monitorEntity == null)
                 throw new TaskActivationException.MissingDataEntity();
-            if (!javaClass.equals(monitorEntity.getJavaClass()))
+            if (!className.equals(monitorEntity.getJavaClass()))
                 throw new TaskActivationException.InconsistentClass();
 
+            // initialize monitor
             IMonitor monitor = (IMonitor) runnable;
             monitor.initMonitor(new MonitorData(monitorEntity));
 
-            ScheduledFuture<?> future = dashboardScheduler.scheduleAtFixedRate(
+            // schedule task
+            MonitorTask task = new MonitorTask(monitor);
+            ScheduledFuture<?> future = monitorScheduler.scheduleAtFixedRate(
                     monitor, monitorEntity.getExecRate());
-            task.setMonitorScheduledFuture(future);
+            task.setScheduledFuture(future);
 
+            runningMonitors.put(monitorEntity.getId(), task);
+            activated = true;
         }
-        if (interfaces.contains(INotifier.class)) {
-            supported = true;
+        if (INotifier.class.isAssignableFrom(javaClass)) {
             if (notifierEntity == null)
                 throw new TaskActivationException.MissingDataEntity();
-            if (!javaClass.equals(notifierEntity.getJavaClass()))
+            if (!className.equals(notifierEntity.getJavaClass()))
                 throw new TaskActivationException.InconsistentClass();
 
+            // initialize notifier
             INotifier notifier = (INotifier) runnable;
             notifier.initNotifier(
                     new NotifierData(notifierEntity),
                     new Messenger(notifierEntity.getId(), messaging));
 
-            if (!notifierEntity.isMonitor()) {
+            if (!activated) {
+                // start task
+                NotifierTask task = new NotifierTask(notifier);
                 Thread notifierThread = new Thread(notifier);
                 notifierThread.start();
                 task.setNotifierThread(notifierThread);
+
+                runningNotifiers.put(notifierEntity.getId(), task);
+                activated = true;
             }
         }
-        if (!supported)
+        if (!activated)
             throw new TaskActivationException.NonSupportedTask();
-        runningTasks.put(javaClass, task);
     }
 
-    public synchronized void deactivate(String javaClass) {
-        Task task = runningTasks.get(javaClass);
-        if (task != null) {
-            ScheduledFuture<?> monitorScheduledFuture = task.getMonitorScheduledFuture();
-            if (monitorScheduledFuture != null)
-                monitorScheduledFuture.cancel(true);
-            Thread notifierThread = task.getNotifierThread();
-            if (notifierThread != null)
-                notifierThread.interrupt();
-            runningTasks.remove(javaClass);
+    public synchronized void deactivate(MonitorEntity monitor) {
+        if (monitor != null) {
+            long id = monitor.getId();
+            MonitorTask task = runningMonitors.get(id);
+            if (task != null) {
+                ScheduledFuture<?> sf = task.getScheduledFuture();
+                if (sf != null)
+                    sf.cancel(true);
+                runningMonitors.remove(id);
+            }
         }
     }
 
-    public void deactivate(MonitorEntity monitor) {
-        if (monitor != null)
-            deactivate(monitor.getJavaClass());
-    }
-
-    public void deactivate(MessageNotifierEntity notifier) {
-        if (notifier != null)
-            deactivate(notifier.getJavaClass());
+    public synchronized void deactivate(MessageNotifierEntity notifier) {
+        if (notifier != null) {
+            long id = notifier.getId();
+            NotifierTask task = runningNotifiers.get(id);
+            if (task != null) {
+                Thread t = task.getNotifierThread();
+                if (t != null)
+                    t.interrupt();
+                runningNotifiers.remove(id);
+            }
+        }
     }
 
 }

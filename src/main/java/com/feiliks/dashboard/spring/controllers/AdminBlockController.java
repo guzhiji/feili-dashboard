@@ -50,6 +50,17 @@ public class AdminBlockController {
                 "pie", "line", "bar"
         };
         data.put("dataRenderers", dataRenderers);
+        String[] dataPreprocessors = {
+                "preproc1", "preproc2"
+        };
+        data.put("dataPreprocessors", dataPreprocessors);
+        String[] msgHandlers = {
+                "msgh1", "msgh2", "msgh3"
+        };
+        data.put("messageHandlers", msgHandlers);
+
+        data.put("dataSources", dataSourceRepo.findAll());
+        data.put("messageNotifiers", notifierRepo.findAll());
 
         return new ModelAndView("admin/block/edit", data);
     }

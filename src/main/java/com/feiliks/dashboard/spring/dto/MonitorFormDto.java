@@ -1,9 +1,13 @@
 package com.feiliks.dashboard.spring.dto;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MonitorFormDto {
@@ -18,10 +22,14 @@ public class MonitorFormDto {
     @NotBlank(message = "monitor-javaclass-empty")
     private String javaClass;
 
-    private String args;
-
     @NotNull(message = "monitor-execrate-empty")
     private Long execRate;
+
+    private boolean isDb;
+    private String dbUri;
+    private String dbUser;
+    private String dbPass;
+    private String dbSql;
 
     public MonitorEntity toEntity() {
         MonitorEntity entity = new MonitorEntity();
@@ -33,8 +41,23 @@ public class MonitorFormDto {
         entity.setId(id);
         entity.setName(name);
         entity.setJavaClass(javaClass);
-        entity.setArgs(args);
         entity.setExecRate(execRate);
+
+        if (isDb()) {
+            Map<String, String> config = new HashMap<>();
+            config.put("dbUri", getDbUri());
+            config.put("dbUser", getDbUser());
+            config.put("dbPass", getDbPass());
+            config.put("dbSql", getDbSql());
+            try {
+                entity.setConfigData(
+                        new ObjectMapper().writeValueAsString(config));
+            } catch (JsonProcessingException e) {
+                entity.setConfigData(null);
+            }
+        } else {
+            entity.setConfigData(null);
+        }
     }
 
     public Long getId() {
@@ -61,19 +84,51 @@ public class MonitorFormDto {
         this.javaClass = javaClass;
     }
 
-    public String getArgs() {
-        return args;
-    }
-
-    public void setArgs(String args) {
-        this.args = args;
-    }
-
     public Long getExecRate() {
         return execRate;
     }
 
     public void setExecRate(Long execRate) {
         this.execRate = execRate;
+    }
+
+    public boolean isDb() {
+        return isDb;
+    }
+
+    public void setDb(boolean db) {
+        isDb = db;
+    }
+
+    public String getDbUri() {
+        return dbUri;
+    }
+
+    public void setDbUri(String dbUri) {
+        this.dbUri = dbUri;
+    }
+
+    public String getDbUser() {
+        return dbUser;
+    }
+
+    public void setDbUser(String dbUser) {
+        this.dbUser = dbUser;
+    }
+
+    public String getDbPass() {
+        return dbPass;
+    }
+
+    public void setDbPass(String dbPass) {
+        this.dbPass = dbPass;
+    }
+
+    public String getDbSql() {
+        return dbSql;
+    }
+
+    public void setDbSql(String dbSql) {
+        this.dbSql = dbSql;
     }
 }

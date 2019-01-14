@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
-        <title>看板单元块</title>
+        <title>数据推送源</title>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -20,48 +20,37 @@
         <div class="container">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    看板单元块
+                    数据推送源
                 </div>
                 <div class="panel-body">
 
-                    <c:if test="${flashMessage == 'block-saved'}">
-                        <div class="alert alert-success flash-message">单元块已经保存</div>
+                    <c:if test="${flashMessage == 'notifier-saved'}">
+                        <div class="alert alert-success flash-message">数据推送源已经保存</div>
                     </c:if>
-                    <c:if test="${flashMessage == 'block-deleted'}">
-                        <div class="alert alert-success flash-message">单元块已经删除</div>
+                    <c:if test="${flashMessage == 'notifier-deleted'}">
+                        <div class="alert alert-success flash-message">数据推送源已经删除</div>
                     </c:if>
 
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>单元块名称</th>
-                                <th>数据展示方式</th>
-                                <th>启用</th>
+                                <th>数据推送源名称</th>
+                                <th>Java类</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach items="${list}" var="blk">
+                            <c:forEach items="${list}" var="mn">
                             <tr>
-                                <td>${blk.name}</td>
-                                <td>${blk.dataRenderer}</td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${blk.active}">
-                                            是
-                                        </c:when>
-                                        <c:otherwise>
-                                            否
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
+                                <td>${mn.name}</td>
+                                <td>${mn.javaClass}</td>
                                 <td class="row-actions">
-                                    <a class="btn btn-primary" href="/admin/blocks/${blk.id}">
+                                    <a class="btn btn-primary" href="/admin/message-notifiers/${mn.id}">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>
-                                    <a class="btn btn-danger action-btn" data-action-url="/admin/blocks/${blk.id}/delete"
-                                        data-action-desc="删除单元块：${blk.name}" data-action-name="删除"
-                                        data-action-msg="确认要删除该单元块吗？">
+                                    <a class="btn btn-danger action-btn" data-action-url="/admin/message-notifiers/${mn.id}/delete"
+                                        data-action-desc="删除数据推送源：${mn.name}" data-action-name="删除"
+                                        data-action-msg="确认要删除该数据推送源吗？">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
                                 </td>
@@ -72,7 +61,7 @@
 
                 </div>
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="/admin/dashboards/${parent.id}/blocks/new">创建单元块</a>
+                    <a class="btn btn-primary" href="/admin/message-notifiers/new">创建数据推送源</a>
                     <a class="btn btn-default" href="/admin/dashboards">返回</a>
                 </div>
             </div>
@@ -120,3 +109,5 @@ setTimeout(function() {
         </script>
     </body>
 </html>
+
+

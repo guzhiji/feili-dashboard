@@ -7,10 +7,10 @@
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
         <title>
             <c:if test="${mode == 'create'}">
-                监视器：创建
+                数据推送源：添加
             </c:if>
             <c:if test="${mode == 'modify'}">
-                监视器：${entity.name}
+                数据推送源：${entity.name}
             </c:if>
         </title>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -22,30 +22,27 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <c:if test="${mode == 'create'}">
-                        监视器：创建
+                        数据推送源：添加
                     </c:if>
                     <c:if test="${mode == 'modify'}">
-                        监视器：${entity.name}（#${entity.id}）
+                        数据推送源：${entity.name}（#${entity.id}）
                     </c:if>
                 </div>
                 <div class="panel-body">
 
                     <c:choose>
-                        <c:when test="${flashMessage == 'monitor-name-empty'}">
-                            <div class="alert alert-danger flash-message">请填写监视器名称</div>
+                        <c:when test="${flashMessage == 'notifier-name-empty'}">
+                            <div class="alert alert-danger flash-message">请填写数据推送源名称</div>
                         </c:when>
-                        <c:when test="${flashMessage == 'monitor-javaclass-empty'}">
-                            <div class="alert alert-danger flash-message">请填写监视器Java类</div>
+                        <c:when test="${flashMessage == 'notifier-javaclass-empty'}">
+                            <div class="alert alert-danger flash-message">请填写数据推送源Java类</div>
                         </c:when>
-                        <c:when test="${flashMessage == 'monitor-javaclass-invalid'}">
-                            <div class="alert alert-danger flash-message">监视器Java类不合法</div>
-                        </c:when>
-                        <c:when test="${flashMessage == 'monitor-execrate-empty'}">
-                            <div class="alert alert-danger flash-message">请填写监视器执行频率</div>
+                        <c:when test="${flashMessage == 'notifier-javaclass-invalid'}">
+                            <div class="alert alert-danger flash-message">数据推送源Java类不合法</div>
                         </c:when>
                     </c:choose>
 
-                    <form class="form-horizontal" id="form-monitor" method="POST"
+                    <form class="form-horizontal" id="form-message-notifier" method="POST"
                         action="${saveUrl}">
 
                         <div class="form-group">
@@ -65,10 +62,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="input-exec-rate" class="col-md-2 control-label">执行频率</label>
-                            <div class="col-md-10">
-                                <input type="text" name="execRate" id="input-exec-rate" class="form-control"
-                                    value="${entity.execRate}" />
+                            <div class="col-md-offset-2 col-md-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <c:if test="${entity.monitor}">
+                                            <input type="checkbox" name="monitor" checked="checked" />
+                                        </c:if>
+                                        <c:if test="${not entity.monitor}">
+                                            <input type="checkbox" name="monitor" />
+                                        </c:if>
+                                        是否为监视器
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -76,18 +81,18 @@
                 </div>
                 <div class="panel-footer">
                     <c:if test="${mode == 'create'}">
-                        <button type="button" id="btn-save" class="btn btn-primary">创建监视器</button>
+                        <button type="button" id="btn-save" class="btn btn-primary">添加数据推送源</button>
                     </c:if>
                     <c:if test="${mode == 'modify'}">
-                        <button type="button" id="btn-save" class="btn btn-primary">修改监视器</button>
+                        <button type="button" id="btn-save" class="btn btn-primary">修改数据推送源</button>
                     </c:if>
-                    <a class="btn btn-default" href="/admin/monitors">返回</a>
+                    <a class="btn btn-default" href="/admin/message-notifiers">返回</a>
                 </div>
             </div>
         </div>
         <script type="text/javascript">
 $('#btn-save').on('click', function() {
-    $('#form-monitor').submit();
+    $('#form-message-notifier').submit();
 });
 setTimeout(function() {
     $('.flash-message').fadeOut();
@@ -95,4 +100,5 @@ setTimeout(function() {
         </script>
     </body>
 </html>
+
 

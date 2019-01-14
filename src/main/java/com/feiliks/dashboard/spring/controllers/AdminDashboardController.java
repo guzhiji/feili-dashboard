@@ -41,6 +41,9 @@ public class AdminDashboardController {
     private MessageNotifierRepository notifierRepo;
 
     @Autowired
+    private BlockRepository blockRepo;
+
+    @Autowired
     private DashboardTaskService dashboardTaskService;
 
     @GetMapping
@@ -183,12 +186,12 @@ public class AdminDashboardController {
         }
 
         BlockEntity entity = formData.toEntity();
+        entity.setId(null);
         entity.setDashboard(parent);
         entity.setDataSource(dataSourceEntity);
         entity.setMessageNotifier(notifierEntity);
 
-        parent.getBlocks().add(entity);
-        dashboardRepo.save(parent);
+        blockRepo.save(entity);
         ratts.addFlashAttribute("flashMessage", "block-saved");
 
         return "redirect:/admin/dashboards/" + id + "/blocks";
@@ -209,6 +212,14 @@ public class AdminDashboardController {
                 "pie", "line", "bar"
         };
         data.put("dataRenderers", dataRenderers);
+        String[] dataPreprocessors = {
+                "preproc1", "preproc2"
+        };
+        data.put("dataPreprocessors", dataPreprocessors);
+        String[] msgHandlers = {
+                "msgh1", "msgh2", "msgh3"
+        };
+        data.put("messageHandlers", msgHandlers);
 
         data.put("dataSources", dataSourceRepo.findAll());
         data.put("messageNotifiers", notifierRepo.findAll());
@@ -235,7 +246,8 @@ public class AdminDashboardController {
         DashboardEntity entity = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
 
-        Set<String> activated = new HashSet<>();
+        Set<MonitorEntity> activatedMon = new HashSet<>();
+        Set<MessageNotifierEntity> activatedNtf = new HashSet<>();
         try {
             for (BlockEntity blk : entity.getBlocks()) {
                 DataSourceEntity src = blk.getDataSource();
@@ -245,22 +257,24 @@ public class AdminDashboardController {
                 if (ntf == null) {
                     if (mon != null) {
                         if (dashboardTaskService.activate(mon))
-                            activated.add(mon.getJavaClass());
+                            activatedMon.add(mon);
                     }
                 } else if (mon == null) {
                     if (dashboardTaskService.activate(ntf))
-                        activated.add(ntf.getJavaClass());
+                        activatedNtf.add(ntf);
                 } else {
                     if (dashboardTaskService.activate(mon, ntf))
-                        activated.add(mon.getJavaClass());
+                        activatedMon.add(mon);
                 }
             }
             entity.setActive(true);
             dashboardRepo.save(entity);
             ratts.addFlashAttribute("flashMessage", "dashboard-activated");
         } catch (TaskActivationException e) {
-            for (String javaClass : activated)
-                dashboardTaskService.deactivate(javaClass);
+            for (MonitorEntity mon : activatedMon)
+                dashboardTaskService.deactivate(mon);
+            for (MessageNotifierEntity ntf : activatedNtf)
+                dashboardTaskService.deactivate(ntf);
             ratts.addFlashAttribute("flashMessage", "dashboard-not-activated");
         }
 
@@ -274,14 +288,11 @@ public class AdminDashboardController {
             throws NotFoundException {
         DashboardEntity entity = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
-        Set<String> tasksToStop = new HashSet<>();
 
         List<MonitorEntity> monPre = monitorRepo.listActiveMonitors();
         List<MessageNotifierEntity> ntfPre = notifierRepo.listActiveNotifiersExceptMonitors();
-        for (MonitorEntity mon : monPre)
-            tasksToStop.add(mon.getJavaClass());
-        for (MessageNotifierEntity ntf : ntfPre)
-            tasksToStop.add(ntf.getJavaClass());
+        Set<MonitorEntity> monitorsToStop = new HashSet<>(monPre);
+        Set<MessageNotifierEntity> notifiersToStop = new HashSet<>(ntfPre);
 
         entity.setActive(false);
         dashboardRepo.save(entity);
@@ -289,12 +300,14 @@ public class AdminDashboardController {
         List<MonitorEntity> monPost = monitorRepo.listActiveMonitors();
         List<MessageNotifierEntity> ntfPost = notifierRepo.listActiveNotifiersExceptMonitors();
         for (MonitorEntity mon : monPost)
-            tasksToStop.remove(mon.getJavaClass());
+            monitorsToStop.remove(mon);
         for (MessageNotifierEntity ntf : ntfPost)
-            tasksToStop.remove(ntf.getJavaClass());
+            notifiersToStop.remove(ntf);
 
-        for (String taskJavaClass : tasksToStop)
-            dashboardTaskService.deactivate(taskJavaClass);
+        for (MonitorEntity mon : monitorsToStop)
+            dashboardTaskService.deactivate(mon);
+        for (MessageNotifierEntity ntf : notifiersToStop)
+            dashboardTaskService.deactivate(ntf);
 
         ratts.addFlashAttribute("flashMessage", "dashboard-deactivated");
         return "redirect:/admin/dashboards";

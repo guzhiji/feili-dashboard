@@ -26,7 +26,7 @@ public class Config implements WebSocketMessageBrokerConfigurer {
     }
 
     @Bean
-    public ThreadPoolTaskScheduler dashboardScheduler() {
+    public ThreadPoolTaskScheduler monitorScheduler() {
         return new ThreadPoolTaskScheduler();
     }
 

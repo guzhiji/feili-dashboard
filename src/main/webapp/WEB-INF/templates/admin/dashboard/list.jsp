@@ -89,6 +89,7 @@
                     <a class="btn btn-primary" href="/admin/dashboards/new">创建看板</a>
                     <a class="btn btn-default" href="/admin/templates">管理模板</a>
                     <a class="btn btn-default" href="/admin/monitors">管理监视器</a>
+                    <a class="btn btn-default" href="/admin/message-notifiers">管理数据推送源</a>
                 </div>
             </div>
         </div>

@@ -17,10 +17,11 @@ public class MonitorEntity {
 	@Column(name = "java_class", nullable = false)
 	private String javaClass;
 
-	private String args;
-
 	@Column(name = "exec_rate", nullable = false)
 	private long execRate;
+
+	@Column(name = "config_data")
+	private String configData;
 
 	@OneToMany(mappedBy = "monitor")
 	private Collection<DataSourceEntity> dataSources;
@@ -49,12 +50,12 @@ public class MonitorEntity {
 		this.javaClass = javaClass;
 	}
 
-	public String getArgs() {
-		return args;
+	public String getConfigData() {
+		return configData;
 	}
 
-	public void setArgs(String args) {
-		this.args = args;
+	public void setConfigData(String configData) {
+		this.configData = configData;
 	}
 
 	public long getExecRate() {
@@ -72,5 +73,24 @@ public class MonitorEntity {
 	public void setDataSources(Collection<DataSourceEntity> dataSources) {
 		this.dataSources = dataSources;
 	}
+
+	@Override
+	public int hashCode() {
+		if (id == null)
+			return 0;
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (id == null)
+			return this == other;
+		if (other instanceof MonitorEntity) {
+			MonitorEntity entity = (MonitorEntity) other;
+			return id.equals(entity.id);
+		}
+		return false;
+	}
+
 }
 

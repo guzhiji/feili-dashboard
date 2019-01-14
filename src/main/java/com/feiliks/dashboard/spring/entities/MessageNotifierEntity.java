@@ -14,14 +14,14 @@ public class MessageNotifierEntity {
     @Column(nullable = false, length = 32)
     private String name;
 
-    @Column(name = "broker_dest", nullable = false, length = 32)
-    private String brokerDestination;
+    @Column(name = "java_class", nullable = false)
+    private String javaClass;
 
     @Column(name = "is_monitor", nullable = false)
     private boolean isMonitor;
 
-    @Column(name = "java_class", nullable = false)
-    private String javaClass;
+    @Column(name = "config_data")
+    private String configData;
 
     @OneToMany(mappedBy = "messageNotifier")
     private Collection<BlockEntity> blocks;
@@ -42,14 +42,6 @@ public class MessageNotifierEntity {
         this.name = name;
     }
 
-    public String getBrokerDestination() {
-        return brokerDestination;
-    }
-
-    public void setBrokerDestination(String brokerDestination) {
-        this.brokerDestination = brokerDestination;
-    }
-
     public boolean isMonitor() {
         return isMonitor;
     }
@@ -66,6 +58,14 @@ public class MessageNotifierEntity {
         this.javaClass = javaClass;
     }
 
+    public String getConfigData() {
+        return configData;
+    }
+
+    public void setConfigData(String configData) {
+        this.configData = configData;
+    }
+
     public Collection<BlockEntity> getBlocks() {
         return blocks;
     }
@@ -73,4 +73,23 @@ public class MessageNotifierEntity {
     public void setBlocks(Collection<BlockEntity> blocks) {
         this.blocks = blocks;
     }
+
+    @Override
+    public int hashCode() {
+        if (id == null)
+            return 0;
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (id == null)
+            return this == other;
+        if (other instanceof MessageNotifierEntity) {
+            MessageNotifierEntity entity = (MessageNotifierEntity) other;
+            return id.equals(entity.id);
+        }
+        return false;
+    }
+
 }

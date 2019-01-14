@@ -5,4 +5,5 @@ public interface INotifierData {
     String getName();
     boolean isMonitor();
     String getJavaClass();
+    Object readConfig(String name);
 }
