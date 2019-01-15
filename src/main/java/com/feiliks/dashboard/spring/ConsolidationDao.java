@@ -124,7 +124,7 @@ public class ConsolidationDao {
             "    inner join LOC l on l.LOC = p.LOC" +
             "        inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = 'CQ2'" +
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
-            "        inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10'" +
+            "        inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY'" +
             "    left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1'" +
             "    left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10' " +
             "where" +

@@ -160,7 +160,7 @@ public class ShipmentDao {
             "    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
             "    inner join LOC l on l.LOC = p.LOC and l.PUTAWAYZONE = 'LKSHIP'" +
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
-            "    inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10'" +
+            "    inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY'" +
             "    left join (" +
             "        select " +
             "            dd.DROPID trolley_id," +
@@ -168,7 +168,7 @@ public class ShipmentDao {
             "        from PICKDETAIL p" +
             "            inner join LOC l on l.LOC = p.LOC and l.PUTAWAYZONE = 'LKSHIP'" +
             "            inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
-            "                inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10'" +
+            "                inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY'" +
             "        group by dd.DROPID" +
             "    ) t on t.trolley_id = dd.DROPID";
 
@@ -183,7 +183,7 @@ public class ShipmentDao {
             "    inner join LOC l on l.LOC = p.LOC" +
             "    inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY='CQ2'" +
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
-            "    inner join DROPID d on d.DROPID = dd.DROPID and d.DROPIDTYPE = '10' " +
+            "    inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY' " +
             "where" +
             "    o.STATUS not in ('98', '99', '95')";
 
