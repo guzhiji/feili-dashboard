@@ -6,11 +6,11 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>看板 - 出货</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/common.css" rel="stylesheet">
+		<link href="/common.css?1547522718" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/common.js"></script>
+		<script src="/common.js?1547522718"></script>
 	</head>
 	<body>
 		<h1>出货看板</h1>
@@ -70,6 +70,7 @@
 			<li><a href="#" id="menu-theme-transpblue">蓝色透明风格</a></li>
 			<li role="separator" class="divider"></li>
 			<li><a href="#" id="menu-refresh">刷新</a></li>
+			<!-- <li><a href="#" id="menu-fullscreen">全屏</a></li> -->
 		</ul>
 	</body>
 	<script type="text/javascript">
@@ -245,6 +246,11 @@ $('#menu-theme-transpblue').on('click', function() {
 });
 $('#menu-refresh').on('click', function() {
 	window.location.reload();
+	return false;
+});
+$('#menu-fullscreen').on('click', function() {
+	requestFullScreen(document.body);
+	$('#context-menu').css('display', 'none');
 	return false;
 });
 $("body")
