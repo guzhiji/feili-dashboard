@@ -67,6 +67,7 @@
 		<ul class="dropdown-menu" id="context-menu">
 			<li><a href="#" id="menu-theme-blue">蓝色风格</a></li>
 			<li><a href="#" id="menu-theme-green">绿色风格</a></li>
+			<li><a href="#" id="menu-theme-transpblue">蓝色透明风格</a></li>
 			<li role="separator" class="divider"></li>
 			<li><a href="#" id="menu-refresh">刷新</a></li>
 		</ul>
@@ -213,18 +214,32 @@ $(window).on('resize', function() {
 	barchart.render();
 });
 $('#menu-theme-blue').on('click', function() {
+	$('body').removeClass('transpblue');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
 		.addClass('panel-primary');
 	$('#context-menu').css('display', 'none');
 	return false;
 });
 $('#menu-theme-green').on('click', function() {
+	$('body').removeClass('transpblue');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
 		.addClass('panel-success');
+	$('#context-menu').css('display', 'none');
+	return false;
+});
+$('#menu-theme-transpblue').on('click', function() {
+	$('body').addClass('transpblue');
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
+		.addClass('panel-transpblue');
 	$('#context-menu').css('display', 'none');
 	return false;
 });
