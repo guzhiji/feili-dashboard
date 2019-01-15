@@ -28,7 +28,7 @@
 			<div class="col-md-8">
 				<div class="panel panel-success">
 					<div class="panel-heading">
-						预约号计时
+						预约计时
 					</div>
 					<div class="panel-body">
 						<div id="bar-chart" style="height: 300px;"></div>
