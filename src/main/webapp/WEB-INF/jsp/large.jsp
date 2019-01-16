@@ -10,8 +10,8 @@
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/common.js"></script>
-		<script src="/asrs-view.js"></script>
+		<script src="/build/common.js?1547630069"></script>
+		<script src="/build/asrs-view.js?1547630069"></script>
 		<style>
 
 @media screen and (min-width: 3800px) {

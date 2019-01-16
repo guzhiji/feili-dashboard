@@ -10,8 +10,8 @@
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/sockjs-client/sockjs.min.js"></script>
         <script src="/echarts.min.js"></script>
-        <script src="/common.js?1547522718"></script>
-		<script src="/theme.js?1547522718"></script>
+        <script src="/build/common.js?1547630069"></script>
+        <script src="/build/theme.js?1547630069"></script>
     </head>
     <body>
         <h1>数据库性能看板</h1>
