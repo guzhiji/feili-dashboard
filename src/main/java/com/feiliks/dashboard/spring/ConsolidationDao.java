@@ -111,14 +111,14 @@ public class ConsolidationDao {
             "    o.ORDERKEY order_key," +
             "    o.STATUS status," +
             "    l.ISASRS is_asrs," +
-            "    o.REQUESTEDSHIPDATE ship_time," +
+            "    CAST((FROM_TZ(CAST(o.REQUESTEDSHIPDATE AS TIMESTAMP),'+00:00') AT TIME ZONE 'Asia/Shanghai') AS DATE) ship_time," +
             "    o.STORERKEY storer_key," +
             "    s.COMPANY storer_name," +
             "    o.SUSR35 consignee_key," +
             "    c.COMPANY consignee_name," +
             "    o.CONSIGNEEKEY factory," +
             "    o.TRADINGPARTNER line," +
-            "    o.EDITDATE op_time " +
+            "    CAST((FROM_TZ(CAST(o.EDITDATE AS TIMESTAMP),'+00:00') AT TIME ZONE 'Asia/Shanghai') AS DATE) op_time " +
             "from ORDERS o" +
             "    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
             "    inner join LOC l on l.LOC = p.LOC" +
@@ -129,8 +129,8 @@ public class ConsolidationDao {
             "    left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10' " +
             "where" +
             "    o.STATUS not in ('98', '99') and" +
-            "        o.REQUESTEDSHIPDATE >= trunc(sysdate) and" +
-            "        o.REQUESTEDSHIPDATE < trunc(sysdate) + 1";
+            "        o.REQUESTEDSHIPDATE >= trunc(SYS_EXTRACT_UTC(SYSTIMESTAMP)) and" +
+            "        o.REQUESTEDSHIPDATE < trunc(SYS_EXTRACT_UTC(SYSTIMESTAMP)) + 1";
 
     public List<OrderTrolley> getOrderTrolley() {
         long timerStart = System.currentTimeMillis();

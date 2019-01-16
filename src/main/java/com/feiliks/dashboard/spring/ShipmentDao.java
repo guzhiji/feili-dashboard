@@ -192,7 +192,7 @@ public class ShipmentDao {
             "    a.APPOINTMENTKEY appointment_key," +
             "    max(o.CONSIGNEEKEY) factory," +
             "    max(o.TRADINGPARTNER) line," +
-            "    a.ADDDATE start_time " +
+            "    CAST((FROM_TZ(CAST(a.ADDDATE AS TIMESTAMP),'+00:00') AT TIME ZONE 'Asia/Shanghai') AS DATE) start_time " +
             "from APPOINTMENT a" +
             "    inner join ORDERS o on o.APPOINTMENTKEY = a.APPOINTMENTKEY" +
             "        inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
