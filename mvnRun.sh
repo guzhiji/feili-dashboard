@@ -2,6 +2,6 @@
 
 cd `dirname "$0"`
 
-gulp js
+gulp clean js sass
 
 mvn spring-boot:run -Dspring.config.location="./config.properties"

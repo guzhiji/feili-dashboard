@@ -6,7 +6,7 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>看板</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/common.css" rel="stylesheet">
+		<link href="/build/styles.min.css?1547647385" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/echarts.min.js"></script>

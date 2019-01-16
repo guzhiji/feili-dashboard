@@ -1,0 +1,37 @@
+
+.nav-pills {
+	margin-bottom: 10px;
+}
+
+.nav-pills > li > a {
+	padding: 5px 8px;
+}
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:focus,
+.nav-pills > li.active > a:hover {
+	color: #a5c8e6;
+}
+
+.nav-pills > li > a:focus,
+.nav-pills > li > a:hover {
+	background-color: #81a4a1;
+}
+
+@media screen and (min-width: 3800px) {
+	.nav-pills {
+		font-size: 2.5em;
+	}
+}
+
+@media screen and (min-width: 1900px) and (max-width: 3799px) {
+	.nav-pills {
+		font-size: 1.5em;
+	}
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1899px) {
+	.nav-pills {
+		font-size: 0.8em;
+	}
+}
