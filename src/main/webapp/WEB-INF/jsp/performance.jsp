@@ -6,11 +6,12 @@
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
         <title>看板 - 数据库性能</title>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/common.css" rel="stylesheet">
+        <link href="/common.css?1547522718" rel="stylesheet">
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/sockjs-client/sockjs.min.js"></script>
         <script src="/echarts.min.js"></script>
-        <script src="/common.js"></script>
+        <script src="/common.js?1547522718"></script>
+		<script src="/theme.js?1547522718"></script>
     </head>
     <body>
         <h1>数据库性能看板</h1>
@@ -281,5 +282,30 @@ $(window).on('resize', function() {
     hourlychart.render();
 });
 
+theme.register('blue', '蓝色风格', function() {
+	$('body').removeClass('transpblue');
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
+		.addClass('panel-primary');
+});
+theme.register('green', '绿色风格', function() {
+	$('body').removeClass('transpblue');
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
+		.addClass('panel-success');
+});
+theme.register('transpblue', '蓝色透明风格', function() {
+	$('body').addClass('transpblue');
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
+		.addClass('panel-transpblue');
+});
+theme.init('performance');
     </script>
 </html>

@@ -11,6 +11,7 @@
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/echarts.min.js"></script>
 		<script src="/common.js?1547522718"></script>
+		<script src="/theme.js?1547522718"></script>
 	</head>
 	<body>
 		<h1>出货看板</h1>
@@ -64,14 +65,6 @@
 		<div id="error-message" class="alert alert-danger">
 			服务器连接错误
 		</div>
-		<ul class="dropdown-menu" id="context-menu">
-			<li><a href="#" id="menu-theme-blue">蓝色风格</a></li>
-			<li><a href="#" id="menu-theme-green">绿色风格</a></li>
-			<li><a href="#" id="menu-theme-transpblue">蓝色透明风格</a></li>
-			<li role="separator" class="divider"></li>
-			<li><a href="#" id="menu-refresh">刷新</a></li>
-			<!-- <li><a href="#" id="menu-fullscreen">全屏</a></li> -->
-		</ul>
 	</body>
 	<script type="text/javascript">
 
@@ -214,56 +207,30 @@ $(window).on('resize', function() {
 	piechart.render();
 	barchart.render();
 });
-$('#menu-theme-blue').on('click', function() {
+theme.register('blue', '蓝色风格', function() {
 	$('body').removeClass('transpblue');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
 		.addClass('panel-primary');
-	$('#context-menu').css('display', 'none');
-	return false;
 });
-$('#menu-theme-green').on('click', function() {
+theme.register('green', '绿色风格', function() {
 	$('body').removeClass('transpblue');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
 		.addClass('panel-success');
-	$('#context-menu').css('display', 'none');
-	return false;
 });
-$('#menu-theme-transpblue').on('click', function() {
+theme.register('transpblue', '蓝色透明风格', function() {
 	$('body').addClass('transpblue');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
 		.addClass('panel-transpblue');
-	$('#context-menu').css('display', 'none');
-	return false;
 });
-$('#menu-refresh').on('click', function() {
-	window.location.reload();
-	return false;
-});
-$('#menu-fullscreen').on('click', function() {
-	requestFullScreen(document.body);
-	$('#context-menu').css('display', 'none');
-	return false;
-});
-$("body")
-	.on('click', function() {
-		$('#context-menu').css('display', 'none');
-	})
-	.on('contextmenu', function(e) {
-		$('#context-menu').css({
-			display: 'block',
-			left: e.pageX,
-			top: e.pageY
-		});
-		return false;
-	});
+theme.init('shipment');
 	</script>
 </html>
