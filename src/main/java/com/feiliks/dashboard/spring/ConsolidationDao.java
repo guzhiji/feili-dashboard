@@ -122,10 +122,10 @@ public class ConsolidationDao {
             "from ORDERS o" +
             "    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
             "    inner join LOC l on l.LOC = p.LOC" +
-            "        inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = 'CQ2'" +
+            // "        inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY = 'CQ2'" +
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
             "        inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY'" +
-            "    left join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1'" +
+            "    inner join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' and s.SUSR2 = 'CQ2'" +
             "    left join STORER c on c.STORERKEY = o.SUSR35 and c.TYPE = '10' " +
             "where" +
             "    o.STATUS not in ('98', '99') and" +

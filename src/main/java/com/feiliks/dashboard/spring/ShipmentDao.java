@@ -179,9 +179,10 @@ public class ShipmentDao {
             "    trim(o.APPOINTMENTKEY) appt_key," +
             "    l.PUTAWAYZONE " +
             "from ORDERS o" +
+            "    inner join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' and s.SUSR2 = 'CQ2'" +
             "    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
             "    inner join LOC l on l.LOC = p.LOC" +
-            "    inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY='CQ2'" +
+            // "    inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY='CQ2'" +
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
             "    inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY' " +
             "where" +
