@@ -4,43 +4,41 @@
 	border-color: #288faa;
 	border-radius: 15px;
 	border-width: 5px;
-}
-.panel-default > .panel-body {
-	background-color: #1b0008;
-	border-color: #288faa;
-	border-radius: 12px;
-}
-.panel-default > .panel-footer {
-	background-color: #288faa;
-	border-color: #288faa;
-	color: #aee8ff;
-	text-align: center;
-	text-shadow: 2px 2px 16px #1f5d6b;
-}
 
-@media screen and (min-width: 3800px) {
-	.panel-default > .panel-body {
-		padding: 5em;
-	}
-	.panel-default > .panel-footer {
-		font-size: 2.5em;
-	}
-}
+	&> .panel-body {
+		background-color: #1b0008;
+		border-color: #288faa;
+		border-radius: 12px;
 
-@media screen and (min-width: 1900px) and (max-width: 3799px) {
-	.panel-default > .panel-body {
-		padding: 2em;
-	}
-	.panel-default > .panel-footer {
-		font-size: 1.5em;
-	}
-}
+		@media screen and (min-width: 3800px) {
+			padding: 5em;
+		}
+		@media screen and (min-width: 1900px) and (max-width: 3799px) {
+			padding: 2em;
+		}
+		@media screen and (min-width: 1200px) and (max-width: 1899px) {
+			padding: 2em;
+		}
 
-@media screen and (min-width: 1200px) and (max-width: 1899px) {
-	.panel-default > .panel-body {
-		padding: 2em;
 	}
-	.panel-default > .panel-footer {
-		font-size: 1.5em;
+
+	&> .panel-footer {
+		background-color: #288faa;
+		border-color: #288faa;
+		color: #aee8ff;
+		text-align: center;
+		text-shadow: 2px 2px 16px #1f5d6b;
+
+		@media screen and (min-width: 3800px) {
+			font-size: 2.5em;
+		}
+		@media screen and (min-width: 1900px) and (max-width: 3799px) {
+			font-size: 1.5em;
+		}
+		@media screen and (min-width: 1200px) and (max-width: 1899px) {
+			font-size: 1.5em;
+		}
+
 	}
+
 }
