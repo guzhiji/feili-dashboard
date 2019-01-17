@@ -3,8 +3,13 @@ body.transporange {
 	background-image: url(/transporange.jpg);
 	background-size: 100%;
 	background-attachment: fixed;
+
 	h1 {
 		color: #ffe9d1;
+	}
+
+	#error-message {
+		background-color: rgba(242, 222, 222, 0.8);
 	}
 
 	.nav-pills {
