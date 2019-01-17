@@ -6,12 +6,13 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>看板</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1547647385" rel="stylesheet">
+		<link href="/build/styles.min.css?1547705916" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/echarts.min.js"></script>
 		<script src="/build/common.js?1547630069"></script>
 		<script src="/build/asrs-view.js?1547630069"></script>
+		<script src="/build/theme.js?1547630069"></script>
 		<style>
 
 @media screen and (min-width: 3800px) {
@@ -317,6 +318,41 @@ $(window).on('resize', function() {
 	lineInInfo.render();
 });
 
+theme.register('opaque', '非透明风格', function() {
+	$('body').removeClass('transpblue');
+	$('#block-in-kpi,#block-pick-info,#block-error-info')
+		.removeClass('panel-success')
+		.removeClass('panel-transpblue')
+		.addClass('panel-success');
+	$('#block-in-info,#block-out-info')
+		.removeClass('panel-info')
+		.removeClass('panel-transporange')
+		.addClass('panel-info');
+	/*
+	$('#block-asrs-view')
+		.removeClass('panel-default')
+		.addClass('panel-default');
+	*/
+});
+theme.register('transpblue', '蓝色透明风格', function() {
+	$('body')
+		.removeClass('transpblue')
+		.addClass('transpblue');
+	$('#block-in-kpi,#block-pick-info,#block-error-info')
+		.removeClass('panel-success')
+		.removeClass('panel-transpblue')
+		.addClass('panel-transpblue');
+	$('#block-in-info,#block-out-info')
+		.removeClass('panel-info')
+		.removeClass('panel-transporange')
+		.addClass('panel-transporange');
+	/*
+	$('#block-asrs-view')
+		.removeClass('panel-default')
+		.addClass('panel-default');
+	*/
+});
+theme.init('large');
 		</script>
 	</body>
 </html>

@@ -3,9 +3,40 @@ body.transpblue {
 	background-image: url(/transpblue.jpg);
 	background-size: 100%;
 	background-attachment: fixed;
+
 	h1 {
 		color: #ddeaf5;
 	}
+
+	/******** for the large dashboard *******/
+
+	.panel-transporange {
+		&> .panel-body {
+			border-radius: 0;
+		}
+	}
+
+	.panel-warning {
+		background-color: #132142b3;
+		&> .panel-heading {
+			background-color: #08151880;
+		}
+	}
+
+	.panel-default {
+		background-color: #288faa99;
+		border-color: transparent;
+		box-shadow: 0 0 8px #325e6b;
+		&> .panel-body {
+			background-color: #1e030bcc;
+			border-color: transparent;
+		}
+		&> .panel-footer {
+			background-color: transparent;
+			border-color: transparent;
+		}
+	}
+
 }
 
 .panel-transpblue {

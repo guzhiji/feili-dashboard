@@ -74,6 +74,43 @@ body.transporange {
 
 	}
 
+	&> .panel-footer {
+		background-color: #a8611f65;
+		border-color: #704019c9;
+
+		@media screen and (min-width: 3800px) {
+			font-size: 2em;
+		}
+		@media screen and (min-width: 1900px) and (max-width: 3799px) {
+			font-size: 1.5em;
+		}
+		@media screen and (min-width: 1200px) and (max-width: 1899px) {
+			font-size: 1.2em;
+		}
+
+		.list-group > .list-group-item {
+			border-radius: 10px;
+			margin: 15px 0;
+			padding: 2em;
+			box-shadow: 5px 5px 14px #310e0e;
+			background-color: #352323be;
+			border-width: 0;
+			color: #ffddd4;
+
+			@media screen and (min-width: 3800px) {
+				padding: 2em;
+			}
+			@media screen and (min-width: 1900px) and (max-width: 3799px) {
+				padding: 1.5em;
+			}
+			@media screen and (min-width: 1200px) and (max-width: 1899px) {
+				padding: 1em;
+			}
+
+		}
+
+	}
+
 	.table {
 		color: #f5dede;
 		text-shadow: 1px 1px 3px #571d06;
