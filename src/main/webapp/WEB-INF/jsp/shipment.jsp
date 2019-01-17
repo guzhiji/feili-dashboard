@@ -207,29 +207,52 @@ $(window).on('resize', function() {
 	piechart.render();
 	barchart.render();
 });
+
 theme.register('blue', '蓝色风格', function() {
-	$('body').removeClass('transpblue');
+	$('body')
+		.removeClass('transpblue')
+		.removeClass('transporange');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
+		.removeClass('panel-transporange')
 		.addClass('panel-primary');
 });
 theme.register('green', '绿色风格', function() {
-	$('body').removeClass('transpblue');
+	$('body')
+		.removeClass('transpblue')
+		.removeClass('transporange');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
+		.removeClass('panel-transporange')
 		.addClass('panel-success');
 });
 theme.register('transpblue', '蓝色透明风格', function() {
-	$('body').addClass('transpblue');
+	$('body')
+		.removeClass('transpblue')
+		.removeClass('transporange')
+		.addClass('transpblue');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
+		.removeClass('panel-transporange')
 		.addClass('panel-transpblue');
+});
+theme.register('transporange', '橘色透明风格', function() {
+	$('body')
+		.removeClass('transpblue')
+		.removeClass('transporange')
+		.addClass('transporange');
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
+		.removeClass('panel-transporange')
+		.addClass('panel-transporange');
 });
 theme.init('shipment');
 	</script>
