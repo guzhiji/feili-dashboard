@@ -318,22 +318,6 @@ $(window).on('resize', function() {
 	lineInInfo.render();
 });
 
-theme.register('opaque', '非透明风格', function() {
-	$('body').removeClass('transpblue');
-	$('#block-in-kpi,#block-pick-info,#block-error-info')
-		.removeClass('panel-success')
-		.removeClass('panel-transpblue')
-		.addClass('panel-success');
-	$('#block-in-info,#block-out-info')
-		.removeClass('panel-info')
-		.removeClass('panel-transporange')
-		.addClass('panel-info');
-	/*
-	$('#block-asrs-view')
-		.removeClass('panel-default')
-		.addClass('panel-default');
-	*/
-});
 theme.register('transpblue', '蓝色透明风格', function() {
 	$('body')
 		.removeClass('transpblue')
@@ -346,6 +330,22 @@ theme.register('transpblue', '蓝色透明风格', function() {
 		.removeClass('panel-info')
 		.removeClass('panel-transporange')
 		.addClass('panel-transporange');
+	/*
+	$('#block-asrs-view')
+		.removeClass('panel-default')
+		.addClass('panel-default');
+	*/
+});
+theme.register('opaque', '非透明风格', function() {
+	$('body').removeClass('transpblue');
+	$('#block-in-kpi,#block-pick-info,#block-error-info')
+		.removeClass('panel-success')
+		.removeClass('panel-transpblue')
+		.addClass('panel-success');
+	$('#block-in-info,#block-out-info')
+		.removeClass('panel-info')
+		.removeClass('panel-transporange')
+		.addClass('panel-info');
 	/*
 	$('#block-asrs-view')
 		.removeClass('panel-default')

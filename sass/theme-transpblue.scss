@@ -11,24 +11,27 @@ body.transpblue {
 	/******** for the large dashboard *******/
 
 	.panel-transporange {
+		&> .panel-heading {
+			text-align: center;
+		}
 		&> .panel-body {
 			border-radius: 0;
 		}
 	}
 
 	.panel-warning {
-		background-color: #132142b3;
+		background-color: rgba(19, 33, 66, 0.7);
 		&> .panel-heading {
-			background-color: #08151880;
+			background-color: rgba(8, 21, 24, 0.5);
 		}
 	}
 
 	.panel-default {
-		background-color: #288faa99;
+		background-color: rgba(40, 143, 170, 0.6);
 		border-color: transparent;
 		box-shadow: 0 0 8px #325e6b;
 		&> .panel-body {
-			background-color: #1e030bcc;
+			background-color: rgba(30, 3, 11, 0.8);
 			border-color: transparent;
 		}
 		&> .panel-footer {
@@ -40,15 +43,15 @@ body.transpblue {
 }
 
 .panel-transpblue {
-	background-color: #112a301a;
+	background-color: rgba(17, 42, 48, 0.1);
 	border: 0;
 	border-radius: 10px;
 
 	&> .panel-heading {
 		text-shadow: 2px 2px 8px #0f3944;
 		color: #b1e3f0;
-		background-color: #112a301a;
-		border-color: #47abc5c9;
+		background-color: rgba(17, 42, 48, 0.1);
+		border-color: rgba(71, 171, 197, 0.79);
 		border-top-left-radius: 10px;
 		border-top-right-radius: 10px;
 
@@ -67,7 +70,7 @@ body.transpblue {
 	&> .panel-body {
 		border-bottom-left-radius: 10px;
 		border-bottom-right-radius: 10px;
-		background-color: #112a3075;
+		background-color: rgba(17, 42, 48, 0.46);
 
 		@media screen and (min-width: 3800px) {
 			padding: 5em;
@@ -96,11 +99,11 @@ body.transpblue {
 		}
 
 		&> thead > tr > th {
-			border-bottom: 2px solid #296271c9;
+			border-bottom: 2px solid rgba(41, 98, 113, 0.79);
 			border-top: none;
 		}
 		&> tbody > tr > td {
-			border-bottom: 1px solid #296271c9;
+			border-bottom: 1px solid rgba(41, 98, 113, 0.79);
 			border-top: none;
 		}
 
@@ -109,7 +112,7 @@ body.transpblue {
 	.table-striped {
 
 		&> tbody > tr:nth-of-type(2n+1) {
-			background-color: #14343c1a;
+			background-color: rgba(20, 52, 60, 0.1);
 		}
 
 	}

@@ -282,28 +282,6 @@ $(window).on('resize', function() {
     hourlychart.render();
 });
 
-theme.register('blue', '蓝色风格', function() {
-	$('body')
-		.removeClass('transpblue')
-		.removeClass('transporange');
-	$('.panel')
-		.removeClass('panel-success')
-		.removeClass('panel-primary')
-		.removeClass('panel-transpblue')
-		.removeClass('panel-transporange')
-		.addClass('panel-primary');
-});
-theme.register('green', '绿色风格', function() {
-	$('body')
-		.removeClass('transpblue')
-		.removeClass('transporange');
-	$('.panel')
-		.removeClass('panel-success')
-		.removeClass('panel-primary')
-		.removeClass('panel-transpblue')
-		.removeClass('panel-transporange')
-		.addClass('panel-success');
-});
 theme.register('transpblue', '蓝色透明风格', function() {
 	$('body')
 		.removeClass('transpblue')
@@ -327,6 +305,28 @@ theme.register('transporange', '橘色透明风格', function() {
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
 		.addClass('panel-transporange');
+});
+theme.register('blue', '蓝色风格', function() {
+	$('body')
+		.removeClass('transpblue')
+		.removeClass('transporange');
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
+		.removeClass('panel-transporange')
+		.addClass('panel-primary');
+});
+theme.register('green', '绿色风格', function() {
+	$('body')
+		.removeClass('transpblue')
+		.removeClass('transporange');
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
+		.removeClass('panel-transporange')
+		.addClass('panel-success');
 });
 theme.init('performance');
     </script>

@@ -15,7 +15,7 @@ body.transporange {
 
 				&:focus,
 				&:hover {
-					background-color: #f19f7b99;
+					background-color: rgba(241, 159, 123, 0.6);
 				}
 			}
 
@@ -23,7 +23,7 @@ body.transporange {
 				&> a,
 				&> a:focus,
 				&> a:hover {
-					background-color: #dc8540b3;
+					background-color: rgba(220, 133, 64, 0.7);
 					color: #fde0c6;
 				}
 			}
@@ -40,8 +40,8 @@ body.transporange {
 	&> .panel-heading {
 		text-shadow: 2px 2px 8px #44250f;
 		color: #e2ccc7;
-		background-color: #a8611f65;
-		border-color: #704019c9;
+		background-color: rgba(168, 97, 31, 0.4);
+		border-color: rgba(112, 64, 25, 0.79);
 		border-top-left-radius: 10px;
 		border-top-right-radius: 10px;
 
@@ -60,7 +60,7 @@ body.transporange {
 	&> .panel-body {
 		border-bottom-left-radius: 10px;
 		border-bottom-right-radius: 10px;
-		background-color: #c5511c4d;
+		background-color: rgba(197, 81, 28, 0.3);
 
 		@media screen and (min-width: 3800px) {
 			padding: 5em;
@@ -75,8 +75,8 @@ body.transporange {
 	}
 
 	&> .panel-footer {
-		background-color: #a8611f65;
-		border-color: #704019c9;
+		background-color: rgba(168, 97, 31, 0.4);
+		border-color: rgba(112, 64, 25, 0.79);
 
 		@media screen and (min-width: 3800px) {
 			font-size: 2em;
@@ -93,7 +93,7 @@ body.transporange {
 			margin: 15px 0;
 			padding: 2em;
 			box-shadow: 5px 5px 14px #310e0e;
-			background-color: #352323be;
+			background-color: rgba(53, 35, 35, 0.75);
 			border-width: 0;
 			color: #ffddd4;
 
@@ -126,11 +126,11 @@ body.transporange {
 		}
 
 		&> thead > tr > th {
-			border-bottom: 2px solid #e4956a99;
+			border-bottom: 2px solid rgba(228, 149, 106, 0.6);
 			border-top: none;
 		}
 		&> tbody > tr > td {
-			border-bottom: 1px solid #e4956a99;
+			border-bottom: 1px solid rgba(228, 149, 106, 0.6);
 			border-top: none;
 		}
 
@@ -139,7 +139,7 @@ body.transporange {
 	.table-striped {
 
 		&> tbody > tr:nth-of-type(2n+1) {
-			background-color: #3c18141a;
+			background-color: rgba(60, 24, 20, 0.1);
 		}
 
 	}
