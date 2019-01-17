@@ -150,6 +150,7 @@ public class ShipmentDao {
     @Autowired
     private PerfMonService perfMon;
 
+    /*
     private final static String sqlTrolleys = "select distinct" +
             "    dd.DROPID trolley_id," +
             "    o.CONSIGNEEKEY factory," +
@@ -171,24 +172,45 @@ public class ShipmentDao {
             "                inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY'" +
             "        group by dd.DROPID" +
             "    ) t on t.trolley_id = dd.DROPID";
+    */
+
+    private final static String sqlTrolleys = "select" +
+            "    t.trolley_id," +
+            "    max(o.CONSIGNEEKEY) factory," +
+            "    max(o.TRADINGPARTNER) line," +
+            "    t.box_qty," +
+            "    max(o.APPOINTMENTKEY) appointment_key " +
+            "from (" +
+            "    select" +
+            "        d.DROPID trolley_id," +
+            "        count(distinct dd.CHILDID) box_qty" +
+            "    from DROPID d" +
+            "        inner join DROPIDDETAIL dd on dd.DROPID = d.DROPID" +
+            "    where d.CARTONTYPE = 'TROLLEY' and d.DROPLOC = 'LKSHIP'" +
+            "    group by d.DROPID) t " +
+            "inner join DROPIDDETAIL dd on dd.DROPID = t.trolley_id " +
+            "inner join PICKDETAIL p on p.DROPID = dd.CHILDID " +
+            "inner join ORDERS o on o.ORDERKEY = p.ORDERKEY " +
+            "group by t.trolley_id, t.box_qty";
 
     private final static String sqlTrolleyOrders = "select " +
-            "    dd.DROPID trolley_id," +
+            "    d.DROPID trolley_id," +
             "    o.ORDERKEY order_key," +
             "    o.STATUS order_status," +
             "    trim(o.APPOINTMENTKEY) appt_key," +
-            "    l.PUTAWAYZONE " +
+            // "    l.PUTAWAYZONE " +
+            "    d.DROPLOC " +
             "from ORDERS o" +
             "    inner join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' and s.SUSR2 = 'CQ2'" +
             "    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
-            "    inner join LOC l on l.LOC = p.LOC" +
+            // "    inner join LOC l on l.LOC = p.LOC" +
             // "    inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY='CQ2'" +
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
             "    inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY' " +
             "where" +
             "    o.STATUS not in ('98', '99', '95')";
 
-    private final static String sqlAppointments = "select distinct" +
+    private final static String sqlAppointments = "select " +
             "    a.APPOINTMENTKEY appointment_key," +
             "    max(o.CONSIGNEEKEY) factory," +
             "    max(o.TRADINGPARTNER) line," +
@@ -196,7 +218,9 @@ public class ShipmentDao {
             "from APPOINTMENT a" +
             "    inner join ORDERS o on o.APPOINTMENTKEY = a.APPOINTMENTKEY" +
             "        inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
-            "        inner join LOC l on l.LOC = p.LOC and l.PUTAWAYZONE = 'LKSHIP' " +
+            "        inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
+            "        inner join DROPID d on d.DROPID = dd.DROPID and d.DROPLOC = 'LKSHIP' " +
+            // "        inner join LOC l on l.LOC = p.LOC and l.PUTAWAYZONE = 'LKSHIP' " +
             "where a.STATUS <> '5COMP' " +
             "group by a.APPOINTMENTKEY, a.ADDDATE " +
             "order by start_time";
