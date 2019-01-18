@@ -25,8 +25,6 @@
 						<div id="pie-chart" style="height: 300px;"></div>
 					</div>
 				</div>
-			</div>
-			<div class="col-md-8">
 				<div class="panel panel-success">
 					<div class="panel-heading">
 						预约计时
@@ -36,9 +34,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
+			<div class="col-md-8">
 				<div class="panel panel-success">
 					<div class="panel-heading">
 						台车信息
@@ -79,16 +75,19 @@ var STATUS_MAP = {
 
 function estimateChartSizes() {
 	var w = $(window),
-		estHeight = (w.height() - 200) / 3 - 80,
+		pieHeight = (w.height() - 200) / 3 - 80,
+		qPieChart = $('#pie-chart'),
 		qBarChart = $('#bar-chart'),
-		qPieChart = $('#pie-chart');
-	if (estHeight < 300) estHeight = 300;
-	qPieChart.height(estHeight);
-	qBarChart.height(estHeight);
+		barOffset = qBarChart.offset(),
+		barHeight = w.height() - barOffset.top - 128;
+	if (pieHeight < 300) pieHeight = 300;
+	if (barHeight < 300) barHeight = 300;
+	qPieChart.height(pieHeight);
+	qBarChart.height(barHeight);
 }
 estimateChartSizes();
 var piechart = PieChart('pie-chart', '单数', STATUS_TRANS);
-var barchart = SingleBarChart('bar-chart', '等待时间', false, formatDuration);
+var barchart = SingleBarChart('bar-chart', '等待时间', true, formatDuration);
 var datatable = DataTable('data-table', 5000, [
 	function(row) { return row.trolleyId; },
 	function(row) { return row.factory || '-'; },
