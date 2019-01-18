@@ -4,13 +4,14 @@
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<title>看板</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1547705916" rel="stylesheet">
+		<link href="/build/styles.min.css?1547800911" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/build/common.js?1547630069"></script>
+		<script src="/build/common.js?1547800911"></script>
 		<script src="/build/asrs-view.js?1547630069"></script>
 		<script src="/build/theme.js?1547630069"></script>
 		<style>
@@ -43,7 +44,7 @@ svg#asrs-view {
 	</head>
 	<body>
 		<div class="row">
-			<div class="col-md-3">
+			<div class="col-xs-3">
 				<div class="panel panel-success" id="block-in-kpi">
 					<div class="panel-heading">
 						入库KPI
@@ -78,7 +79,7 @@ svg#asrs-view {
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6">
+			<div class="col-xs-6">
 				<h1>立库概况</h1>
 				<div class="panel panel-default" id="block-asrs-view">
 					<div class="panel-body">
@@ -159,7 +160,7 @@ svg#asrs-view {
 					</div>
 				</div>
 			</div>
-			<div class="col-md-3">
+			<div class="col-xs-3">
 				<div class="panel panel-success" id="block-error-info">
 					<div class="panel-body">
 						<div class="panel panel-warning">
