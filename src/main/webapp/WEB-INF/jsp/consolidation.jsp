@@ -194,6 +194,8 @@ theme.register('transpblue', '蓝色透明风格', function() {
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
 		.addClass('panel-transpblue');
+	piechart.updateFontColor(COLOR_TEXT);
+	linechart.updateFontColor(COLOR_TEXT);
 });
 theme.register('transporange', '橘色透明风格', function() {
 	$('body')
@@ -206,6 +208,8 @@ theme.register('transporange', '橘色透明风格', function() {
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
 		.addClass('panel-transporange');
+	piechart.updateFontColor('#612d07');
+	linechart.updateFontColor('#612d07');
 });
 theme.register('blue', '蓝色风格', function() {
 	$('body')
@@ -217,6 +221,8 @@ theme.register('blue', '蓝色风格', function() {
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
 		.addClass('panel-primary');
+	piechart.updateFontColor(COLOR_TEXT);
+	linechart.updateFontColor(COLOR_TEXT);
 });
 theme.register('green', '绿色风格', function() {
 	$('body')
@@ -228,6 +234,8 @@ theme.register('green', '绿色风格', function() {
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
 		.addClass('panel-success');
+	piechart.updateFontColor(COLOR_TEXT);
+	linechart.updateFontColor(COLOR_TEXT);
 });
 theme.init('consolidation');
 	</script>

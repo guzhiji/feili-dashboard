@@ -86,25 +86,10 @@ function estimateChartFontSize() {
     if (width >= 3800)
         return (base * 1.8).toFixed(0);
     if (width >= 1900)
-        return (base * 1).toFixed(0);
+        return (base * 1.2).toFixed(0);
     if (width >= 1200)
-        return (base * 0.8).toFixed(0);
+        return (base * 1.0).toFixed(0);
     return base * 0.5;
-}
-
-// https://stackoverflow.com/questions/1125084/how-to-make-the-window-full-screen-with-javascript-stretching-all-over-the-scre
-function requestFullScreen(element) {
-    // Supports most browsers and their versions.
-    var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
-
-    if (requestMethod) { // Native full screen.
-        requestMethod.call(element);
-    } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-        var wscript = new ActiveXObject("WScript.Shell");
-        if (wscript !== null) {
-            wscript.SendKeys("{F11}");
-        }
-    }
 }
 
 var PieChart = function(id, name, translatedLabels) {
@@ -161,6 +146,8 @@ var PieChart = function(id, name, translatedLabels) {
     }
 
     function updateFontSize(size) {
+        option.legend.textStyle.fontSize = size;
+        option.series[0].label.fontSize = size;
         chart.setOption({
             legend: {
                 textStyle: {
@@ -171,6 +158,25 @@ var PieChart = function(id, name, translatedLabels) {
                 {
                     label: {
                         fontSize: size
+                    }
+                }
+            ]
+        });
+    }
+
+    function updateFontColor(color) {
+        option.legend.textStyle.color = color;
+        option.series[0].label.color = color;
+        chart.setOption({
+            legend: {
+                textStyle: {
+                    color: color
+                }
+            },
+            series: [
+                {
+                    label: {
+                        color: color
                     }
                 }
             ]
@@ -205,6 +211,7 @@ var PieChart = function(id, name, translatedLabels) {
             });
         },
         updateFontSize: updateFontSize,
+        updateFontColor: updateFontColor,
         update: update
     };
 };
@@ -357,6 +364,13 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
     }
 
     function updateFontSize(size) {
+        option.legend.textStyle.fontSize = size;
+        if (option.tooltip.textStyle)
+            option.tooltip.textStyle.fontSize = size;
+        else
+            option.tooltip.textStyle = {fontSize: size};
+        option.xAxis[0].axisLabel.fontSize = size;
+        option.yAxis[0].axisLabel.fontSize = size;
         chart.setOption({
             legend: {
                 textStyle: {
@@ -385,6 +399,42 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
         });
     }
 
+    function updateFontColor(color) {
+        option.legend.textStyle.color = color;
+        if (option.tooltip.textStyle)
+            option.tooltip.textStyle.color = color;
+        else
+            option.tooltip.textStyle = {color: color};
+        option.xAxis[0].axisLabel.color = color;
+        option.yAxis[0].axisLabel.color = color;
+        chart.setOption({
+            legend: {
+                textStyle: {
+                    color: color
+                }
+            },
+            tooltip: {
+                textStyle: {
+                    color: color
+                }
+            },
+            xAxis: [
+                {
+                    axisLabel: {
+                        color: color
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    axisLabel: {
+                        color: color
+                    }
+                }
+            ]
+        });
+    }
+
     if (xFormatter)
         option.xAxis[0].axisLabel.formatter = xFormatter;
     chart.setOption(option);
@@ -406,6 +456,7 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
             });
         },
         updateFontSize: updateFontSize,
+        updateFontColor: updateFontColor,
         update: update,
         load: function(values) {
             initData();
@@ -501,6 +552,13 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
     chart.setOption(option);
 
     function updateFontSize(size) {
+        option.legend.textStyle.fontSize = size;
+        if (option.tooltip.textStyle)
+            option.tooltip.textStyle.fontSize = size;
+        else
+            option.tooltip.textStyle = {fontSize: size};
+        option.yAxis.axisLabel.fontSize = size;
+        option.xAxis.axisLabel.fontSize = size;
         chart.setOption({
             legend: {
                 textStyle: {
@@ -520,6 +578,38 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
             xAxis: {
                 axisLabel: {
                     fontSize: size
+                }
+            }
+        });
+    }
+
+    function updateFontColor(color) {
+        option.legend.textStyle.color = color;
+        if (option.tooltip.textStyle)
+            option.tooltip.textStyle.color = color;
+        else
+            option.tooltip.textStyle = {color: color};
+        option.yAxis.axisLabel.color = color;
+        option.xAxis.axisLabel.color = color;
+        chart.setOption({
+            legend: {
+                textStyle: {
+                    color: color
+                }
+            },
+            tooltip: {
+                textStyle: {
+                    color: color
+                }
+            },
+            yAxis: {
+                axisLabel: {
+                    color: color
+                }
+            },
+            xAxis: {
+                axisLabel: {
+                    color: color
                 }
             }
         });
@@ -546,6 +636,7 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
             renderData();
         },
         updateFontSize: updateFontSize,
+        updateFontColor: updateFontColor,
         load: function(values) {
             bars = [];
             labels = [];
