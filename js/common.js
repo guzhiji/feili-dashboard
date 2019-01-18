@@ -487,7 +487,7 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
     };
 };
 
-var SingleBarChart = function(id, name, yAxisLabelFormatter) {
+var SingleBarChart = function(id, name, vertical, yAxisLabelFormatter) {
     var chart = echarts.init(document.getElementById(id)),
         bars = [],
         labels = [],
@@ -505,49 +505,57 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
                 show: true,
                 formatter: '{b}: {c}'
             },
-            yAxis: {
-                splitLine: {
-                    lineStyle: {
-                        color: [COLOR_DARK_LINE]
-                    }
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: COLOR_DARK_LINE
-                    }
-                },
-                axisLabel: {
-                    color: COLOR_TEXT,
-                    formatter: yAxisLabelFormatter
-                }
-            },
-            xAxis: {
-                splitLine: {
-                    lineStyle: {
-                        color: [COLOR_DARK_LINE]
-                    }
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: COLOR_DARK_LINE
-                    }
-                },
-                axisLabel: {
-                    color: COLOR_TEXT
-                },
-                data: labels
-            },
             series: [
                 {
                     name: name,
                     type: 'bar',
+                    barMaxWidth: 30,
                     itemStyle: {
                         opacity: 0.9
                     },
                     data: data
                 }
             ]
+        },
+        valueAxis = {
+            splitLine: {
+                lineStyle: {
+                    color: [COLOR_DARK_LINE]
+                }
+            },
+            axisLine: {
+                lineStyle: {
+                    color: COLOR_DARK_LINE
+                }
+            },
+            axisLabel: {
+                color: COLOR_TEXT,
+                formatter: yAxisLabelFormatter
+            }
+        },
+        categoryAxis = {
+            splitLine: {
+                lineStyle: {
+                    color: [COLOR_DARK_LINE]
+                }
+            },
+            axisLine: {
+                lineStyle: {
+                    color: COLOR_DARK_LINE
+                }
+            },
+            axisLabel: {
+                color: COLOR_TEXT
+            },
+            data: labels
         };
+    if (vertical) {
+        option.yAxis = categoryAxis;
+        option.xAxis = valueAxis;
+    } else {
+        option.xAxis = categoryAxis;
+        option.yAxis = valueAxis;
+    }
 
     chart.setOption(option);
 
@@ -616,10 +624,16 @@ var SingleBarChart = function(id, name, yAxisLabelFormatter) {
     }
 
     function renderData() {
-        chart.setOption({
-            xAxis: {data: labels},
-            series: [{data: data}]
-        });
+        if (vertical)
+            chart.setOption({
+                yAxis: {data: labels},
+                series: [{data: data}]
+            });
+        else
+            chart.setOption({
+                xAxis: {data: labels},
+                series: [{data: data}]
+            });
     }
 
     return {

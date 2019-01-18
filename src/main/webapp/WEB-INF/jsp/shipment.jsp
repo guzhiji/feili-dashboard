@@ -88,7 +88,7 @@ function estimateChartSizes() {
 }
 estimateChartSizes();
 var piechart = PieChart('pie-chart', '单数', STATUS_TRANS);
-var barchart = SingleBarChart('bar-chart', '等待时间', formatDuration);
+var barchart = SingleBarChart('bar-chart', '等待时间', false, formatDuration);
 var datatable = DataTable('data-table', 5000, [
 	function(row) { return row.trolleyId; },
 	function(row) { return row.factory || '-'; },
