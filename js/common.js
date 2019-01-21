@@ -712,7 +712,7 @@ var DataTable = function(id, refreshRate, fields) {
             createRow(tbody);
             count++;
         }
-        while (count < 5) {
+        while (count < 4) {
             createRow(tbody);
             count++;
         }

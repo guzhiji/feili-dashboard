@@ -12,7 +12,7 @@
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/build/common.js?1547800911"></script>
+		<script src="/build/common.js?1548038745"></script>
 		<script src="/build/theme.js?1547630069"></script>
 	</head>
 	<body>
@@ -84,7 +84,7 @@ function estimateChartSizes() {
 		estHeight = (w.height() - 200) / 3 - 80,
 		qBarChart = $('#bar-chart'),
 		qPieChart = $('#pie-chart');
-	if (estHeight < 300) estHeight = 300;
+	if (estHeight < 250) estHeight = 250;
 	qPieChart.height(estHeight);
 	qBarChart.height(estHeight);
 }
