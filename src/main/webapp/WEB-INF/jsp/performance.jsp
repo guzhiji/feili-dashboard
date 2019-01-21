@@ -9,6 +9,7 @@
 		<link href="/build/styles.min.css?1547705916" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
 		<script src="/build/common.js?1547630069"></script>
 		<script src="/build/theme.js?1547630069"></script>
@@ -191,33 +192,11 @@ minutelychart.updateFontSize(chartFontSize);
 hourlychart.updateFontSize(chartFontSize);
 
 var connected = false;
-var ws = null;
+var stomp = null;
 function connect() {
-	ws = new SockJS('/sockjs/performance');
-	ws.onmessage = function (evt) {
-		var arr = evt.data.split(':');
-		if (arr.length) {
-			if (arr[0] in sources) {
-				var t = parseInt(arr[1]),
-					min = toMinute(t),
-					hr = toHour(t),
-					m = parseInt(arr[2]),
-					p = {};
-				p[arr[0]] = m;
-				realtimechart.update(t, p);
-				if (min != currentMinute) {
-					currentMinute = min;
-					loadMinutelyData();
-					loadHourlyData();
-				}
-				if (hr != currentHour) {
-					currentHour = hr;
-					loadHourlyData();
-				}
-			}
-		}
-	};
-	ws.onopen = function (evt) {
+	var ws = new SockJS('/sockjs');
+	stomp = Stomp.over(ws);
+	stomp.connect({}, function() {
 		connected = true;
 		$('#error-message').fadeOut();
 		$.get('/performance/data/realtime.json', function(data) {
@@ -225,8 +204,30 @@ function connect() {
 		});
 		loadMinutelyData();
 		loadHourlyData();
-	};
-	ws.onclose = function (evt) {
+		stomp.subscribe('/dashboard/performance', function(msg) {
+			var arr = msg.body.split(':');
+			if (arr.length) {
+				if (arr[0] in sources) {
+					var t = parseInt(arr[1]),
+						min = toMinute(t),
+						hr = toHour(t),
+						m = parseInt(arr[2]),
+						p = {};
+					p[arr[0]] = m;
+					realtimechart.update(t, p);
+					if (min != currentMinute) {
+						currentMinute = min;
+						loadMinutelyData();
+						loadHourlyData();
+					}
+					if (hr != currentHour) {
+						currentHour = hr;
+						loadHourlyData();
+					}
+				}
+			}
+		});
+	}, function() {
 		var e = $('#error-message'), w = $(window);
 		e.css({
 			top: (w.height() - e.height()) / 2,
@@ -235,7 +236,7 @@ function connect() {
 		realtimechart.clear();
 		connected = false;
 		setTimeout(connect, 1000);
-	};
+	});
 }
 connect();
 

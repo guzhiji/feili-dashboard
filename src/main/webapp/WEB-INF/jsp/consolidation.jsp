@@ -9,6 +9,7 @@
 		<link href="/build/styles.min.css?1547705916" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
 		<script src="/build/common.js?1547630069"></script>
 		<script src="/build/theme.js?1547630069"></script>
@@ -125,33 +126,33 @@ piechart.updateFontSize(chartFontSize);
 linechart.updateFontSize(chartFontSize);
 
 var connected = false;
-var ws = null;
+var stomp = null;
 function connect() {
-	ws = new SockJS('/sockjs/consolidation');
-	ws.onmessage = function(evt) {
-		var arr = evt.data.split(':');
-		if (arr.length) {
-			if (arr[0] == 'pie') {
-				piechart.update(deserializeMessage(arr[1], parseInt));
-			} else if (arr[0] == 'line') {
-				var t = parseInt(arr[1]);
-				linechart.update(t, deserializeMessage(arr[2], parseInt));
-			} else if (arr[0] == 'init') {
-				$.get('/consolidation/table.json', updateTableData).done(datatable.render);
-				$.get('/consolidation/history.json', linechart.load);
-			} else if (arr[0] == 'basetime') {
-				setBaseTime(arr[1]);
-			}
-		}
-	};
-	ws.onopen = function(evt) {
+	var ws = new SockJS('/sockjs');
+	stomp = Stomp.over(ws);
+	stomp.connect({}, function() {
 		connected = true;
 		$('#error-message').fadeOut();
 		$.get('/consolidation/table.json', updateTableData).done(datatable.render);
 		$.get('/consolidation/history.json', linechart.load);
 		$.get('/consolidation/status.json', piechart.update);
-	};
-	ws.onclose = function(evt) {
+		stomp.subscribe('/dashboard/consolidation', function(msg) {
+			var arr = msg.body.split(':');
+			if (arr.length) {
+				if (arr[0] == 'pie') {
+					piechart.update(deserializeMessage(arr[1], parseInt));
+				} else if (arr[0] == 'line') {
+					var t = parseInt(arr[1]);
+					linechart.update(t, deserializeMessage(arr[2], parseInt));
+				} else if (arr[0] == 'init') {
+					$.get('/consolidation/table.json', updateTableData).done(datatable.render);
+					$.get('/consolidation/history.json', linechart.load);
+				} else if (arr[0] == 'basetime') {
+					setBaseTime(arr[1]);
+				}
+			}
+		});
+	}, function() {
 		var e = $('#error-message'), w = $(window);
 		e.css({
 			top: (w.height() - e.height()) / 2,
@@ -162,7 +163,7 @@ function connect() {
 		piechart.clear();
 		connected = false;
 		setTimeout(connect, 1000);
-	};
+	});
 }
 connect();
 setInterval(function() {

@@ -1,6 +1,7 @@
 package com.feiliks.dashboard.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +11,7 @@ import java.util.*;
 public class ShipmentTask {
 
     @Autowired
-    private WebSocketHandler wsShipmentHandler;
+    private SimpMessagingTemplate wsShipment;
 
     @Autowired
     private ShipmentDao dao;
@@ -22,6 +23,10 @@ public class ShipmentTask {
     public ShipmentTask() {
         for (ShipmentDao.Status status : ShipmentDao.Status.values())
             ordersByStatus.put(status.name(), 0);
+    }
+
+    private void broadcast(String msg) {
+        wsShipment.convertAndSend("/dashboard/shipment", msg);
     }
 
     private static String stringifyStats(Map<String, Integer> stats) {
@@ -63,7 +68,7 @@ public class ShipmentTask {
                 ordersByStatus.put(k, n);
             }
         }
-        if (updated) wsShipmentHandler.broadcast("pie:" + stringifyStats(ordersByStatus));
+        if (updated) broadcast("pie:" + stringifyStats(ordersByStatus));
         table = trolleys;
 
         List<ShipmentDao.Appointment> newAppointments = dao.getAppointments();
@@ -75,15 +80,15 @@ public class ShipmentTask {
         appointments = newAppointments;
         // notify updates
         for (ShipmentDao.Appointment a : removed) {
-            wsShipmentHandler.broadcast("bar:remove:" + a.toString());
+            broadcast("bar:remove:" + a.toString());
             updated = true;
         }
         for (ShipmentDao.Appointment a : added) {
-            wsShipmentHandler.broadcast("bar:add:" + a.toString());
+            broadcast("bar:add:" + a.toString());
             updated = true;
         }
 
-        if (!updated) wsShipmentHandler.broadcast("heartbeat:" + System.currentTimeMillis());
+        if (!updated) broadcast("heartbeat:" + System.currentTimeMillis());
 
     }
 

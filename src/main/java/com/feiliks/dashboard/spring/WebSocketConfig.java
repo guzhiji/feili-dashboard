@@ -1,48 +1,27 @@
 package com.feiliks.dashboard.spring;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-// import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 
 @Configuration
-// @EnableWebMvc
-@EnableWebSocket
-public class WebSocketConfig implements WebSocketConfigurer {
-
-    private WebSocketHandler _wsConsolidationHandler = null;
-    private WebSocketHandler _wsShipmentHandler = null;
-    private WebSocketHandler _wsPerformanceHandler = null;
+@EnableWebSocketMessageBroker
+@EnableJms
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(wsConsolidationHandler(), "/sockjs/consolidation").withSockJS();
-        webSocketHandlerRegistry.addHandler(wsShipmentHandler(), "/sockjs/shipment").withSockJS();
-        webSocketHandlerRegistry.addHandler(wsPerformanceHandler(), "/sockjs/performance").withSockJS();
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/sockjs").withSockJS();
     }
 
-    @Bean
-    public WebSocketHandler wsConsolidationHandler() {
-        if (_wsConsolidationHandler == null)
-            _wsConsolidationHandler = new WebSocketHandler();
-        return _wsConsolidationHandler;
-    }
-
-    @Bean
-    public WebSocketHandler wsShipmentHandler() {
-        if (_wsShipmentHandler == null)
-            _wsShipmentHandler = new WebSocketHandler();
-        return _wsShipmentHandler;
-    }
-
-    @Bean
-    public WebSocketHandler wsPerformanceHandler() {
-        if (_wsPerformanceHandler == null)
-            _wsPerformanceHandler = new WebSocketHandler();
-        return _wsPerformanceHandler;
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        // subscribe /dashboard/consolidation, /dashboard/shipment, /dashboard/performance
+        registry.enableSimpleBroker("/dashboard/");
     }
 
 }

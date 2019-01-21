@@ -9,6 +9,7 @@
 		<link href="/build/styles.min.css?1547705916" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
 		<script src="/build/common.js?1547630069"></script>
 		<script src="/build/asrs-view.js?1547630069"></script>

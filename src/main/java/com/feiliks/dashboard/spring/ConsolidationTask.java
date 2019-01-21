@@ -1,6 +1,7 @@
 package com.feiliks.dashboard.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +11,7 @@ import java.util.*;
 public class ConsolidationTask {
 
     @Autowired
-    private WebSocketHandler wsConsolidationHandler;
+    private SimpMessagingTemplate wsConsolidation;
 
     @Autowired
     private ConsolidationDao dao;
@@ -107,7 +108,7 @@ public class ConsolidationTask {
             }
         }
         if (_computeHourlyStats() || isNewHour) {
-            wsConsolidationHandler.broadcast("line:" + currentHour.getTime() + ":" + stringifyStats(currentHourStats));
+            broadcast("line:" + currentHour.getTime() + ":" + stringifyStats(currentHourStats));
             dataSent = true;
         }
     }
@@ -129,7 +130,7 @@ public class ConsolidationTask {
             }
         }
         if (updated) {
-            wsConsolidationHandler.broadcast("pie:" + stringifyStats(currentStats));
+            broadcast("pie:" + stringifyStats(currentStats));
             dataSent = true;
         }
     }
@@ -187,8 +188,12 @@ public class ConsolidationTask {
         }
         for (HourlyStats stats : result)
             historicalStats.addFirst(stats);
-        wsConsolidationHandler.broadcast("init:" + System.currentTimeMillis());
+        broadcast("init:" + System.currentTimeMillis());
         dataSent = true;
+    }
+
+    private void broadcast(String msg) {
+        wsConsolidation.convertAndSend("/dashboard/consolidation", msg);
     }
 
     private static String stringifyStats(Map<String, Integer> stats) {
@@ -237,7 +242,7 @@ public class ConsolidationTask {
             computeHourlyStats(tableData, isNewHour);
         }
         computeCurrentStats(tableData);
-        if (!dataSent) wsConsolidationHandler.broadcast("heartbeat:" + System.currentTimeMillis());
+        if (!dataSent) broadcast("heartbeat:" + System.currentTimeMillis());
 
     }
 
