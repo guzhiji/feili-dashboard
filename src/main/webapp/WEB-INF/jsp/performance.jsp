@@ -4,20 +4,21 @@
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<title>看板 - 数据库性能</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1547705916" rel="stylesheet">
+		<link href="/build/styles.min.css?1547800911" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/build/common.js?1547630069"></script>
+		<script src="/build/common.js?1547800911"></script>
 		<script src="/build/theme.js?1547630069"></script>
 	</head>
 	<body>
 		<h1>数据库性能看板</h1>
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-xs-12">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						查询延迟实时数据
@@ -27,7 +28,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6">
+			<div class="col-xs-6">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						查询延迟分钟级历史数据
@@ -45,7 +46,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6">
+			<div class="col-xs-6">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						查询延迟小时级历史数据

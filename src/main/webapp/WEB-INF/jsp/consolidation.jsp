@@ -4,20 +4,21 @@
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<title>看板 - 集货</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1547705916" rel="stylesheet">
+		<link href="/build/styles.min.css?1547800911" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/build/common.js?1547630069"></script>
+		<script src="/build/common.js?1547800911"></script>
 		<script src="/build/theme.js?1547630069"></script>
 	</head>
 	<body>
 		<h1>集货看板</h1>
 		<div class="row">
-			<div class="col-md-4">
+			<div class="col-xs-4">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						集货订单状态
@@ -27,7 +28,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-8">
+			<div class="col-xs-8">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						今日集货订单量
@@ -39,7 +40,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-xs-12">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						台车信息
