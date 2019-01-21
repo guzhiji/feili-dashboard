@@ -6,6 +6,17 @@ body.transporange {
 
 	h1 {
 		color: #ffe9d1;
+
+		a {
+			color: #ffe9d1;
+			&:hover {
+				color: #dfaa72;
+			}
+			&:focus,
+			&:active {
+				color: #9e7e5d;
+			}
+		}
 	}
 
 	#error-message {

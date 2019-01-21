@@ -55,7 +55,7 @@ var theme = (function() {
         };
     }
 
-    function init(board) {
+    function init(board, optionBtn) {
         if ($('#context-menu').length)
             return;
         var menu = $('<ul class="dropdown-menu" id="context-menu"></ul>'),
@@ -109,6 +109,16 @@ var theme = (function() {
                 return false;
             })
             .append(menu);
+        if (optionBtn) {
+            $(optionBtn).on('click', function(e) {
+                $('#context-menu').css({
+                    display: 'block',
+                    left: e.pageX,
+                    top: e.pageY
+                });
+                return false;
+            });
+        }
     }
 
     return {

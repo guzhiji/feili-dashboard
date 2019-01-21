@@ -7,16 +7,19 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<title>看板 - 出货</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1547800911" rel="stylesheet">
+		<link href="/build/styles.min.css?1548079168" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
 		<script src="/build/common.js?1548062670"></script>
-		<script src="/build/theme.js?1547630069"></script>
+		<script src="/build/theme.js?1548079168"></script>
 	</head>
 	<body>
-		<h1>出货看板</h1>
+		<h1>
+			出货看板
+			<a href="#" id="option-btn"><i class="glyphicon glyphicon-option-vertical"></i></a>
+		</h1>
 		<div class="row">
 			<div class="col-xs-4">
 				<div class="panel panel-success">
@@ -106,7 +109,7 @@ function convertStatus(value) {
 	return 3;
 }
 function updateTableData(values) {
-	if (values.sort) {
+	if (values && values.sort) {
 		values.sort(function (a, b) {
 			var sa = convertStatus(a), sb = convertStatus(b);
 			if (sa < sb) return -1;
@@ -135,6 +138,7 @@ var stomp = null;
 function connect() {
 	var ws = new SockJS('/sockjs');
 	stomp = Stomp.over(ws);
+	stomp.debug = null;
 	stomp.connect({}, function() {
 		connected = true;
 		$('#error-message').fadeOut();
@@ -264,6 +268,6 @@ theme.register('green', '绿色风格', function() {
 	piechart.updateFontColor(COLOR_TEXT);
 	barchart.updateFontColor(COLOR_TEXT);
 });
-theme.init('shipment');
+theme.init('shipment', '#option-btn');
 	</script>
 </html>
