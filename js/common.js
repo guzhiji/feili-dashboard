@@ -505,6 +505,9 @@ var SingleBarChart = function(id, name, vertical, yAxisLabelFormatter) {
                 show: true,
                 formatter: '{b}: {c}'
             },
+            grid: {
+                containLabel: true
+            },
             series: [
                 {
                     name: name,
