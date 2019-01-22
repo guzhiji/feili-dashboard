@@ -7,12 +7,12 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<title>看板 - 数据库性能</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1548079168" rel="stylesheet">
+		<link href="/build/styles.min.css?1548139581" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/build/common.js?1548062670"></script>
+		<script src="/build/common.js?1548139581"></script>
 		<script src="/build/theme.js?1548079168"></script>
 	</head>
 	<body>
@@ -229,6 +229,8 @@ function connect() {
 						currentHour = hr;
 						loadHourlyData();
 					}
+				} else if (arr[0] == 'reload') {
+					window.location.reload();
 				}
 			}
 		});

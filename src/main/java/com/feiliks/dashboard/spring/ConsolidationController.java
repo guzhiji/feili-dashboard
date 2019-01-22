@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -19,6 +20,12 @@ public class ConsolidationController {
     @GetMapping
     public String show() {
         return "consolidation";
+    }
+
+    @PostMapping("/reload")
+    public ResponseEntity<?> sendReloadCmd() {
+        task.sendReloadCmd();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/table.json")

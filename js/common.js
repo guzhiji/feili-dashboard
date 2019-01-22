@@ -88,7 +88,7 @@ function estimateChartFontSize() {
     if (width >= 1900)
         return (base * 1.2).toFixed(0);
     if (width >= 1200)
-        return (base * 1.0).toFixed(0);
+        return (base * 0.8).toFixed(0);
     return base * 0.5;
 }
 
@@ -506,7 +506,8 @@ var SingleBarChart = function(id, name, vertical, yAxisLabelFormatter) {
                 formatter: '{b}: {c}'
             },
             grid: {
-                containLabel: true
+                containLabel: true,
+                bottom: 10
             },
             series: [
                 {

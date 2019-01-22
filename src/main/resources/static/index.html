@@ -4,11 +4,21 @@
 		<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>看板</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1547647385" rel="stylesheet">
+		<link href="/build/styles.min.css?1548139581" rel="stylesheet">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<style>
 			body {
 				padding-top: 0;
+			}
+			.thumbnail {
+				background-color: #132227;
+				border-color: #174975;
+			}
+			.thumbnail:hover {
+				background-color: #082c39;
+			}
+			.thumbnail .caption h3 {
+				color: #ddd;
 			}
 		</style>
 	</head>
@@ -27,6 +37,118 @@
 			</div>
 		</nav>
 
+		<div class="container">
+			<div class="row">
+
+				<div class="col-xs-6 col-md-3">
+					<div class="thumbnail">
+						<img src="/screenshots/consolidation.png" />
+						<div class="caption">
+							<h3>集货看板</h3>
+							<p>
+								<a href="/consolidation" class="btn btn-primary" role="button">
+									<i class="glyphicon glyphicon-log-in"></i>
+									进入
+								</a>
+								<a href="#" class="btn btn-default" role="button"
+										data-reload="/consolidation/reload">
+									<i class="glyphicon glyphicon-refresh"></i>
+									重载
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xs-6 col-md-3">
+					<div class="thumbnail">
+						<img src="/screenshots/shipment.png" />
+						<div class="caption">
+							<h3>出货看板</h3>
+							<p>
+								<a href="/shipment" class="btn btn-primary" role="button">
+									<i class="glyphicon glyphicon-log-in"></i>
+									进入
+								</a>
+								<a href="#" class="btn btn-default" role="button"
+										data-reload="/shipment/reload">
+									<i class="glyphicon glyphicon-refresh"></i>
+									重载
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xs-6 col-md-3">
+					<div class="thumbnail">
+						<img src="/screenshots/large.png" />
+						<div class="caption">
+							<h3>拼接看板</h3>
+							<p>
+								<a href="/large" class="btn btn-primary" role="button">
+									<i class="glyphicon glyphicon-log-in"></i>
+									进入
+								</a>
+								<a href="#" class="btn btn-default" role="button"
+										data-reload="/large/reload">
+									<i class="glyphicon glyphicon-refresh"></i>
+									重载
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xs-6 col-md-3">
+					<div class="thumbnail">
+						<img src="/screenshots/performance.png" />
+						<div class="caption">
+							<h3>数据库性能看板</h3>
+							<p>
+								<a href="/performance" class="btn btn-primary" role="button">
+									<i class="glyphicon glyphicon-log-in"></i>
+									进入
+								</a>
+								<a href="#" class="btn btn-default" role="button"
+										data-reload="/performance/reload">
+									<i class="glyphicon glyphicon-refresh"></i>
+									重载
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div id="notification-message" class="alert alert-success">
+			已经发送重载命令
+		</div>
+
+		<script type="text/javascript">
+			$('[data-reload]').on('click', function() {
+				var self = $(this),
+					url = self.data('reload');
+				if (url) {
+					console.log('sending cmd');
+					$.post(url, null, function() {
+						console.log('cmd sent');
+						var w = $(window),
+							m = $('#notification-message');
+						m.css({
+							top: (w.height() - m.height()) / 2,
+							left: (w.width() - m.width()) / 2
+						}).fadeIn(function() {
+							setTimeout(function() {
+								m.fadeOut();
+							}, 2000);
+						});
+					});
+				}
+				return false;
+			});
+		</script>
 	</body>
 </html>
 

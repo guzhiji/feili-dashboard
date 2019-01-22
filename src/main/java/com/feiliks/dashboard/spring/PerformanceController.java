@@ -1,9 +1,12 @@
 package com.feiliks.dashboard.spring;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Collection;
@@ -21,9 +24,18 @@ public class PerformanceController {
             ShipmentDao.PERFMON_APPOINTMENTS
     };
 
+    @Autowired
+    private SimpMessagingTemplate wsPerformance;
+
     @GetMapping
     public String show() {
         return "performance";
+    }
+
+    @PostMapping("/reload")
+    public ResponseEntity<?> sendReloadCmd() {
+        wsPerformance.convertAndSend("/dashboard/performance", "reload");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/data/realtime.json")

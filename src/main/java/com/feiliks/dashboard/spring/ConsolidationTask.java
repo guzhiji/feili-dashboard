@@ -218,6 +218,10 @@ public class ConsolidationTask {
         return historicalStats;
     }
 
+    public void sendReloadCmd() {
+        broadcast("reload");
+    }
+
     @Scheduled(fixedDelay = 5000)
     public void run() {
 

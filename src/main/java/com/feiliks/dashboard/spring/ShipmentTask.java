@@ -51,6 +51,10 @@ public class ShipmentTask {
         return appointments;
     }
 
+    public void sendReloadCmd() {
+        broadcast("reload");
+    }
+
     @Scheduled(fixedDelay = 5000)
     public void run() {
 
