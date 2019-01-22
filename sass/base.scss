@@ -8,6 +8,9 @@ ul {
 }
 
 body {
+	-webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+	-webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+	-webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
 	background-color: #030708;
 	padding: 10px 20px 20px 20px;
 
