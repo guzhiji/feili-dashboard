@@ -108,11 +108,11 @@ var PieChart = function(id, name, translatedLabels) {
                 {
                     name: name,
                     type: 'pie',
-                    radius: '50%',
+                    radius: '40%',
                     label: {
                         show: true,
                         color: COLOR_TEXT,
-                        formatter: '{b}: {c} - {d}%'
+                        formatter: '{b}: {c} \n {d}%'
                     },
                     itemStyle: {
                         opacity: 0.9
