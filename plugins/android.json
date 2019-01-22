@@ -1,0 +1,18 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.feiliks.dashboard.cordova.shipment"
+    },
+    "cordova-plugin-fullscreen": {
+      "PACKAGE_NAME": "com.feiliks.dashboard.cordova.shipment"
+    }
+  },
+  "dependent_plugins": {}
+}
