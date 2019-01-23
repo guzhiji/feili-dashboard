@@ -23,7 +23,7 @@ public class DashboardEntity {
 	@ManyToOne(optional = false)
 	private TemplateEntity template;
 
-	@OneToMany(mappedBy = "dashboard")
+	@OneToMany(mappedBy = "dashboard", cascade = CascadeType.ALL)
 	private Collection<BlockEntity> blocks;
 
 	public Long getId() {

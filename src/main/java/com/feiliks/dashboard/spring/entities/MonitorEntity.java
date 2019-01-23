@@ -23,7 +23,7 @@ public class MonitorEntity {
 	@Column(name = "config_data")
 	private String configData;
 
-	@OneToMany(mappedBy = "monitor")
+	@OneToMany(mappedBy = "monitor", cascade = CascadeType.ALL)
 	private Collection<DataSourceEntity> dataSources;
 
 	public Long getId() {
