@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<title>看板 - 数据库性能</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1548139581" rel="stylesheet">
+		<link href="/build/styles.min.css?1548312135" rel="stylesheet">
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
@@ -291,16 +291,35 @@ $(window).on('resize', function() {
 	hourlychart.render();
 });
 
+theme.register('transpgreen', '绿色透明风格', function() {
+	$('body')
+		.removeClass('transpblue')
+		.removeClass('transporange')
+		.removeClass('transpgreen')
+		.addClass('transpgreen');
+	$('.panel')
+		.removeClass('panel-success')
+		.removeClass('panel-primary')
+		.removeClass('panel-transpblue')
+		.removeClass('panel-transporange')
+		.removeClass('panel-transpgreen')
+		.addClass('panel-transpgreen');
+	realtimechart.updateFontColor('#c9fcc9');
+	minutelychart.updateFontColor('#c9fcc9');
+	hourlychart.updateFontColor('#c9fcc9');
+});
 theme.register('transpblue', '蓝色透明风格', function() {
 	$('body')
 		.removeClass('transpblue')
 		.removeClass('transporange')
+		.removeClass('transpgreen')
 		.addClass('transpblue');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
+		.removeClass('panel-transpgreen')
 		.addClass('panel-transpblue');
 	realtimechart.updateFontColor(COLOR_TEXT);
 	minutelychart.updateFontColor(COLOR_TEXT);
@@ -310,12 +329,14 @@ theme.register('transporange', '橘色透明风格', function() {
 	$('body')
 		.removeClass('transpblue')
 		.removeClass('transporange')
+		.removeClass('transpgreen')
 		.addClass('transporange');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
+		.removeClass('panel-transpgreen')
 		.addClass('panel-transporange');
 	realtimechart.updateFontColor('#612d07');
 	minutelychart.updateFontColor('#612d07');
@@ -324,12 +345,14 @@ theme.register('transporange', '橘色透明风格', function() {
 theme.register('blue', '蓝色风格', function() {
 	$('body')
 		.removeClass('transpblue')
-		.removeClass('transporange');
+		.removeClass('transporange')
+		.removeClass('transpgreen');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
+		.removeClass('panel-transpgreen')
 		.addClass('panel-primary');
 	realtimechart.updateFontColor(COLOR_TEXT);
 	minutelychart.updateFontColor(COLOR_TEXT);
@@ -338,12 +361,14 @@ theme.register('blue', '蓝色风格', function() {
 theme.register('green', '绿色风格', function() {
 	$('body')
 		.removeClass('transpblue')
-		.removeClass('transporange');
+		.removeClass('transporange')
+		.removeClass('transpgreen');
 	$('.panel')
 		.removeClass('panel-success')
 		.removeClass('panel-primary')
 		.removeClass('panel-transpblue')
 		.removeClass('panel-transporange')
+		.removeClass('panel-transpgreen')
 		.addClass('panel-success');
 	realtimechart.updateFontColor(COLOR_TEXT);
 	minutelychart.updateFontColor(COLOR_TEXT);

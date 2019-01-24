@@ -27,12 +27,20 @@ body {
 }
 
 .panel {
-	transition: background 2s ease-out, border 2s ease-out;
+	transition: background-color 2s ease-out, border 2s ease-out;
 
 	&> .panel-heading,
 	&> .panel-body,
 	&> .panel-footer {
-		transition: background 2s ease-out, color 2s ease-out, opacity 2s ease-out, border 2s ease-out;
+		transition: background-color 2s ease-out, color 2s ease-out, opacity 2s ease-out, border 2s ease-out;
+	}
+
+	.table-striped {
+
+		&> tbody > tr:nth-of-type(2n+1) {
+			transition: background-color 2s ease-out, border 2s ease-out;
+		}
+
 	}
 
 }
