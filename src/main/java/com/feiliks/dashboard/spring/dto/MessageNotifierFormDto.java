@@ -26,9 +26,9 @@ public class MessageNotifierFormDto {
     private boolean isMonitor;
 
     private boolean isBroker;
-    private String brokerUri;
-    private String brokerUser;
-    private String brokerPass;
+    private String brokerUri; // tcp://localhost:61613
+    private String brokerUser; // admin
+    private String brokerPass; // password
     private String brokerDest;
 
     public MessageNotifierEntity toEntity() {

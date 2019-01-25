@@ -1,7 +1,6 @@
 package com.feiliks.dashboard.monitors;
 
-import com.feiliks.dashboard.spring.AbstractMonitorNotifier;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import com.feiliks.dashboard.spring.impl.AbstractMonitorNotifier;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -13,12 +12,7 @@ public class SqlOneRowMonitor extends AbstractMonitorNotifier {
     public void run() {
 
         try {
-            DataSource ds = DataSourceBuilder.create()
-                    .driverClassName("")
-                    .url("")
-                    .username("")
-                    .password("")
-                    .build();
+            DataSource ds = getDatabase();
             Connection conn = ds.getConnection();
             PreparedStatement pstmt = conn.prepareStatement("");
             ResultSet rs = pstmt.executeQuery();

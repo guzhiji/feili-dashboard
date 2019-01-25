@@ -1,4 +1,4 @@
-package com.feiliks.dashboard.spring;
+package com.feiliks.dashboard.spring.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

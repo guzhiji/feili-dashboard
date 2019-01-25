@@ -1,6 +1,6 @@
 package com.feiliks.dashboard.monitors;
 
-import com.feiliks.dashboard.spring.AbstractMonitorNotifier;
+import com.feiliks.dashboard.spring.impl.AbstractMonitorNotifier;
 import com.feiliks.dashboard.SysInfo;
 
 import java.util.HashMap;

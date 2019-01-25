@@ -1,7 +1,7 @@
 package com.feiliks.dashboard.monitors;
 
 import com.feiliks.dashboard.SysInfo;
-import com.feiliks.dashboard.spring.AbstractMonitorNotifier;
+import com.feiliks.dashboard.spring.impl.AbstractMonitorNotifier;
 
 public class LocalMemoryUsageMonitor extends AbstractMonitorNotifier {
 

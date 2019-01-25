@@ -25,11 +25,10 @@ public class MonitorFormDto {
     @NotNull(message = "monitor-execrate-empty")
     private Long execRate;
 
-    private boolean isDb;
-    private String dbUri;
-    private String dbUser;
-    private String dbPass;
+    private Long databaseId;
+
     private String dbSql;
+
 
     public MonitorEntity toEntity() {
         MonitorEntity entity = new MonitorEntity();
@@ -43,11 +42,8 @@ public class MonitorFormDto {
         entity.setJavaClass(javaClass);
         entity.setExecRate(execRate);
 
-        if (isDb()) {
+        if (databaseId != null && dbSql != null) {
             Map<String, String> config = new HashMap<>();
-            config.put("dbUri", getDbUri());
-            config.put("dbUser", getDbUser());
-            config.put("dbPass", getDbPass());
             config.put("dbSql", getDbSql());
             try {
                 entity.setConfigData(
@@ -92,36 +88,12 @@ public class MonitorFormDto {
         this.execRate = execRate;
     }
 
-    public boolean isDb() {
-        return isDb;
+    public Long getDatabaseId() {
+        return databaseId;
     }
 
-    public void setDb(boolean db) {
-        isDb = db;
-    }
-
-    public String getDbUri() {
-        return dbUri;
-    }
-
-    public void setDbUri(String dbUri) {
-        this.dbUri = dbUri;
-    }
-
-    public String getDbUser() {
-        return dbUser;
-    }
-
-    public void setDbUser(String dbUser) {
-        this.dbUser = dbUser;
-    }
-
-    public String getDbPass() {
-        return dbPass;
-    }
-
-    public void setDbPass(String dbPass) {
-        this.dbPass = dbPass;
+    public void setDatabaseId(Long databaseId) {
+        this.databaseId = databaseId;
     }
 
     public String getDbSql() {

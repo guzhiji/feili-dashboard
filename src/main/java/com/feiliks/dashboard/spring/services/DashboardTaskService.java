@@ -1,10 +1,12 @@
 package com.feiliks.dashboard.spring.services;
 
-import com.feiliks.dashboard.IMonitor;
-import com.feiliks.dashboard.INotifier;
+import com.feiliks.dashboard.*;
 import com.feiliks.dashboard.spring.*;
 import com.feiliks.dashboard.spring.entities.MessageNotifierEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
+import com.feiliks.dashboard.spring.impl.Messenger;
+import com.feiliks.dashboard.spring.impl.MonitorData;
+import com.feiliks.dashboard.spring.impl.NotifierData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -20,6 +22,9 @@ public class DashboardTaskService {
 
     @Autowired
     private SimpMessagingTemplate messaging;
+
+    @Autowired
+    private IDbConnManager dbConnManager;
 
     @Autowired
     private ThreadPoolTaskScheduler monitorScheduler;
@@ -97,7 +102,7 @@ public class DashboardTaskService {
 
             // initialize monitor
             IMonitor monitor = (IMonitor) runnable;
-            monitor.initMonitor(new MonitorData(monitorEntity));
+            monitor.initMonitor(new MonitorData(monitorEntity), dbConnManager);
 
             // schedule task
             MonitorTask task = new MonitorTask(monitor);

@@ -1,6 +1,7 @@
 package com.feiliks.dashboard.spring;
 
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
+import com.feiliks.dashboard.spring.impl.MonitorData;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

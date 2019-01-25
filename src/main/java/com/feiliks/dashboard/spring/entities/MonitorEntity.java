@@ -23,6 +23,9 @@ public class MonitorEntity {
 	@Column(name = "config_data")
 	private String configData;
 
+	@ManyToOne
+	private DatabaseEntity database;
+
 	@OneToMany(mappedBy = "monitor", cascade = CascadeType.ALL)
 	private Collection<DataSourceEntity> dataSources;
 
@@ -64,6 +67,14 @@ public class MonitorEntity {
 
 	public void setExecRate(long execRate) {
 		this.execRate = execRate;
+	}
+
+	public DatabaseEntity getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(DatabaseEntity database) {
+		this.database = database;
 	}
 
 	public Collection<DataSourceEntity> getDataSources() {

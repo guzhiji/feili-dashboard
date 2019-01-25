@@ -40,6 +40,9 @@
                         <c:when test="${flashMessage == 'monitor-javaclass-invalid'}">
                             <div class="alert alert-danger flash-message">监视器Java类不合法</div>
                         </c:when>
+                        <c:when test="${flashMessage == 'monitor-database-invalid'}">
+                            <div class="alert alert-danger flash-message">监视器数据库连接不合法</div>
+                        </c:when>
                         <c:when test="${flashMessage == 'monitor-execrate-empty'}">
                             <div class="alert alert-danger flash-message">请填写监视器执行频率</div>
                         </c:when>
@@ -69,6 +72,25 @@
                             <div class="col-md-10">
                                 <input type="text" name="execRate" id="input-exec-rate" class="form-control"
                                     value="${entity.execRate}" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-database" class="col-md-2 control-label">数据库连接</label>
+                            <div class="col-md-10">
+                                <select name="databaseId" id="input-database" class="form-control">
+                                    <option value="">-</option>
+                                    <c:forEach items="${databases}" var="db">
+                                        <c:choose>
+                                            <c:when test="${entity.database.id == db.id}">
+                                    <option value="${db.id}" selected="selected">${db.name} [${db.dbDriver}]</option>
+                                            </c:when>
+                                            <c:otherwise>
+                                    <option value="${db.id}">${db.name} [${db.dbDriver}]</option>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
+                                </select>
                             </div>
                         </div>
 

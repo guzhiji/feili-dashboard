@@ -1,7 +1,9 @@
-package com.feiliks.dashboard.spring;
+package com.feiliks.dashboard.spring.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.feiliks.dashboard.IDatabaseInfo;
 import com.feiliks.dashboard.IMonitorData;
+import com.feiliks.dashboard.spring.entities.DatabaseEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
 
 import java.util.Collections;
@@ -14,6 +16,7 @@ public class MonitorData implements IMonitorData {
     private final String name;
     private final String javaClass;
     private final long execRate;
+    private final IDatabaseInfo databaseInfo;
     private final Map configMap;
 
     public MonitorData(MonitorEntity entity) {
@@ -21,6 +24,13 @@ public class MonitorData implements IMonitorData {
         name = entity.getName();
         javaClass = entity.getJavaClass();
         execRate = entity.getExecRate();
+
+        DatabaseEntity database = entity.getDatabase();
+        if (database == null) {
+            databaseInfo = null;
+        } else {
+            databaseInfo = new DatabaseInfo(database);
+        }
 
         String configData = entity.getConfigData();
         Map m;
@@ -53,7 +63,13 @@ public class MonitorData implements IMonitorData {
     }
 
     @Override
+    public IDatabaseInfo getDatabaseInfo() {
+        return databaseInfo;
+    }
+
+    @Override
     public Object readConfig(String name) {
         return configMap.get(name);
     }
+
 }

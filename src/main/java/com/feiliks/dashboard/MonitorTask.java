@@ -1,11 +1,9 @@
-package com.feiliks.dashboard.spring;
-
-import com.feiliks.dashboard.IMonitor;
+package com.feiliks.dashboard;
 
 import java.util.concurrent.ScheduledFuture;
 
 
-public class MonitorTask {
+public final class MonitorTask {
 
     private final IMonitor runnable;
     private ScheduledFuture<?> scheduledFuture;

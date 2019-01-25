@@ -1,4 +1,4 @@
-package com.feiliks.dashboard.spring;
+package com.feiliks.dashboard.spring.impl;
 
 import com.feiliks.dashboard.IMessenger;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

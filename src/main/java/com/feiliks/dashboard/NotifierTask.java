@@ -1,9 +1,7 @@
-package com.feiliks.dashboard.spring;
+package com.feiliks.dashboard;
 
 
-import com.feiliks.dashboard.INotifier;
-
-public class NotifierTask {
+public final class NotifierTask {
 
     private final INotifier runnable;
     private Thread notifierThread;
