@@ -14,4 +14,7 @@ public interface IMonitor extends Runnable {
     String retrieveDataSource(String dsName);
 
     void exportDataSource(String dsName, Object data);
+
+    void exportDataSourcePreformatted(String dsName, String json);
+
 }

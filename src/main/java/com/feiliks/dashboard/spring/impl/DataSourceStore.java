@@ -20,6 +20,10 @@ public class DataSourceStore {
         data.put(internalName, value);
     }
 
+    public void storePreformatted(String internalName, String json) {
+        data.put(internalName, json);
+    }
+
     public String retrieveDataSourceAsJson(String internalName) {
         String result = data.get(internalName);
         if (result == null)

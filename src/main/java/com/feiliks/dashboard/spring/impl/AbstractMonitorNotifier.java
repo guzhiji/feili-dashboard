@@ -64,4 +64,14 @@ public abstract class AbstractMonitorNotifier implements IMonitor, INotifier {
         }
     }
 
+    @Override
+    public void exportDataSourcePreformatted(String dsName, String json) {
+        if (dataSourceStore != null) {
+            if (json == null)
+                exportDataSource(dsName, null);
+            else
+                dataSourceStore.storePreformatted(dsName, json);
+        }
+    }
+
 }

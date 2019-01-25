@@ -3,7 +3,8 @@ package com.feiliks.dashboard.monitors;
 import com.feiliks.dashboard.SysInfo;
 import com.feiliks.dashboard.spring.impl.AbstractMonitorNotifier;
 
-public class LocalMemoryUsageMonitor extends AbstractMonitorNotifier {
+
+public class LinuxMemoryUsageMonitor extends AbstractMonitorNotifier {
 
     public static class MemoryUsage {
         private long used;

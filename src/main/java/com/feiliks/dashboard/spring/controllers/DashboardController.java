@@ -36,19 +36,6 @@ public class DashboardController {
     @Autowired
     private DashboardTaskService dashboardTaskService;
 
-    @GetMapping("/{pathKey}")
-    public ModelAndView show(@PathVariable String pathKey)
-            throws NotFoundException {
-        Optional<DashboardEntity> result = dashboardRepo.findByPathKey(pathKey);
-        DashboardEntity entity = result.orElseThrow(NotFoundException::new);
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", entity.getId());
-        data.put("dashboard", entity);
-        return new ModelAndView(
-                entity.getTemplate().getInternalName(),
-                data);
-    }
-
     @GetMapping("/{id}.json")
     public ResponseEntity<DashboardDto> getDashboardData(
             @PathVariable Long id)
@@ -75,6 +62,18 @@ public class DashboardController {
         } else {
             resp.getWriter().write("null");
         }
+    }
+
+    @GetMapping("/{pathKey}")
+    public ModelAndView show(@PathVariable String pathKey)
+            throws NotFoundException {
+        Optional<DashboardEntity> result = dashboardRepo.findByPathKey(pathKey);
+        DashboardEntity entity = result.orElseThrow(NotFoundException::new);
+        Map<String, Object> data = new HashMap<>();
+        data.put("dashboard", entity);
+        return new ModelAndView("dashboard/" +
+                entity.getTemplate().getInternalName(),
+                data);
     }
 
 }

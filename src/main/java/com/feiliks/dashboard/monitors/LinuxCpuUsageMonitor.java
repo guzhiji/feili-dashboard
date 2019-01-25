@@ -9,7 +9,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
-public class LocalCpuUsageMonitor extends AbstractMonitorNotifier {
+public class LinuxCpuUsageMonitor extends AbstractMonitorNotifier {
 
     public static class CpuUsage {
         private long time;
@@ -68,6 +68,7 @@ public class LocalCpuUsageMonitor extends AbstractMonitorNotifier {
             history.poll();
         history.offer(new CpuUsage(curTime, curMsr));
 
+        exportDataSource("status", curMsr);
         exportDataSource("history", history);
     }
 

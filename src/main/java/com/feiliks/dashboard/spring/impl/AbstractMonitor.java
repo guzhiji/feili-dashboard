@@ -4,7 +4,6 @@ import com.feiliks.dashboard.IDatabaseInfo;
 import com.feiliks.dashboard.IDbConnManager;
 import com.feiliks.dashboard.IMonitor;
 import com.feiliks.dashboard.IMonitorData;
-import com.feiliks.dashboard.spring.impl.DataSourceStore;
 
 import javax.sql.DataSource;
 
@@ -46,6 +45,16 @@ public abstract class AbstractMonitor implements IMonitor {
             } catch (Exception e) {
                 dataSourceStore.clear(dsName);
             }
+        }
+    }
+
+    @Override
+    public void exportDataSourcePreformatted(String dsName, String json) {
+        if (dataSourceStore != null) {
+            if (json == null)
+                exportDataSource(dsName, null);
+            else
+                dataSourceStore.storePreformatted(dsName, json);
         }
     }
 

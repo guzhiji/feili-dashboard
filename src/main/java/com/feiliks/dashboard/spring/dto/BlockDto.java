@@ -1,12 +1,15 @@
 package com.feiliks.dashboard.spring.dto;
 
 import com.feiliks.dashboard.spring.entities.BlockEntity;
+import com.feiliks.dashboard.spring.entities.DataSourceEntity;
+import com.feiliks.dashboard.spring.entities.MessageNotifierEntity;
 
 public class BlockDto {
 
     private Long id;
     private String name;
-    private MonitorDto monitor;
+    private DataSourceDto dataSource;
+    private MessageNotifierDto messageNotifier;
     private String dataRenderer;
     private String dataPreprocessor;
     private String notificationHandler;
@@ -18,7 +21,10 @@ public class BlockDto {
     public BlockDto(BlockEntity entity) {
         id = entity.getId();
         name = entity.getName();
-        monitor = new MonitorDto(entity.getDataSource().getMonitor());
+        DataSourceEntity dse = entity.getDataSource();
+        setDataSource(dse == null ? null : new DataSourceDto(dse));
+        MessageNotifierEntity mne = entity.getMessageNotifier();
+        setMessageNotifier(mne == null ? null : new MessageNotifierDto(mne));
         dataRenderer = entity.getDataRenderer();
         dataPreprocessor = entity.getDataPreprocessor();
         notificationHandler = entity.getMessageHandler();
@@ -40,14 +46,6 @@ public class BlockDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public MonitorDto getMonitor() {
-        return monitor;
-    }
-
-    public void setMonitor(MonitorDto monitor) {
-        this.monitor = monitor;
     }
 
     public String getDataRenderer() {
@@ -88,5 +86,21 @@ public class BlockDto {
 
     public void setWidth(int width) {
         this.width = width;
+    }
+
+    public DataSourceDto getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSourceDto dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public MessageNotifierDto getMessageNotifier() {
+        return messageNotifier;
+    }
+
+    public void setMessageNotifier(MessageNotifierDto messageNotifier) {
+        this.messageNotifier = messageNotifier;
     }
 }
