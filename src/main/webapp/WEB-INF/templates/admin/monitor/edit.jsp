@@ -82,7 +82,7 @@
                                     <option value="">-</option>
                                     <c:forEach items="${databases}" var="db">
                                         <c:choose>
-                                            <c:when test="${entity.database.id == db.id}">
+                                            <c:when test="${entity.databaseId == db.id}">
                                     <option value="${db.id}" selected="selected">${db.name} [${db.dbDriver}]</option>
                                             </c:when>
                                             <c:otherwise>
@@ -91,6 +91,13 @@
                                         </c:choose>
                                     </c:forEach>
                                 </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-sql" class="col-md-2 control-label">SQL</label>
+                            <div class="col-md-10">
+                                <textarea name="dbSql" id="input-sql" class="form-control" rows="8" style="resize: vertical">${entity.dbSql}</textarea>
                             </div>
                         </div>
 

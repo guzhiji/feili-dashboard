@@ -1,12 +1,12 @@
 package com.feiliks.dashboard.spring.dto;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feiliks.dashboard.spring.entities.MessageNotifierEntity;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +31,41 @@ public class MessageNotifierFormDto {
     private String brokerPass; // password
     private String brokerDest;
 
+    public MessageNotifierFormDto() {
+    }
+
+    public MessageNotifierFormDto(MessageNotifierEntity entity) {
+        id = entity.getId();
+        name = entity.getName();
+        javaClass = entity.getJavaClass();
+        isMonitor = entity.isMonitor();
+
+        // parse configData to read message broker info
+        if (entity.getConfigData() == null) {
+            isBroker = false;
+            brokerUri = null;
+            brokerUser = null;
+            brokerPass = null;
+            brokerDest = null;
+        } else {
+            try {
+                Map config = new ObjectMapper().readValue(
+                        entity.getConfigData(), Map.class);
+                brokerUri = (String) config.get("brokerUri");
+                isBroker = brokerUri != null;
+                brokerUser = (String) config.get("brokerUser");
+                brokerPass = (String) config.get("brokerPass");
+                brokerDest = (String) config.get("brokerDest");
+            } catch (IOException ignored) {
+                isBroker = false;
+                brokerUri = null;
+                brokerUser = null;
+                brokerPass = null;
+                brokerDest = null;
+            }
+        }
+    }
+
     public MessageNotifierEntity toEntity() {
         MessageNotifierEntity entity = new MessageNotifierEntity();
         toEntity(entity);
@@ -43,16 +78,17 @@ public class MessageNotifierFormDto {
         entity.setJavaClass(getJavaClass());
         entity.setMonitor(isMonitor());
 
+        // save message broker info as JSON into configData
         if (isBroker()) {
             Map<String, String> config = new HashMap<>();
             config.put("brokerUri", getBrokerUri());
-            config.put("borkerUser", getBrokerUser());
+            config.put("brokerUser", getBrokerUser());
             config.put("brokerPass", getBrokerPass());
             config.put("brokerDest", getBrokerDest());
             try {
                 entity.setConfigData(
                         new ObjectMapper().writeValueAsString(config));
-            } catch (JsonProcessingException e) {
+            } catch (JsonProcessingException ignored) {
                 entity.setConfigData(null);
             }
         } else {

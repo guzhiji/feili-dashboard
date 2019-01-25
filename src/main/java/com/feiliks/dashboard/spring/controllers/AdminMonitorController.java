@@ -100,7 +100,7 @@ public class AdminMonitorController {
         Map<String, Object> data = new HashMap<>();
         data.put("mode", "modify");
         data.put("saveUrl", "/admin/monitors/" + id);
-        data.put("entity", entity);
+        data.put("entity", new MonitorFormDto(entity));
         data.put("databases", dbRepo.findAll());
         return new ModelAndView("admin/monitor/edit", data);
     }

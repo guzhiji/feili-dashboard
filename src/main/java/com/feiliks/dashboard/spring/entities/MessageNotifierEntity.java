@@ -21,6 +21,7 @@ public class MessageNotifierEntity {
     private boolean isMonitor;
 
     @Column(name = "config_data")
+    @Lob
     private String configData;
 
     @OneToMany(mappedBy = "messageNotifier")

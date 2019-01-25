@@ -21,6 +21,7 @@ public class MonitorEntity {
 	private long execRate;
 
 	@Column(name = "config_data")
+	@Lob
 	private String configData;
 
 	@ManyToOne

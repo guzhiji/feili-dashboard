@@ -71,7 +71,7 @@ public class AdminMessageNotifierController {
         Map<String, Object> data = new HashMap<>();
         data.put("mode", "modify");
         data.put("saveUrl", "/admin/message-notifiers/" + id);
-        data.put("entity", entity);
+        data.put("entity", new MessageNotifierFormDto(entity));
         return new ModelAndView("admin/message-notifier/edit", data);
     }
 

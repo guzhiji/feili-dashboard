@@ -77,6 +77,54 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <c:if test="${entity.broker}">
+                                            <input type="checkbox" name="broker" checked="checked" />
+                                        </c:if>
+                                        <c:if test="${not entity.broker}">
+                                            <input type="checkbox" name="broker" />
+                                        </c:if>
+                                        是否为消息队列
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-broker-uri" class="col-md-2 control-label">消息队列地址</label>
+                            <div class="col-md-10">
+                                <input type="text" name="brokerUri" id="input-broker-uri" class="form-control"
+                                    value="${entity.brokerUri}" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-broker-user" class="col-md-2 control-label">消息队列用户</label>
+                            <div class="col-md-10">
+                                <input type="text" name="brokerUser" id="input-broker-user" class="form-control"
+                                    value="${entity.brokerUser}" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-broker-pass" class="col-md-2 control-label">消息队列密码</label>
+                            <div class="col-md-10">
+                                <input type="password" name="brokerPass" id="input-broker-pass" class="form-control"
+                                    value="${entity.brokerPass}" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-broker-dest" class="col-md-2 control-label">Destination</label>
+                            <div class="col-md-10">
+                                <input type="text" name="brokerDest" id="input-broker-dest" class="form-control"
+                                    value="${entity.brokerDest}" />
+                            </div>
+                        </div>
+
                     </form>
                 </div>
                 <div class="panel-footer">
