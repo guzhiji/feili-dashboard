@@ -89,12 +89,12 @@ estimateChartSizes();
 var piechart = PieChart('pie-chart', '单数', {
 	PICKED: '已拣货',
 	SHIPPED: '已发货',
-	OTHER: '其它'
+	OTHER: '拣货中'
 });
 var linechart = LineChart('line-chart', 24, '{value}', null, true, {
 	PICKED: '已拣货',
 	SHIPPED: '已发货',
-	OTHER: '其它'
+	OTHER: '拣货中'
 });
 var datatable = DataTable('data-table', 5000, [
 	function(row) { return row.trolleyId; },
