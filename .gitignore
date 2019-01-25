@@ -1,4 +1,6 @@
 /admin_data/
+/src/main/resources/static/build/
+/node_modules/
 /target/
 /log/
 pid
