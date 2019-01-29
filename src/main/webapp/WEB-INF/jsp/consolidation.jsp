@@ -47,7 +47,7 @@
 			<div class="col-xs-12">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						台车信息
+						台车-订单（未发货）信息
 					</div>
 					<div class="panel-body">
 						<table id="data-table" class="table table-striped">
@@ -87,14 +87,14 @@ function estimateChartSizes() {
 }
 estimateChartSizes();
 var piechart = PieChart('pie-chart', '单数', {
-	PICKED: '已拣货',
-	SHIPPED: '已发货',
+	PICKED: '拣货完成',
+	SHIPPED: '发货完成',
 	OTHER: '拣货中'
 });
 var linechart = LineChart('line-chart', 24, '{value}', null, true, {
-	PICKED: '已拣货',
-	SHIPPED: '已发货',
-	OTHER: '拣货中'
+	PICKED: '拣货完成',
+	SHIPPED: '发货完成',
+	OTHER: '其它（开始拣货）'
 });
 var datatable = DataTable('data-table', 5000, [
 	function(row) { return row.trolleyId; },

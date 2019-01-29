@@ -106,6 +106,19 @@ public class ConsolidationDao {
     @Autowired
     private PerfMonService perfMon;
 
+    /**
+     * List order-trolley pairs that are requested to ship today in CQ2.
+     *
+     * Detailed Requirements:
+     * - Order status is not cancelled.
+     * - Location: in CQ2
+     * - Orders are requested to ship today.
+     * - Requested shipping time is in UTC.
+     * - ISASRS is needed to test whether an order should 'combine'.
+     * - Op time is used to recover historical data partially on startup
+     *   (non-latest status is lost if not in memory;
+     *   edit time is not equivalent to op time).
+     */
     private final static String sqlOrderTrolley = "select distinct " +
             "    dd.DROPID trolley_id," +
             "    o.ORDERKEY order_key," +
@@ -170,8 +183,10 @@ public class ConsolidationDao {
             Map<String, List<OrderTrolley>> asrsMap = new HashMap<>();
             for (OrderTrolley ot : result) {
 
+                // convert status
                 ot.status = convertStatus(ot.getStatus());
 
+                // group by order key
                 if (!asrsMap.containsKey(ot.getOrderKey())) {
                     List<OrderTrolley> ots = new LinkedList<>();
                     ots.add(ot);
@@ -185,7 +200,8 @@ public class ConsolidationDao {
             for (List<OrderTrolley> ots : asrsMap.values()) {
                 boolean asrs = ots.get(0).isAsrs();
                 for (OrderTrolley ot : ots) {
-                    if (asrs != ot.isAsrs()) {
+                    if (asrs != ot.isAsrs()) { // isAsrs not consistent
+                        // update all records relevant to the current order
                         for (OrderTrolley ot2 : ots)
                             ot2.isToCombine = true;
                         break;

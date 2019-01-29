@@ -174,6 +174,18 @@ public class ShipmentDao {
             "    ) t on t.trolley_id = dd.DROPID";
     */
 
+    /**
+     * List trolleys within LKSHIP, whose orders are not shipped nor cancelled.
+     *
+     * Detailed Requirements:
+     * - Boxes are counted by trolley ids.
+     * - Trolleys are not duplicated even if there're multiple orders associated
+     *   with them (factories and lines are presumably consistent within the same trolley).
+     * - Only trolleys in LKSHIP are counted.
+     * - Associated orders should not be shipped nor cancelled
+     *   (in LKSHIP orders naturally shouldn't be shipped).
+     * - Extra fields in orders: factory, line, and appointment_key.
+     */
     private final static String sqlTrolleys = "select" +
             "    t.trolley_id," +
             "    max(o.CONSIGNEEKEY) factory," +
@@ -190,9 +202,20 @@ public class ShipmentDao {
             "    group by d.DROPID) t " +
             "inner join DROPIDDETAIL dd on dd.DROPID = t.trolley_id " +
             "inner join PICKDETAIL p on p.DROPID = dd.CHILDID " +
-            "inner join ORDERS o on o.ORDERKEY = p.ORDERKEY " +
+            "inner join ORDERS o on o.ORDERKEY = p.ORDERKEY and o.STATUS not in ('98', '99', '95') " +
             "group by t.trolley_id, t.box_qty";
 
+    /**
+     * List trolley-order pairs in CQ2 whose order status is not shipped nor cancelled.
+     *
+     * Detailed Requirements:
+     * - Appointment keys are needed to test if status is APPOINTMENT (non-empty).
+     * - Locations and order status are needed to test if status is WAITING (LKSHIP and 55-PICKED).
+     * - Area: CQ2.
+     * - Order status: not shipped nor cancelled.
+     * - Trolleys moved out of LKSHIP are presumably shipped - they shouldn't
+     *   be back to status OTHERS when leaving LKSHIP.
+     */
     private final static String sqlTrolleyOrders = "select " +
             "    d.DROPID trolley_id," +
             "    o.ORDERKEY order_key," +
@@ -210,13 +233,24 @@ public class ShipmentDao {
             "where" +
             "    o.STATUS not in ('98', '99', '95')";
 
+    /**
+     * List appointments open in LSHIP with factory & line info and start time.
+     *
+     * Detailed Requirements:
+     * - Associated orders should not be shipped nor cancelled.
+     * - Appointment status is not completed.
+     * - Location is LKSHIP.
+     * - Extra fields: factory, line, and start time of the appointment
+     * - Factories and lines are presumably consistent within the same appointment.
+     * - The raw start time values are not +8.
+     */
     private final static String sqlAppointments = "select " +
             "    a.APPOINTMENTKEY appointment_key," +
             "    max(o.CONSIGNEEKEY) factory," +
             "    max(o.TRADINGPARTNER) line," +
             "    CAST((FROM_TZ(CAST(a.ADDDATE AS TIMESTAMP),'+00:00') AT TIME ZONE 'Asia/Shanghai') AS DATE) start_time " +
             "from APPOINTMENT a" +
-            "    inner join ORDERS o on o.APPOINTMENTKEY = a.APPOINTMENTKEY" +
+            "    inner join ORDERS o on o.APPOINTMENTKEY = a.APPOINTMENTKEY and o.STATUS not in ('98', '99', '95')" +
             "        inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
             "        inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
             "        inner join DROPID d on d.DROPID = dd.DROPID and d.DROPLOC = 'LKSHIP' " +
