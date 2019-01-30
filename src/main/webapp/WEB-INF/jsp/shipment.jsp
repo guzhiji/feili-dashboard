@@ -13,7 +13,7 @@
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/build/common.js?1548139581"></script>
+		<script src="/build/common.js?1548818299"></script>
 		<script src="/build/theme.js?1548079168"></script>
 	</head>
 	<body>

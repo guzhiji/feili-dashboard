@@ -739,7 +739,11 @@ var DataTable = function(id, refreshRate, fields) {
                 if (pageCount > 1) {
                     row.hide('fast', function() {
                         row.find('td').each(function(c) {
-                            $(this).text(fields[c](data[s + r]));
+                            // hide() is async - therefore boundary is rechecked
+                            if (s + r < data.length)
+                                $(this).text(fields[c](data[s + r]));
+                            else
+                                $(this).html('&nbsp;');
                         });
                     });
                     row.show('fast');
