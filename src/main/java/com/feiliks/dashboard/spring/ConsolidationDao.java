@@ -180,13 +180,9 @@ public class ConsolidationDao {
                         }
                     });
 
+            // group by order key
             Map<String, List<OrderTrolley>> asrsMap = new HashMap<>();
             for (OrderTrolley ot : result) {
-
-                // convert status
-                ot.status = convertStatus(ot.getStatus());
-
-                // group by order key
                 if (!asrsMap.containsKey(ot.getOrderKey())) {
                     List<OrderTrolley> ots = new LinkedList<>();
                     ots.add(ot);
@@ -194,9 +190,8 @@ public class ConsolidationDao {
                 } else {
                     asrsMap.get(ot.getOrderKey()).add(ot);
                 }
-
             }
-
+            // set isToCombine
             for (List<OrderTrolley> ots : asrsMap.values()) {
                 boolean asrs = ots.get(0).isAsrs();
                 for (OrderTrolley ot : ots) {
@@ -208,8 +203,19 @@ public class ConsolidationDao {
                     }
                 }
             }
+            // distinct result by order key and trolley id
+            List<OrderTrolley> distinctList = new ArrayList<>(result.size());
+            Set<String> otPairs = new HashSet<>();
+            for (OrderTrolley ot : result) {
+                String otp = ot.getOrderKey() + "-" + ot.getTrolleyId();
+                if (!otPairs.contains(otp)) {
+                    ot.status = convertStatus(ot.getStatus());
+                    distinctList.add(ot);
+                    otPairs.add(otp);
+                }
+            }
 
-            return result;
+            return distinctList;
         } finally {
             perfMon.measure(PERFMON_KEY, timerStart);
         }
