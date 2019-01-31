@@ -70,6 +70,13 @@ body.transpgreen {
 			font-size: 1.1em;
 		}
 
+		#table-page {
+			display: inline-block;
+			background-color: rgba(51, 163, 30, 0.5);
+			border-radius: 5px;
+			padding: 1px 6px;
+			margin: auto 5px;
+		}
 	}
 
 	&> .panel-body {

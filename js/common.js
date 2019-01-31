@@ -693,8 +693,9 @@ var SingleBarChart = function(id, name, vertical, yAxisLabelFormatter) {
     };
 };
 
-var DataTable = function(id, refreshRate, fields) {
+var DataTable = function(id, pagerId, refreshRate, fields) {
     var table = $('#' + id),
+        pager = $('#' + pagerId),
         page = 0,
         data = [];
 
@@ -731,6 +732,8 @@ var DataTable = function(id, refreshRate, fields) {
         // next page
         page++;
         if (page > pageCount) page = 1;
+        // display page
+        pager.text((pageCount>0?page:0) + '/' + pageCount);
         // starting position
         var s = (page - 1) * rows.length;
         rows.each(function(r) {

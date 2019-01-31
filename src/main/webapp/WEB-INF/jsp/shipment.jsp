@@ -7,13 +7,13 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<title>看板 - 出货</title>
 		<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="/build/styles.min.css?1548312135" rel="stylesheet">
+		<link href="/build/styles.min.css?1548896602" rel="stylesheet">
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 		<script src="/webjars/jquery/jquery.min.js"></script>
 		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 		<script src="/echarts.min.js"></script>
-		<script src="/build/common.js?1548818299"></script>
+		<script src="/build/common.js?1548896602"></script>
 		<script src="/build/theme.js?1548079168"></script>
 	</head>
 	<body>
@@ -48,6 +48,7 @@
 				<div class="panel panel-success">
 					<div class="panel-heading">
 						台车信息
+						<div id="table-page">1/1</div>
 					</div>
 					<div class="panel-body">
 						<table id="data-table" class="table table-striped">
@@ -95,7 +96,7 @@ function estimateChartSizes() {
 estimateChartSizes();
 var piechart = PieChart('pie-chart', '单数', STATUS_TRANS);
 var barchart = SingleBarChart('bar-chart', '等待时间', false, formatDuration);
-var datatable = DataTable('data-table', 5000, [
+var datatable = DataTable('data-table', 'table-page', 5000, [
 	function(row) { return row.trolleyId; },
 	function(row) { return row.factory || '-'; },
 	function(row) { return row.line || '-'; },
