@@ -287,7 +287,7 @@ var LineChart = function(id, max_len, formatter, xFormatter, showPoints, transla
                     }
                 }
             ],
-            serise: data
+            series: data
         };
 
     function createSeries(name) {
