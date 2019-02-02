@@ -1,8 +1,11 @@
 package com.feiliks.dashboard.spring.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feiliks.dashboard.IMessenger;
 import com.feiliks.dashboard.INotifier;
 import com.feiliks.dashboard.INotifierData;
+import com.feiliks.dashboard.NotifierMessage;
 
 
 public abstract class AbstractNotifier implements INotifier {
@@ -25,6 +28,17 @@ public abstract class AbstractNotifier implements INotifier {
     public void notifyClient(String message) {
         if (messenger != null)
             messenger.send(message);
+    }
+
+    @Override
+    public <T> void notifyClient(NotifierMessage<T> message) {
+        if (messenger != null) {
+            try {
+                messenger.send(new ObjectMapper().writeValueAsString(message));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

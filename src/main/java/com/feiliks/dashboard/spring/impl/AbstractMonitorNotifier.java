@@ -1,5 +1,7 @@
 package com.feiliks.dashboard.spring.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.feiliks.dashboard.*;
 
 import javax.sql.DataSource;
@@ -46,6 +48,17 @@ public abstract class AbstractMonitorNotifier implements IMonitor, INotifier {
     public void notifyClient(String message) {
         if (messenger != null)
             messenger.send(message);
+    }
+
+    @Override
+    public <T> void notifyClient(NotifierMessage<T> message) {
+        if (messenger != null) {
+            try {
+                messenger.send(new ObjectMapper().writeValueAsString(message));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public String retrieveDataSource(String dsName) {

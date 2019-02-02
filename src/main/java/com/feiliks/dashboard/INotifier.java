@@ -8,4 +8,7 @@ public interface INotifier extends Runnable {
     INotifierData getNotifier();
 
     void notifyClient(String message);
+
+    <T> void notifyClient(NotifierMessage<T> message);
+
 }

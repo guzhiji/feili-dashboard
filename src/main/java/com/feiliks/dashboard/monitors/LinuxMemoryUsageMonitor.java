@@ -1,5 +1,6 @@
 package com.feiliks.dashboard.monitors;
 
+import com.feiliks.dashboard.NotifierMessage;
 import com.feiliks.dashboard.SysInfo;
 import com.feiliks.dashboard.spring.impl.AbstractMonitorNotifier;
 
@@ -38,11 +39,9 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitorNotifier {
     public void run() {
         long[] memUsage = SysInfo.getMemoryUsage();
         if (memUsage != null) {
-            notifyClient(memUsage[0] + "," + memUsage[1]);
-            exportDataSource(
-                    "status",
-                    new MemoryUsage(
-                            memUsage[0], memUsage[1]));
+            MemoryUsage mu = new MemoryUsage(memUsage[0], memUsage[1]);
+            notifyClient(new NotifierMessage<>("update", "", mu));
+            exportDataSource("status", mu);
         }
     }
 

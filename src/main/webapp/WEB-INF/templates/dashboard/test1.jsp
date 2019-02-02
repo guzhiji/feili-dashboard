@@ -13,8 +13,7 @@
         <script src="/webjars/sockjs-client/sockjs.min.js"></script>
         <script src="/webjars/stomp-websocket/stomp.min.js"></script>
         <script src="/echarts.min.js"></script>
-        <script src="/build/common.js?1548139581"></script>
-        <script src="/build/theme.js?1548079168"></script>
+        <script src="/build/main.min.js?1548139581"></script>
     </head>
     <body>
         <h1>
@@ -65,5 +64,17 @@
         <div id="error-message" class="alert alert-danger">
             服务器连接错误
         </div>
+        <script type="text/javascript">
+        $.get('/dashboard/${dashboard.id}.json', function(data) {
+            console.log(data);
+        });
+        setInterval(function() {
+        <c:forEach items="${dashboard.blocks}" var="blk">
+        $.get('/dashboard/datasource/${blk.dataSource.id}.json', function(data) {
+            console.log(data);
+        });
+        </c:forEach>
+        }, 5000);
+        </script>
     </body>
 </html>

@@ -1,11 +1,10 @@
 package com.feiliks.dashboard.monitors;
 
+import com.feiliks.dashboard.NotifierMessage;
 import com.feiliks.dashboard.spring.impl.AbstractMonitorNotifier;
 import com.feiliks.dashboard.SysInfo;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
@@ -39,7 +38,7 @@ public class LinuxCpuUsageMonitor extends AbstractMonitorNotifier {
 
     private Map<String, Long[]> lastCpuTime = null;
     private final static int HISTORY_LENGTH = 100;
-    private final Queue<CpuUsage> history = new ConcurrentLinkedQueue<>();
+    private final Queue<CpuUsage> history = new LinkedList<>();
 
     @Override
     public void run() {
@@ -48,7 +47,6 @@ public class LinuxCpuUsageMonitor extends AbstractMonitorNotifier {
 
         Map<String, Long[]> cpuTime = SysInfo.getCPUUsage();
         if (lastCpuTime != null && cpuTime != null) {
-            StringBuilder out = new StringBuilder();
             for (Map.Entry<String, Long[]> entry : cpuTime.entrySet()) {
                 Long[] prev = lastCpuTime.get(entry.getKey());
                 Long[] cur = entry.getValue();
@@ -56,12 +54,9 @@ public class LinuxCpuUsageMonitor extends AbstractMonitorNotifier {
                 long used = cur[1] - prev[1];
                 double measure = Math.round(10000.0 * used / total) / 100.0;
                 curMsr.put(entry.getKey(), measure);
-                out.append(entry.getKey())
-                        .append('=')
-                        .append(measure)
-                        .append(',');
             }
-            notifyClient(out.toString());
+            notifyClient(new NotifierMessage<>(
+                    "update", String.valueOf(curTime), curMsr));
         }
         lastCpuTime = cpuTime;
         if (history.size() >= HISTORY_LENGTH)

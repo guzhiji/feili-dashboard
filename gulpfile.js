@@ -21,6 +21,7 @@ gulp.task('sass:watch', function() {
 
 gulp.task('js', function() {
 	return gulp.src('./js/*.js')
+		.pipe(concat('main.min.js', {newLine: ''}))
 		.pipe(uglify())
 		.pipe(gulp.dest(buildPath));
 });
