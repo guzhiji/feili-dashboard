@@ -16,6 +16,13 @@
 			font-size: 1.1em;
 		}
 
+		#table-page {
+			display: inline-block;
+			background-color: #0b313d;
+			border-radius: 5px;
+			padding: 1px 6px;
+			margin: auto 5px;
+		}
 	}
 
 	&> .panel-body {
