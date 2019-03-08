@@ -5,6 +5,8 @@ import com.feiliks.dashboard.spring.entities.DashboardEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DashboardDto {
 
@@ -14,6 +16,7 @@ public class DashboardDto {
     private boolean active;
     private TemplateDto template;
     private Collection<BlockDto> blocks;
+    private Collection<MonitorDto> monitors;
 
     public DashboardDto() {}
 
@@ -24,10 +27,17 @@ public class DashboardDto {
         setActive(entity.isActive());
         setTemplate(new TemplateDto(entity.getTemplate()));
 
+        Map<Long, MonitorDto> mmap = new HashMap<>();
         ArrayList<BlockDto> blist = new ArrayList<>();
-        for (BlockEntity be : entity.getBlocks())
+        for (BlockEntity be : entity.getBlocks()) {
             blist.add(new BlockDto(be));
+            Long mid = be.getMonitor() == null ? null :
+                    be.getMonitor().getId();
+            if (mid != null && !mmap.containsKey(mid))
+                mmap.put(mid, new MonitorDto(be.getMonitor()));
+        }
         setBlocks(blist);
+        setMonitors(mmap.values());
     }
 
     public Long getId() {
@@ -76,5 +86,13 @@ public class DashboardDto {
 
     public void setBlocks(Collection<BlockDto> blocks) {
         this.blocks = blocks;
+    }
+
+    public Collection<MonitorDto> getMonitors() {
+        return monitors;
+    }
+
+    public void setMonitors(Collection<MonitorDto> monitors) {
+        this.monitors = monitors;
     }
 }

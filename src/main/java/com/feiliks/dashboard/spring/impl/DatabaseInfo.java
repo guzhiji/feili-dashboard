@@ -1,7 +1,8 @@
 package com.feiliks.dashboard.spring.impl;
 
-import com.feiliks.dashboard.IDatabaseInfo;
 import com.feiliks.dashboard.spring.entities.DatabaseEntity;
+import com.feiliks.dashboard.IDatabaseInfo;
+
 
 public class DatabaseInfo implements IDatabaseInfo {
 

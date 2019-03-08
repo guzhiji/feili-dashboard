@@ -2,6 +2,7 @@ package com.feiliks.dashboard.spring.entities;
 
 import javax.persistence.*;
 
+
 @Entity
 @Table(name = "dashboard_block")
 public class BlockEntity {
@@ -22,16 +23,11 @@ public class BlockEntity {
     @Column(name = "data_preprocessor", length = 32)
     private String dataPreprocessor;
 
-    @ManyToOne
-    @JoinColumn(name = "data_source")
-    private DataSourceEntity dataSource;
+    @ManyToOne(optional = false)
+    private MonitorEntity monitor;
 
     @Column(name = "message_handler", length = 32)
     private String messageHandler;
-
-    @ManyToOne
-    @JoinColumn(name = "message_notifier")
-    private MessageNotifierEntity messageNotifier;
 
     @Column(name = "min_height", nullable = false)
     private int minHeight;
@@ -85,6 +81,14 @@ public class BlockEntity {
         this.dataPreprocessor = dataPreprocessor;
     }
 
+    public MonitorEntity getMonitor() {
+        return monitor;
+    }
+
+    public void setMonitor(MonitorEntity monitor) {
+        this.monitor = monitor;
+    }
+
     public String getMessageHandler() {
         return messageHandler;
     }
@@ -107,22 +111,6 @@ public class BlockEntity {
 
     public void setWidth(int width) {
         this.width = width;
-    }
-
-    public DataSourceEntity getDataSource() {
-        return dataSource;
-    }
-
-    public void setDataSource(DataSourceEntity dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public MessageNotifierEntity getMessageNotifier() {
-        return messageNotifier;
-    }
-
-    public void setMessageNotifier(MessageNotifierEntity messageNotifier) {
-        this.messageNotifier = messageNotifier;
     }
 
     public boolean isActive() {

@@ -1,70 +1,91 @@
 package com.feiliks.dashboard.monitors;
 
+import com.feiliks.dashboard.History;
 import com.feiliks.dashboard.NotifierMessage;
-import com.feiliks.dashboard.spring.impl.AbstractMonitorNotifier;
 import com.feiliks.dashboard.SysInfo;
+import com.feiliks.dashboard.AbstractMonitor;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashMap;
+import java.util.Map;
 
 
-public class LinuxCpuUsageMonitor extends AbstractMonitorNotifier {
+public class LinuxCpuUsageMonitor extends AbstractMonitor {
 
-    public static class CpuUsage {
-        private long time;
-        private Map<String, Double> data;
+    public final class Task extends AbstractMonitor.Task {
 
-        CpuUsage(long time, Map<String, Double> data) {
-            this.time = time;
-            this.data = data;
+        private final History<Map<String, Double>, Double> history = new History<>(
+                new History.IRealtimeEventHandler<Map<String, Double>>() {
+                    @Override
+                    public void onExpired(History.Item<Map<String, Double>> item) {
+                        notifyClient("History_Realtime", new NotifierMessage<>(
+                                        "remove", String.valueOf(item.getTime()), null));
+                    }
+
+                    @Override
+                    public void onNew(History.Item<Map<String, Double>> item) {
+                        notifyClient("History_Realtime", new NotifierMessage<>(
+                                "update", String.valueOf(item.getTime()), item.getData()));
+                    }
+                },
+                new History.IAggHistoryEventHandler<Double>() {
+                    @Override
+                    public void onPeriodExpired(String attr, History.Item<History.AggValues<Double>> item) {
+
+                    }
+
+                    @Override
+                    public void onNewPeriod(String attr, History.Item<History.AggValues<Double>> item) {
+
+                    }
+                },
+                new History.IAggHistoryEventHandler<Double>() {
+                    @Override
+                    public void onPeriodExpired(String attr, History.Item<History.AggValues<Double>> item) {
+
+                    }
+
+                    @Override
+                    public void onNewPeriod(String attr, History.Item<History.AggValues<Double>> item) {
+
+                    }
+                });
+
+        private Map<String, Long[]> lastCpuTime = null;
+
+        public Task() {}
+
+        @Override
+        public void run() {
+            long curTime = System.currentTimeMillis();
+            Map<String, Double> curMsr = new HashMap<>();
+
+            Map<String, Long[]> cpuTime = SysInfo.getCPUUsage();
+            if (lastCpuTime != null && cpuTime != null) {
+                for (Map.Entry<String, Long[]> entry : cpuTime.entrySet()) {
+                    Long[] prev = lastCpuTime.get(entry.getKey());
+                    Long[] cur = entry.getValue();
+                    long total = cur[0] - prev[0];
+                    long used = cur[1] - prev[1];
+                    double measure = Math.round(10000.0 * used / total) / 100.0;
+                    curMsr.put(entry.getKey(), measure);
+                }
+                notifyClient("Status", new NotifierMessage<>(
+                        "update", String.valueOf(curTime), curMsr));
+            }
+            lastCpuTime = cpuTime;
+            history.add(curTime, curMsr);
+
+            exportResult("Status", curMsr);
+            exportResult("History_Realtime", history.getRealtimeData());
         }
 
-        public long getTime() {
-            return time;
-        }
-
-        public void setTime(long time) {
-            this.time = time;
-        }
-
-        public Map<String, Double> getData() {
-            return data;
-        }
-
-        public void setData(Map<String, Double> data) {
-            this.data = data;
-        }
     }
 
-    private Map<String, Long[]> lastCpuTime = null;
-    private final static int HISTORY_LENGTH = 100;
-    private final Queue<CpuUsage> history = new LinkedList<>();
-
-    @Override
-    public void run() {
-        long curTime = System.currentTimeMillis();
-        Map<String, Double> curMsr = new HashMap<>();
-
-        Map<String, Long[]> cpuTime = SysInfo.getCPUUsage();
-        if (lastCpuTime != null && cpuTime != null) {
-            for (Map.Entry<String, Long[]> entry : cpuTime.entrySet()) {
-                Long[] prev = lastCpuTime.get(entry.getKey());
-                Long[] cur = entry.getValue();
-                long total = cur[0] - prev[0];
-                long used = cur[1] - prev[1];
-                double measure = Math.round(10000.0 * used / total) / 100.0;
-                curMsr.put(entry.getKey(), measure);
-            }
-            notifyClient(new NotifierMessage<>(
-                    "update", String.valueOf(curTime), curMsr));
-        }
-        lastCpuTime = cpuTime;
-        if (history.size() >= HISTORY_LENGTH)
-            history.poll();
-        history.offer(new CpuUsage(curTime, curMsr));
-
-        exportDataSource("status", curMsr);
-        exportDataSource("history", history);
+    public LinuxCpuUsageMonitor() {
+        super(Task.class, true);
+        registerNotificationSource("History_Realtime", "map");
+        registerResultSource("Status", "map");
+        registerResultSource("History_Realtime", "");
     }
 
 }

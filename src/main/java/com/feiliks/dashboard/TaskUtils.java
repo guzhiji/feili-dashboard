@@ -14,11 +14,7 @@ public class TaskUtils {
     }
 
     public static boolean validateMonitor(String javaClass) {
-        return validateClass(javaClass, IMonitor.class);
-    }
-
-    public static boolean validateNotifier(String javaClass) {
-        return validateClass(javaClass, INotifier.class);
+        return validateClass(javaClass, AbstractMonitor.class);
     }
 
 }

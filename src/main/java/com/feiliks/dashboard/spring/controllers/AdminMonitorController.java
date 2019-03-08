@@ -2,14 +2,12 @@ package com.feiliks.dashboard.spring.controllers;
 
 import com.feiliks.dashboard.TaskUtils;
 import com.feiliks.dashboard.spring.NotFoundException;
-import com.feiliks.dashboard.spring.dto.DataSourceFormDto;
 import com.feiliks.dashboard.spring.dto.MonitorFormDto;
-import com.feiliks.dashboard.spring.entities.DataSourceEntity;
 import com.feiliks.dashboard.spring.entities.DatabaseEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
-import com.feiliks.dashboard.spring.repositories.DataSourceRepository;
 import com.feiliks.dashboard.spring.repositories.DatabaseRepository;
 import com.feiliks.dashboard.spring.repositories.MonitorRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -32,9 +30,6 @@ public class AdminMonitorController {
 
     @Autowired
     private MonitorRepository monitorRepo;
-
-    @Autowired
-    private DataSourceRepository dataSourceRepo;
 
     @Autowired
     private DatabaseRepository dbRepo;
@@ -156,61 +151,6 @@ public class AdminMonitorController {
         ratts.addFlashAttribute("flashMessage", "monitor-deleted");
 
         return "redirect:/admin/monitors";
-    }
-
-    @GetMapping("/{id}/data-sources")
-    public ModelAndView listDataSources(
-            @PathVariable long id)
-            throws NotFoundException {
-
-        MonitorEntity entity = monitorRepo.findById(id)
-                .orElseThrow(NotFoundException::new);
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("parent", entity);
-        data.put("list", entity.getDataSources());
-
-        return new ModelAndView("admin/data-source/list", data);
-    }
-
-    @PostMapping("/{id}/data-sources")
-    public String createDataSource(
-            @PathVariable long id,
-            @Valid DataSourceFormDto formData,
-            BindingResult vresult,
-            RedirectAttributes ratts)
-            throws NotFoundException {
-
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
-            return "redirect:/admin/monitors/" + id + "/data-sources/new";
-        }
-
-        MonitorEntity parent = monitorRepo.findById(id)
-                .orElseThrow(NotFoundException::new);
-
-        DataSourceEntity entity = formData.toEntity();
-        entity.setId(null);
-        entity.setMonitor(parent);
-        dataSourceRepo.save(entity);
-        ratts.addFlashAttribute("flashMessage", "data-source-saved");
-
-        return "redirect:/admin/monitors/" + id + "/data-sources";
-    }
-
-    @GetMapping("/{id}/data-sources/new")
-    public ModelAndView showDataSourceEditor(@PathVariable long id)
-            throws NotFoundException {
-
-        MonitorEntity parent = monitorRepo.findById(id)
-                .orElseThrow(NotFoundException::new);
-        Map<String, Object> data = new HashMap<>();
-        data.put("mode", "create");
-        data.put("saveUrl", "/admin/monitors/" + id + "/data-sources");
-        data.put("parent", parent);
-        return new ModelAndView("admin/data-source/edit", data);
     }
 
 }

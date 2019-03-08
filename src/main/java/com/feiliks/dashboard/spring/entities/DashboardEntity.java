@@ -3,6 +3,7 @@ package com.feiliks.dashboard.spring.entities;
 import javax.persistence.*;
 import java.util.Collection;
 
+
 @Entity
 @Table(name = "dashboard_dashboard")
 public class DashboardEntity {

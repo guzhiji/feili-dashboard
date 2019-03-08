@@ -65,15 +65,24 @@
             服务器连接错误
         </div>
         <script type="text/javascript">
+        var resultSources = {};
         $.get('/dashboard/${dashboard.id}.json', function(data) {
-            console.log(data);
+            for (var m = 0; m < data.monitors.length; m++) {
+                var mon = data.monitors[m];
+                if (mon.resultSources) {
+                    for (var r in mon.resultSources) {
+                        resultSources['/dashboard/monitor/' + mon.id + '/result/' + r + '.json'] = {};
+                    }
+                }
+            }
         });
         setInterval(function() {
-        <c:forEach items="${dashboard.blocks}" var="blk">
-        $.get('/dashboard/datasource/${blk.dataSource.id}.json', function(data) {
-            console.log(data);
-        });
-        </c:forEach>
+            console.log(resultSources);
+            for (var url in resultSources) {
+                $.get(url, function(data) {
+                    console.log(data);
+                });
+            }
         }, 5000);
         </script>
     </body>

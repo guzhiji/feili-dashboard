@@ -47,9 +47,6 @@
                                 <td>${monitor.javaClass}</td>
                                 <td>${monitor.execRate}</td>
                                 <td class="row-actions">
-                                    <a class="btn btn-default" href="/admin/monitors/${monitor.id}/data-sources">
-                                        <span class="glyphicon glyphicon-eye-open"></span>
-                                    </a>
                                     <a class="btn btn-primary" href="/admin/monitors/${monitor.id}">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>

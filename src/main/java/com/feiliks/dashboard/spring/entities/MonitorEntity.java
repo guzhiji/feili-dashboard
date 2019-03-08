@@ -3,6 +3,7 @@ package com.feiliks.dashboard.spring.entities;
 import javax.persistence.*;
 import java.util.Collection;
 
+
 @Entity
 @Table(name = "dashboard_monitor")
 public class MonitorEntity {
@@ -17,18 +18,18 @@ public class MonitorEntity {
 	@Column(name = "java_class", nullable = false)
 	private String javaClass;
 
-	@Column(name = "exec_rate", nullable = false)
+	@Column(name = "exec_rate")
 	private long execRate;
+
+	@ManyToOne
+	private DatabaseEntity database;
 
 	@Column(name = "config_data")
 	@Lob
 	private String configData;
 
-	@ManyToOne
-	private DatabaseEntity database;
-
-	@OneToMany(mappedBy = "monitor", cascade = CascadeType.ALL)
-	private Collection<DataSourceEntity> dataSources;
+	@OneToMany(mappedBy = "monitor")
+	private Collection<BlockEntity> blocks;
 
 	public Long getId() {
 		return id;
@@ -78,12 +79,12 @@ public class MonitorEntity {
 		this.database = database;
 	}
 
-	public Collection<DataSourceEntity> getDataSources() {
-		return dataSources;
+	public Collection<BlockEntity> getBlocks() {
+		return blocks;
 	}
 
-	public void setDataSources(Collection<DataSourceEntity> dataSources) {
-		this.dataSources = dataSources;
+	public void setBlocks(Collection<BlockEntity> blocks) {
+		this.blocks = blocks;
 	}
 
 	@Override
@@ -96,7 +97,7 @@ public class MonitorEntity {
 	@Override
 	public boolean equals(Object other) {
 		if (id == null)
-			return this == other;
+			return super.equals(other);
 		if (other instanceof MonitorEntity) {
 			MonitorEntity entity = (MonitorEntity) other;
 			return id.equals(entity.id);

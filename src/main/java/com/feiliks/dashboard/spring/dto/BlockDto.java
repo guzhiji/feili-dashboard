@@ -1,35 +1,32 @@
 package com.feiliks.dashboard.spring.dto;
 
 import com.feiliks.dashboard.spring.entities.BlockEntity;
-import com.feiliks.dashboard.spring.entities.DataSourceEntity;
-import com.feiliks.dashboard.spring.entities.MessageNotifierEntity;
+
 
 public class BlockDto {
 
     private Long id;
     private String name;
-    private DataSourceDto dataSource;
-    private MessageNotifierDto messageNotifier;
     private String dataRenderer;
     private String dataPreprocessor;
-    private String notificationHandler;
+    private String messageHandler;
     private int minHeight;
     private int width;
+    private boolean active;
+    private int ordinal;
+    private Long monitorId;
 
     public BlockDto() {}
 
     public BlockDto(BlockEntity entity) {
         id = entity.getId();
         name = entity.getName();
-        DataSourceEntity dse = entity.getDataSource();
-        setDataSource(dse == null ? null : new DataSourceDto(dse));
-        MessageNotifierEntity mne = entity.getMessageNotifier();
-        setMessageNotifier(mne == null ? null : new MessageNotifierDto(mne));
         dataRenderer = entity.getDataRenderer();
         dataPreprocessor = entity.getDataPreprocessor();
-        notificationHandler = entity.getMessageHandler();
         minHeight = entity.getMinHeight();
         width = entity.getWidth();
+        monitorId = entity.getMonitor() == null ? null :
+                entity.getMonitor().getId();
     }
 
     public Long getId() {
@@ -64,12 +61,12 @@ public class BlockDto {
         this.dataPreprocessor = dataPreprocessor;
     }
 
-    public String getNotificationHandler() {
-        return notificationHandler;
+    public String getMessageHandler() {
+        return messageHandler;
     }
 
-    public void setNotificationHandler(String notificationHandler) {
-        this.notificationHandler = notificationHandler;
+    public void setMessageHandler(String messageHandler) {
+        this.messageHandler = messageHandler;
     }
 
     public int getMinHeight() {
@@ -88,19 +85,27 @@ public class BlockDto {
         this.width = width;
     }
 
-    public DataSourceDto getDataSource() {
-        return dataSource;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setDataSource(DataSourceDto dataSource) {
-        this.dataSource = dataSource;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    public MessageNotifierDto getMessageNotifier() {
-        return messageNotifier;
+    public int getOrdinal() {
+        return ordinal;
     }
 
-    public void setMessageNotifier(MessageNotifierDto messageNotifier) {
-        this.messageNotifier = messageNotifier;
+    public void setOrdinal(int ordinal) {
+        this.ordinal = ordinal;
+    }
+
+    public Long getMonitorId() {
+        return monitorId;
+    }
+
+    public void setMonitorId(Long monitorId) {
+        this.monitorId = monitorId;
     }
 }

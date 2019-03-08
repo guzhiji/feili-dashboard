@@ -2,14 +2,27 @@ package com.feiliks.dashboard.spring.dto;
 
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+
 public class BlockFormDto {
     private Long id;
+
+    @NotNull(message = "block-name-empty")
+    @NotBlank(message = "block-name-empty")
     private String name;
+
+    @NotNull(message = "block-renderer-empty")
+    @NotBlank(message = "block-renderer-empty")
     private String dataRenderer;
+
     private String dataPreprocessor;
-    private Long dataSourceId;
     private String messageHandler;
-    private Long messageNotifierId;
+
+    @NotNull(message = "monitor-required")
+    private Long monitorId;
+
     private int minHeight;
     private int width;
     private boolean active;
@@ -63,28 +76,12 @@ public class BlockFormDto {
         this.dataPreprocessor = dataPreprocessor;
     }
 
-    public Long getDataSourceId() {
-        return dataSourceId;
-    }
-
-    public void setDataSourceId(Long dataSourceId) {
-        this.dataSourceId = dataSourceId;
-    }
-
     public String getMessageHandler() {
         return messageHandler;
     }
 
     public void setMessageHandler(String messageHandler) {
         this.messageHandler = messageHandler;
-    }
-
-    public Long getMessageNotifierId() {
-        return messageNotifierId;
-    }
-
-    public void setMessageNotifierId(Long messageNotifierId) {
-        this.messageNotifierId = messageNotifierId;
     }
 
     public int getMinHeight() {
@@ -109,5 +106,13 @@ public class BlockFormDto {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Long getMonitorId() {
+        return monitorId;
+    }
+
+    public void setMonitorId(Long monitorId) {
+        this.monitorId = monitorId;
     }
 }

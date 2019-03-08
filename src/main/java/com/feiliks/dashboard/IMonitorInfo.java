@@ -1,9 +1,10 @@
 package com.feiliks.dashboard;
 
-public interface INotifierData {
+public interface IMonitorInfo {
     Long getId();
     String getName();
-    boolean isMonitor();
     String getJavaClass();
+    long getExecRate();
+    IDatabaseInfo getDatabaseInfo();
     Object readConfig(String name);
 }

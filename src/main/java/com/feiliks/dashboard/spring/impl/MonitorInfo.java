@@ -1,26 +1,36 @@
 package com.feiliks.dashboard.spring.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.feiliks.dashboard.INotifierData;
-import com.feiliks.dashboard.spring.entities.MessageNotifierEntity;
+import com.feiliks.dashboard.spring.entities.DatabaseEntity;
+import com.feiliks.dashboard.spring.entities.MonitorEntity;
+import com.feiliks.dashboard.IDatabaseInfo;
+import com.feiliks.dashboard.IMonitorInfo;
 
 import java.util.Collections;
 import java.util.Map;
 
 
-public class NotifierData implements INotifierData {
+public class MonitorInfo implements IMonitorInfo {
 
     private final Long id;
     private final String name;
     private final String javaClass;
-    private final boolean isMonitor;
+    private final long execRate;
+    private final IDatabaseInfo databaseInfo;
     private final Map configMap;
 
-    public NotifierData(MessageNotifierEntity entity) {
+    public MonitorInfo(MonitorEntity entity) {
         id = entity.getId();
         name = entity.getName();
         javaClass = entity.getJavaClass();
-        isMonitor = entity.isMonitor();
+        execRate = entity.getExecRate();
+
+        DatabaseEntity database = entity.getDatabase();
+        if (database == null) {
+            databaseInfo = null;
+        } else {
+            databaseInfo = new DatabaseInfo(database);
+        }
 
         String configData = entity.getConfigData();
         Map m;
@@ -48,12 +58,18 @@ public class NotifierData implements INotifierData {
     }
 
     @Override
-    public boolean isMonitor() {
-        return isMonitor;
+    public long getExecRate() {
+        return execRate;
+    }
+
+    @Override
+    public IDatabaseInfo getDatabaseInfo() {
+        return databaseInfo;
     }
 
     @Override
     public Object readConfig(String name) {
         return configMap.get(name);
     }
+
 }

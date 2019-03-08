@@ -6,9 +6,10 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
+
 public interface MonitorRepository extends CrudRepository<MonitorEntity, Long> {
 
-    @Query("SELECT m FROM MonitorEntity AS m JOIN m.dataSources AS ds JOIN ds.blocks AS b JOIN b.dashboard AS bd WHERE b.active=true AND bd.active=true")
+    @Query("SELECT m FROM MonitorEntity AS m JOIN m.blocks AS b JOIN b.dashboard AS bd WHERE b.active=true AND bd.active=true")
     List<MonitorEntity> listActiveMonitors();
 
 }

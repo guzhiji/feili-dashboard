@@ -9,9 +9,9 @@ public class NotifierMessage<T> {
     }
 
     public NotifierMessage(String cmd, String key, T data) {
-        this.cmd = cmd;
-        this.key = key;
-        this.data = data;
+        this.setCmd(cmd);
+        this.setKey(key);
+        this.setData(data);
     }
 
     public String getCmd() {
@@ -24,5 +24,17 @@ public class NotifierMessage<T> {
 
     public T getData() {
         return data;
+    }
+
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setData(T data) {
+        this.data = data;
     }
 }

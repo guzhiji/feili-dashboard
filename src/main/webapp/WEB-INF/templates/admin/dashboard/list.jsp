@@ -90,7 +90,6 @@
                     <a class="btn btn-default" href="/admin/templates">管理模板</a>
                     <a class="btn btn-default" href="/admin/databases">管理数据库连接</a>
                     <a class="btn btn-default" href="/admin/monitors">管理监视器</a>
-                    <a class="btn btn-default" href="/admin/message-notifiers">管理数据推送源</a>
                 </div>
             </div>
         </div>

@@ -93,17 +93,17 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="select-data-source" class="col-md-2 control-label">数据源</label>
+                            <label for="select-monitor" class="col-md-2 control-label">监视器</label>
                             <div class="col-md-10">
-                                <select name="dataSourceId" id="select-data-source" class="form-control">
+                                <select name="monitorId" id="select-monitor" class="form-control">
                                     <option value="">-</option>
-                                    <c:forEach items="${dataSources}" var="ds">
+                                    <c:forEach items="${monitors}" var="m">
                                         <c:choose>
-                                            <c:when test="${ds.id == entity.dataSource.id}">
-                                                <option value="${ds.id}" selected="selected">${ds.name}</option>
+                                            <c:when test="${m.id == entity.monitor.id}">
+                                                <option value="${m.id}" selected="selected">${m.name}</option>
                                             </c:when>
                                             <c:otherwise>
-                                                <option value="${ds.id}">${ds.name}</option>
+                                                <option value="${m.id}">${m.name}</option>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:forEach>
@@ -123,25 +123,6 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <option value="${dp}">${dp}</option>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </c:forEach>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="select-msg-notifier" class="col-md-2 control-label">数据推送源</label>
-                            <div class="col-md-10">
-                                <select name="messageNotifierId" id="select-msg-notifier" class="form-control">
-                                    <option value="">-</option>
-                                    <c:forEach items="${messageNotifiers}" var="mn">
-                                        <c:choose>
-                                            <c:when test="${mn.id == entity.messageNotifier.id}">
-                                                <option value="${mn.id}" selected="selected">${mn.name}</option>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <option value="${mn.id}">${mn.name}</option>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:forEach>

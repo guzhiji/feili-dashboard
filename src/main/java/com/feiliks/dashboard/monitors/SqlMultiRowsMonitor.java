@@ -2,7 +2,7 @@ package com.feiliks.dashboard.monitors;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.feiliks.dashboard.spring.impl.AbstractMonitor;
+import com.feiliks.dashboard.AbstractMonitor;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -12,48 +12,56 @@ import java.sql.*;
 
 public class SqlMultiRowsMonitor extends AbstractMonitor {
 
-    @Override
-    public void run() {
+    public final class Task extends AbstractMonitor.Task {
 
-        String sql = (String) getMonitor().readConfig("dbSql");
-        DataSource ds = getDatabase();
+        @Override
+        public void run() {
 
-        try {
+            String sql = (String) getMonitorInfo().readConfig("dbSql");
+            DataSource ds = getDataSource();
 
-            try (Connection conn = ds.getConnection()) {
-                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                    try (ResultSet rs = pstmt.executeQuery()) {
+            try {
 
-                        StringWriter sw = new StringWriter();
-                        JsonFactory jf = new JsonFactory();
-                        JsonGenerator jg = jf.createGenerator(sw);
-                        jg.writeStartArray();
+                try (Connection conn = ds.getConnection()) {
+                    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                        try (ResultSet rs = pstmt.executeQuery()) {
 
-                        ResultSetMetaData metaData = rs.getMetaData();
-                        int c = metaData.getColumnCount();
-                        while (rs.next()) {
-                            jg.writeStartObject();
-                            for (int i = 1; i <= c; i++) {
-                                jg.writeObjectField(
-                                        metaData.getColumnLabel(i),
-                                        rs.getObject(i));
+                            StringWriter sw = new StringWriter();
+                            JsonFactory jf = new JsonFactory();
+                            JsonGenerator jg = jf.createGenerator(sw);
+                            jg.writeStartArray();
+
+                            ResultSetMetaData metaData = rs.getMetaData();
+                            int c = metaData.getColumnCount();
+                            while (rs.next()) {
+                                jg.writeStartObject();
+                                for (int i = 1; i <= c; i++) {
+                                    jg.writeObjectField(
+                                            metaData.getColumnLabel(i),
+                                            rs.getObject(i));
+                                }
+                                jg.writeEndObject();
                             }
-                            jg.writeEndObject();
+
+                            jg.writeEndArray();
+                            exportPreformattedResult(
+                                    "result", sw.toString());
+
                         }
-
-                        jg.writeEndArray();
-                        exportDataSourcePreformatted(
-                                "result", sw.toString());
-
                     }
                 }
+
+            } catch (SQLException | IOException e) {
+                e.printStackTrace();
+                exportResult("result", null);
             }
 
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            exportDataSource("result", null);
         }
 
+    }
+
+    public SqlMultiRowsMonitor() {
+        super(Task.class, true);
     }
 
 }

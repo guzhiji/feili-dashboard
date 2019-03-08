@@ -3,21 +3,21 @@ package com.feiliks.dashboard.spring.impl;
 import com.feiliks.dashboard.IMessenger;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+
 public class Messenger implements IMessenger {
 
-    private final long notifierId;
     private final SimpMessagingTemplate messaging;
 
-    public Messenger(long notifierId, SimpMessagingTemplate messaging) {
-        this.notifierId = notifierId;
+    public Messenger(SimpMessagingTemplate messaging) {
         this.messaging = messaging;
     }
 
     @Override
-    public void send(String text) {
+    public void send(long monitorId, String source, String message) {
         messaging.convertAndSend(
-                "/dashboard/notifier/" + notifierId,
-                text);
+                "/dashboard/notification/" +
+                        monitorId + "/" + source,
+                message);
     }
 
 }

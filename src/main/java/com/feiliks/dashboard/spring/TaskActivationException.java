@@ -8,8 +8,16 @@ public class TaskActivationException extends Exception {
 
     public static class NonSupportedTask extends TaskActivationException {}
 
-    public static class RunnableNotInstantiated extends TaskActivationException {
-        public RunnableNotInstantiated(Throwable e) {
+    public static class TaskAlreadyActivated extends TaskActivationException {}
+
+    public static class MonitorNotInstantiated extends TaskActivationException {
+        public MonitorNotInstantiated(Throwable e) {
+            super(e);
+        }
+    }
+
+    public static class TaskNotInstantiated extends TaskActivationException {
+        public TaskNotInstantiated(Throwable e) {
             super(e);
         }
     }

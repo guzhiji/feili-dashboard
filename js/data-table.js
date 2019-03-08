@@ -109,12 +109,12 @@ function DataTable(id, $, config) {
                 if (pageCount > 1 && animate)
                     row.hide('fast');
                 row.find('td').each(function(f) {
-                        var text = config.fields[f].formatter(
-                            data[s + r][config.fields[f].key]);
-                        if (text)
-                            $(this).text(text);
-                        else
-                            $(this).html('&nbsp;');
+                    var text = config.fields[f].formatter(
+                        data[s + r][config.fields[f].key]);
+                    if (text)
+                        $(this).text(text);
+                    else
+                        $(this).html('&nbsp;');
                 });
                 if (pageCount > 1 && animate)
                     row.show('fast');

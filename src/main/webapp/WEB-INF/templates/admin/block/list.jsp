@@ -24,12 +24,29 @@
                 </div>
                 <div class="panel-body">
 
-                    <c:if test="${flashMessage == 'block-saved'}">
-                        <div class="alert alert-success flash-message">单元块已经保存</div>
-                    </c:if>
-                    <c:if test="${flashMessage == 'block-deleted'}">
-                        <div class="alert alert-success flash-message">单元块已经删除</div>
-                    </c:if>
+                    <c:choose>
+                        <c:when test="${flashMessage == 'block-saved'}">
+                            <div class="alert alert-success flash-message">单元块已经保存</div>
+                        </c:when>
+                        <c:when test="${flashMessage == 'block-deleted'}">
+                            <div class="alert alert-success flash-message">单元块已经删除</div>
+                        </c:when>
+                        <c:when test="${flashMessage == 'block-name-empty'}">
+                            <div class="alert alert-danger flash-message">请填写单元块名称</div>
+                        </c:when>
+                        <c:when test="${flashMessage == 'block-renderer-empty'}">
+                            <div class="alert alert-danger flash-message">请选择数据展示方式</div>
+                        </c:when>
+                        <c:when test="${flashMessage == 'monitor-required'}">
+                            <div class="alert alert-danger flash-message">请选择监视器</div>
+                        </c:when>
+                        <c:when test="${flashMessage == 'monitor-not-found'}">
+                            <div class="alert alert-danger flash-message">未找到监视器</div>
+                        </c:when>
+                        <c:when test="${not empty flashMessage}">
+                            <div class="alert alert-danger flash-message">${flashMessage}</div>
+                        </c:when>
+                    </c:choose>
 
                     <table class="table table-hover">
                         <thead>

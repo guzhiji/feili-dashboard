@@ -1,16 +1,16 @@
 package com.feiliks.dashboard.spring.controllers;
 
-
 import com.feiliks.dashboard.spring.NotFoundException;
 import com.feiliks.dashboard.spring.dto.BlockFormDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
-import com.feiliks.dashboard.spring.entities.DataSourceEntity;
-import com.feiliks.dashboard.spring.entities.MessageNotifierEntity;
 import com.feiliks.dashboard.spring.repositories.BlockRepository;
-import com.feiliks.dashboard.spring.repositories.DataSourceRepository;
-import com.feiliks.dashboard.spring.repositories.MessageNotifierRepository;
+import com.feiliks.dashboard.spring.repositories.MonitorRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,10 +31,7 @@ public class AdminBlockController {
     private BlockRepository blockRepo;
 
     @Autowired
-    private DataSourceRepository dataSourceRepo;
-
-    @Autowired
-    private MessageNotifierRepository notifierRepo;
+    private MonitorRepository monitorRepo;
 
     @GetMapping("/{id}")
     public ModelAndView showBlockEditor(@PathVariable long id)
@@ -46,6 +44,7 @@ public class AdminBlockController {
         data.put("parent", entity.getDashboard());
         data.put("mode", "modify");
         data.put("saveUrl", "/admin/blocks/" + id);
+        data.put("monitors", monitorRepo.findAll());
         String[] dataRenderers = {
                 "pie", "line", "bar"
         };
@@ -59,16 +58,14 @@ public class AdminBlockController {
         };
         data.put("messageHandlers", msgHandlers);
 
-        data.put("dataSources", dataSourceRepo.findAll());
-        data.put("messageNotifiers", notifierRepo.findAll());
-
         return new ModelAndView("admin/block/edit", data);
     }
 
     @PostMapping("/{id}")
     public String modifyBlock(
             @PathVariable long id,
-            BlockFormDto formData,
+            @Valid BlockFormDto formData,
+            BindingResult vresult,
             RedirectAttributes ratts)
             throws NotFoundException {
 
@@ -76,26 +73,26 @@ public class AdminBlockController {
                 .orElseThrow(NotFoundException::new);
         long dashboardId = entity.getDashboard().getId();
 
-        DataSourceEntity dataSourceEntity = null;
-        MessageNotifierEntity notifierEntity = null;
-        if (formData.getDataSourceId() != null)
-            dataSourceEntity = dataSourceRepo.findById(
-                    formData.getDataSourceId()).orElse(null);
-        if (formData.getMessageNotifierId() != null)
-            notifierEntity = notifierRepo.findById(
-                    formData.getMessageNotifierId()).orElse(null);
-        if (dataSourceEntity == null && notifierEntity == null) {
-            ratts.addFlashAttribute("flashMessage", "block-no-data");
-            return "redirect:/admin/blocks/" + id;
+        if (vresult.hasErrors()) {
+
+            FieldError fe = vresult.getFieldError();
+            if (fe != null) {
+                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+            } else {
+                ObjectError oe = vresult.getGlobalError();
+                if (oe != null)
+                    ratts.addFlashAttribute("flashMessage", oe.getDefaultMessage());
+            }
+
+        } else {
+
+            formData.toEntity(entity);
+            entity.setId(id);
+
+            blockRepo.save(entity);
+            ratts.addFlashAttribute("flashMessage", "block-saved");
+
         }
-
-        formData.toEntity(entity);
-        entity.setId(id);
-        entity.setDataSource(dataSourceEntity);
-        entity.setMessageNotifier(notifierEntity);
-
-        blockRepo.save(entity);
-        ratts.addFlashAttribute("flashMessage", "block-saved");
 
         return "redirect:/admin/dashboards/" + dashboardId + "/blocks";
     }

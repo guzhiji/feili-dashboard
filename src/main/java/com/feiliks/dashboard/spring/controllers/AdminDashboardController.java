@@ -3,16 +3,21 @@ package com.feiliks.dashboard.spring.controllers;
 import com.feiliks.dashboard.spring.NotFoundException;
 import com.feiliks.dashboard.spring.TaskActivationException;
 import com.feiliks.dashboard.spring.dto.BlockFormDto;
-import com.feiliks.dashboard.spring.dto.DashboardFormDto;
-import com.feiliks.dashboard.spring.entities.*;
 import com.feiliks.dashboard.spring.repositories.*;
-import com.feiliks.dashboard.spring.services.DashboardTaskService;
+import com.feiliks.dashboard.spring.services.MonitorService;
+import com.feiliks.dashboard.spring.dto.DashboardFormDto;
+import com.feiliks.dashboard.spring.entities.BlockEntity;
+import com.feiliks.dashboard.spring.entities.DashboardEntity;
+import com.feiliks.dashboard.spring.entities.MonitorEntity;
+import com.feiliks.dashboard.spring.entities.TemplateEntity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -35,16 +40,10 @@ public class AdminDashboardController {
     private MonitorRepository monitorRepo;
 
     @Autowired
-    private DataSourceRepository dataSourceRepo;
-
-    @Autowired
-    private MessageNotifierRepository notifierRepo;
-
-    @Autowired
     private BlockRepository blockRepo;
 
     @Autowired
-    private DashboardTaskService dashboardTaskService;
+    private MonitorService monitorService;
 
     @GetMapping
     public ModelAndView listDashboards(
@@ -166,33 +165,40 @@ public class AdminDashboardController {
     @PostMapping("/{id}/blocks")
     public String createBlock(
             @PathVariable long id,
-            BlockFormDto formData,
+            @Valid BlockFormDto formData,
+            BindingResult vresult,
             RedirectAttributes ratts)
             throws NotFoundException {
-        DashboardEntity parent = dashboardRepo.findById(id)
-                .orElseThrow(NotFoundException::new);
 
-        DataSourceEntity dataSourceEntity = null;
-        MessageNotifierEntity notifierEntity = null;
-        if (formData.getDataSourceId() != null)
-            dataSourceEntity = dataSourceRepo.findById(
-                    formData.getDataSourceId()).orElse(null);
-        if (formData.getMessageNotifierId() != null)
-            notifierEntity = notifierRepo.findById(
-                    formData.getMessageNotifierId()).orElse(null);
-        if (dataSourceEntity == null && notifierEntity == null) {
-            ratts.addFlashAttribute("flashMessage", "block-no-data");
-            return "redirect:/admin/dashboards/" + id + "/blocks/new";
+        if (vresult.hasErrors()) {
+            FieldError fe = vresult.getFieldError();
+            if (fe != null) {
+                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+            } else {
+                ObjectError oe = vresult.getGlobalError();
+                if (oe != null)
+                    ratts.addFlashAttribute("flashMessage", oe.getDefaultMessage());
+            }
+        } else {
+
+            DashboardEntity parent = dashboardRepo.findById(id)
+                    .orElseThrow(NotFoundException::new);
+            MonitorEntity monitor = monitorRepo.findById(formData.getMonitorId())
+                    .orElse(null);
+
+            if (monitor == null) {
+                ratts.addFlashAttribute("flashMessage", "monitor-not-found");
+            } else {
+                BlockEntity entity = formData.toEntity();
+                entity.setId(null);
+                entity.setDashboard(parent);
+                entity.setMonitor(monitor);
+
+                blockRepo.save(entity);
+                ratts.addFlashAttribute("flashMessage", "block-saved");
+            }
+
         }
-
-        BlockEntity entity = formData.toEntity();
-        entity.setId(null);
-        entity.setDashboard(parent);
-        entity.setDataSource(dataSourceEntity);
-        entity.setMessageNotifier(notifierEntity);
-
-        blockRepo.save(entity);
-        ratts.addFlashAttribute("flashMessage", "block-saved");
 
         return "redirect:/admin/dashboards/" + id + "/blocks";
     }
@@ -208,6 +214,7 @@ public class AdminDashboardController {
         data.put("parent", entity);
         data.put("saveUrl", "/admin/dashboards/" + id + "/blocks");
 
+        data.put("monitors", monitorRepo.findAll());
         String[] dataRenderers = {
                 "pie", "line", "bar"
         };
@@ -220,9 +227,6 @@ public class AdminDashboardController {
                 "msgh1", "msgh2", "msgh3"
         };
         data.put("messageHandlers", msgHandlers);
-
-        data.put("dataSources", dataSourceRepo.findAll());
-        data.put("messageNotifiers", notifierRepo.findAll());
 
         return new ModelAndView("admin/block/edit", data);
     }
@@ -247,34 +251,19 @@ public class AdminDashboardController {
                 .orElseThrow(NotFoundException::new);
 
         Set<MonitorEntity> activatedMon = new HashSet<>();
-        Set<MessageNotifierEntity> activatedNtf = new HashSet<>();
         try {
             for (BlockEntity blk : entity.getBlocks()) {
-                DataSourceEntity src = blk.getDataSource();
-                MonitorEntity mon = null;
-                if (src != null) mon = src.getMonitor();
-                MessageNotifierEntity ntf = blk.getMessageNotifier();
-                if (ntf == null) {
-                    if (mon != null) {
-                        if (dashboardTaskService.activate(mon))
-                            activatedMon.add(mon);
-                    }
-                } else if (mon == null) {
-                    if (dashboardTaskService.activate(ntf))
-                        activatedNtf.add(ntf);
-                } else {
-                    if (dashboardTaskService.activate(mon, ntf))
-                        activatedMon.add(mon);
-                }
+                MonitorEntity mon = blk.getMonitor();
+                monitorService.activate(mon);
+                activatedMon.add(mon);
             }
             entity.setActive(true);
             dashboardRepo.save(entity);
             ratts.addFlashAttribute("flashMessage", "dashboard-activated");
         } catch (TaskActivationException e) {
+            e.printStackTrace();
             for (MonitorEntity mon : activatedMon)
-                dashboardTaskService.deactivate(mon);
-            for (MessageNotifierEntity ntf : activatedNtf)
-                dashboardTaskService.deactivate(ntf);
+                monitorService.deactivate(mon);
             ratts.addFlashAttribute("flashMessage", "dashboard-not-activated");
         }
 
@@ -290,24 +279,17 @@ public class AdminDashboardController {
                 .orElseThrow(NotFoundException::new);
 
         List<MonitorEntity> monPre = monitorRepo.listActiveMonitors();
-        List<MessageNotifierEntity> ntfPre = notifierRepo.listActiveNotifiersExceptMonitors();
         Set<MonitorEntity> monitorsToStop = new HashSet<>(monPre);
-        Set<MessageNotifierEntity> notifiersToStop = new HashSet<>(ntfPre);
 
         entity.setActive(false);
         dashboardRepo.save(entity);
 
         List<MonitorEntity> monPost = monitorRepo.listActiveMonitors();
-        List<MessageNotifierEntity> ntfPost = notifierRepo.listActiveNotifiersExceptMonitors();
         for (MonitorEntity mon : monPost)
             monitorsToStop.remove(mon);
-        for (MessageNotifierEntity ntf : ntfPost)
-            notifiersToStop.remove(ntf);
 
         for (MonitorEntity mon : monitorsToStop)
-            dashboardTaskService.deactivate(mon);
-        for (MessageNotifierEntity ntf : notifiersToStop)
-            dashboardTaskService.deactivate(ntf);
+            monitorService.deactivate(mon);
 
         ratts.addFlashAttribute("flashMessage", "dashboard-deactivated");
         return "redirect:/admin/dashboards";
