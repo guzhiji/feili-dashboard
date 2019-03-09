@@ -56,7 +56,7 @@ public class BrokerMonitor extends AbstractMonitor {
     }
 
     public BrokerMonitor() {
-        super(Task.class, false);
+        super(BrokerMonitor.class, Task.class, false);
     }
 
 }

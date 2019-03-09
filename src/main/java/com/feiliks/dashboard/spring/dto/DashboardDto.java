@@ -30,6 +30,7 @@ public class DashboardDto {
         Map<Long, MonitorDto> mmap = new HashMap<>();
         ArrayList<BlockDto> blist = new ArrayList<>();
         for (BlockEntity be : entity.getBlocks()) {
+            if (!be.isActive()) continue;
             blist.add(new BlockDto(be));
             Long mid = be.getMonitor() == null ? null :
                     be.getMonitor().getId();

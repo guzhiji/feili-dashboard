@@ -22,6 +22,7 @@
         </h1>
         <div class="row">
             <c:forEach items="${dashboard.blocks}" var="blk">
+            <c:if test="${blk.active}">
             <div class="col-xs-${blk.width}">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -32,6 +33,7 @@
                     </div>
                 </div>
             </div>
+            </c:if>
             </c:forEach>
         </div>
         <div class="row">

@@ -52,8 +52,6 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
 
         private Map<String, Long[]> lastCpuTime = null;
 
-        public Task() {}
-
         @Override
         public void run() {
             long curTime = System.currentTimeMillis();
@@ -82,7 +80,7 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
     }
 
     public LinuxCpuUsageMonitor() {
-        super(Task.class, true);
+        super(LinuxCpuUsageMonitor.class, Task.class, true);
         registerNotificationSource("History_Realtime", "map");
         registerResultSource("Status", "map");
         registerResultSource("History_Realtime", "");

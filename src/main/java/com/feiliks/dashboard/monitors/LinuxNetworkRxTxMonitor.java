@@ -39,7 +39,7 @@ public class LinuxNetworkRxTxMonitor extends AbstractMonitor {
     }
 
     public LinuxNetworkRxTxMonitor() {
-        super(Task.class, true);
+        super(LinuxNetworkRxTxMonitor.class, Task.class, true);
     }
 
 }

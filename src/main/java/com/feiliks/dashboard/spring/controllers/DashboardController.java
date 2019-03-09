@@ -56,6 +56,8 @@ public class DashboardController {
             throws NotFoundException {
         DashboardEntity entity = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
+        if (!entity.isActive())
+            throw new NotFoundException();
         DashboardDto dto = new DashboardDto(entity);
         for (MonitorDto md : dto.getMonitors()) {
             AbstractMonitor monitor = monitorService.getMonitor(md.getId());
@@ -85,6 +87,8 @@ public class DashboardController {
 
         BlockEntity blk = blockRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
+        if (!blk.isActive())
+            throw new NotFoundException();
         AbstractMonitor monitor = monitorService.getMonitor(blk.getMonitor());
         if (monitor == null)
             throw new NotFoundException();
@@ -142,6 +146,8 @@ public class DashboardController {
             throws NotFoundException {
         DashboardEntity entity = dashboardRepo.findByPathKey(pathKey)
                 .orElseThrow(NotFoundException::new);
+        if (!entity.isActive())
+            throw new NotFoundException();
         Map<String, Object> data = new HashMap<>();
         data.put("dashboard", entity);
         return new ModelAndView("dashboard/" +

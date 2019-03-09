@@ -61,7 +61,7 @@ public class SqlMultiRowsMonitor extends AbstractMonitor {
     }
 
     public SqlMultiRowsMonitor() {
-        super(Task.class, true);
+        super(SqlMultiRowsMonitor.class, Task.class, true);
     }
 
 }

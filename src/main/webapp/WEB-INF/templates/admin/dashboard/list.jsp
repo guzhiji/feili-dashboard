@@ -52,7 +52,14 @@
                             <c:forEach items="${list}" var="board">
                             <tr>
                                 <td>${board.name}</td>
-                                <td><a href="/dashboard/${board.pathKey}" target="_blank">${board.pathKey}</a></td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${board.active}">
+                                            <a href="/dashboard/${board.pathKey}" target="_blank">${board.pathKey}</a>
+                                        </c:when>
+                                        <c:otherwise>${board.pathKey}</c:otherwise>
+                                    </c:choose>
+                                </td>
                                 <td class="row-actions">
                                     <a class="btn btn-default" href="/admin/dashboards/${board.id}/blocks">
                                         <span class="glyphicon glyphicon-eye-open"></span>

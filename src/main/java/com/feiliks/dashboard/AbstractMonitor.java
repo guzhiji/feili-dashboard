@@ -20,6 +20,7 @@ public abstract class AbstractMonitor {
 
     private Task task;
     private ScheduledFuture<?> scheduledFuture;
+    private final Class<? extends AbstractMonitor> monitorClass;
     private final Class<? extends Task> taskClass;
     private final boolean repeatable;
     private final Map<String, String> resultStore = new ConcurrentHashMap<>();
@@ -76,7 +77,11 @@ public abstract class AbstractMonitor {
 
     }
 
-    public AbstractMonitor(Class<? extends Task> taskClass, boolean repeatable) {
+    public AbstractMonitor(
+            Class<? extends AbstractMonitor> monitorClass,
+            Class<? extends Task> taskClass,
+            boolean repeatable) {
+        this.monitorClass = monitorClass;
         this.taskClass = taskClass;
         this.repeatable = repeatable;
     }
@@ -112,7 +117,7 @@ public abstract class AbstractMonitor {
     public final Task getTask() throws TaskActivationException.TaskNotInstantiated {
         try {
             if (task == null) {
-                Constructor<? extends Task> cst = taskClass.getConstructor(AbstractMonitor.class);
+                Constructor<? extends Task> cst = taskClass.getConstructor(monitorClass);
                 task = cst.newInstance(this);
             }
             return task;

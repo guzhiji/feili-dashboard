@@ -104,7 +104,7 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
     }
 
     public LinuxMemoryUsageMonitor() {
-        super(Task.class, true);
+        super(LinuxMemoryUsageMonitor.class, Task.class, true);
         registerNotificationSource("", "");
     }
 

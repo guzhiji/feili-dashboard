@@ -12,7 +12,6 @@ public class BlockDto {
     private String messageHandler;
     private int minHeight;
     private int width;
-    private boolean active;
     private int ordinal;
     private Long monitorId;
 
@@ -23,8 +22,10 @@ public class BlockDto {
         name = entity.getName();
         dataRenderer = entity.getDataRenderer();
         dataPreprocessor = entity.getDataPreprocessor();
+        messageHandler = entity.getMessageHandler();
         minHeight = entity.getMinHeight();
         width = entity.getWidth();
+        ordinal = entity.getOrdinal();
         monitorId = entity.getMonitor() == null ? null :
                 entity.getMonitor().getId();
     }
@@ -83,14 +84,6 @@ public class BlockDto {
 
     public void setWidth(int width) {
         this.width = width;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public int getOrdinal() {

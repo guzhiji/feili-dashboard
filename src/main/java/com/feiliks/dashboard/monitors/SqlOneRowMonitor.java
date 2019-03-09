@@ -48,7 +48,7 @@ public class SqlOneRowMonitor extends AbstractMonitor {
     }
 
     public SqlOneRowMonitor() {
-        super(Task.class, true);
+        super(SqlOneRowMonitor.class, Task.class, true);
     }
 
 }

@@ -253,6 +253,7 @@ public class AdminDashboardController {
         Set<MonitorEntity> activatedMon = new HashSet<>();
         try {
             for (BlockEntity blk : entity.getBlocks()) {
+                if (!blk.isActive()) continue;
                 MonitorEntity mon = blk.getMonitor();
                 monitorService.activate(mon);
                 activatedMon.add(mon);
@@ -260,6 +261,9 @@ public class AdminDashboardController {
             entity.setActive(true);
             dashboardRepo.save(entity);
             ratts.addFlashAttribute("flashMessage", "dashboard-activated");
+        } catch (TaskActivationException.TaskAlreadyActivated e) {
+            entity.setActive(true);
+            dashboardRepo.save(entity);
         } catch (TaskActivationException e) {
             e.printStackTrace();
             for (MonitorEntity mon : activatedMon)
