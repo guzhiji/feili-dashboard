@@ -22,7 +22,7 @@ public class Config implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/dashboard/notifier/");
+        registry.enableSimpleBroker("/dashboard/monitor/");
     }
 
     @Bean

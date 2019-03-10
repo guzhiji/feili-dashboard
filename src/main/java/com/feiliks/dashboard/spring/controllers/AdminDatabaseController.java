@@ -10,7 +10,6 @@ import com.feiliks.dashboard.spring.repositories.DatabaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +24,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/admin/databases")
-public class AdminDatabaseController {
+public class AdminDatabaseController extends AbstractClassicController {
 
     @Autowired
     private DatabaseRepository dbRepo;
@@ -45,12 +44,8 @@ public class AdminDatabaseController {
             @Valid DatabaseFormDto formData,
             BindingResult vresult,
             RedirectAttributes ratts) {
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+        if (!checkValidation(vresult, ratts))
             return "redirect:/admin/databases/new";
-        }
         dbRepo.save(formData.toEntity());
         ratts.addFlashAttribute("flashMessage", "database-saved");
         return "redirect:/admin/databases";
@@ -85,12 +80,8 @@ public class AdminDatabaseController {
             BindingResult vresult,
             RedirectAttributes ratts)
             throws NotFoundException {
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+        if (!checkValidation(vresult, ratts))
             return "redirect:/admin/databases/" + id;
-        }
         DatabaseEntity entity = dbRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
         formData.toEntity(entity);

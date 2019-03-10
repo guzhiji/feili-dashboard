@@ -1,8 +1,8 @@
 
 /**
  * 
- * @param {string|Element} id   id of the table element.
- * @param {object} $            jQuery object
+ * @param {string|Element} container    id of the table element.
+ * @param {object} $                    jQuery object
  * @param {object} config
  * ```
  * {
@@ -23,8 +23,8 @@
  * }
  * ```
  */
-function DataTable(id, $, config) {
-    var table = $('#' + id),
+function DataTable(container, $, config) {
+    var table = getTable(container),
         pager = null,
         tbody = null,
         page = 0,
@@ -53,6 +53,12 @@ function DataTable(id, $, config) {
             hrow.append(col);
         }
     })();
+
+    function getTable(c) {
+        if (typeof c == 'string')
+            return $('#' + c);
+        return $(c);
+    }
 
     function createRow() {
         var r = $('<tr></tr>'),

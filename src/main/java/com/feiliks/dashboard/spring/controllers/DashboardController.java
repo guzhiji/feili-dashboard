@@ -6,10 +6,8 @@ import com.feiliks.dashboard.spring.dto.DashboardDto;
 import com.feiliks.dashboard.spring.dto.MonitorDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.DashboardEntity;
-import com.feiliks.dashboard.spring.entities.MonitorEntity;
 import com.feiliks.dashboard.spring.repositories.BlockRepository;
 import com.feiliks.dashboard.spring.repositories.DashboardRepository;
-import com.feiliks.dashboard.spring.repositories.MonitorRepository;
 import com.feiliks.dashboard.spring.services.MonitorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Controller
@@ -36,9 +33,6 @@ public class DashboardController {
 
     @Autowired
     private BlockRepository blockRepo;
-
-    @Autowired
-    private MonitorRepository monitorRepo;
 
     @Autowired
     private MonitorService monitorService;
@@ -105,9 +99,7 @@ public class DashboardController {
             HttpServletResponse resp)
             throws NotFoundException, IOException {
 
-        MonitorEntity mon = monitorRepo.findById(id)
-                .orElseThrow(NotFoundException::new);
-        AbstractMonitor monitor = monitorService.getMonitor(mon);
+        AbstractMonitor monitor = monitorService.getMonitor(id);
         if (monitor == null)
             throw new NotFoundException();
 
@@ -120,9 +112,7 @@ public class DashboardController {
     @GetMapping("/monitor/{id}/result-sources.json")
     public ResponseEntity<Map<String, String>> getResultSources(@PathVariable Long id)
             throws NotFoundException {
-        MonitorEntity mon = monitorRepo.findById(id)
-                .orElseThrow(NotFoundException::new);
-        AbstractMonitor monitor = monitorService.getMonitor(mon);
+        AbstractMonitor monitor = monitorService.getMonitor(id);
         if (monitor == null)
             throw new NotFoundException();
 
@@ -132,9 +122,7 @@ public class DashboardController {
     @GetMapping("/monitor/{id}/notification-sources.json")
     public ResponseEntity<Map<String, String>> getNotificationSources(@PathVariable Long id)
             throws NotFoundException {
-        MonitorEntity mon = monitorRepo.findById(id)
-                .orElseThrow(NotFoundException::new);
-        AbstractMonitor monitor = monitorService.getMonitor(mon);
+        AbstractMonitor monitor = monitorService.getMonitor(id);
         if (monitor == null)
             throw new NotFoundException();
 

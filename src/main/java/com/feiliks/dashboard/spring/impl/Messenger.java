@@ -15,7 +15,7 @@ public class Messenger implements IMessenger {
     @Override
     public void send(long monitorId, String source, String message) {
         messaging.convertAndSend(
-                "/dashboard/notification/" +
+                "/dashboard/monitor/" +
                         monitorId + "/" + source,
                 message);
     }

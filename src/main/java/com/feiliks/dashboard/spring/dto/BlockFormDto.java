@@ -17,14 +17,23 @@ public class BlockFormDto {
     @NotBlank(message = "block-renderer-empty")
     private String dataRenderer;
 
-    private String dataPreprocessor;
+    @NotNull(message = "block-result-source-empty")
+    @NotBlank(message = "block-result-source-empty")
+    private String resultSource;
+    private String resultHandler;
+
+    private String messageSource;
     private String messageHandler;
 
     @NotNull(message = "monitor-required")
     private Long monitorId;
 
-    private int minHeight;
-    private int width;
+    @NotNull(message = "block-min-height-required")
+    private Integer minHeight;
+
+    @NotNull(message = "block-width-required")
+    private Integer width;
+
     private boolean active;
 
     public BlockEntity toEntity() {
@@ -37,7 +46,9 @@ public class BlockFormDto {
         entity.setId(id);
         entity.setName(name);
         entity.setDataRenderer(dataRenderer);
-        entity.setDataPreprocessor(dataPreprocessor);
+        entity.setResultSource(resultSource);
+        entity.setResultHandler(resultHandler);
+        entity.setMessageSource(messageSource);
         entity.setMessageHandler(messageHandler);
         entity.setMinHeight(minHeight);
         entity.setWidth(width);
@@ -68,12 +79,12 @@ public class BlockFormDto {
         this.dataRenderer = dataRenderer;
     }
 
-    public String getDataPreprocessor() {
-        return dataPreprocessor;
+    public String getResultHandler() {
+        return resultHandler;
     }
 
-    public void setDataPreprocessor(String dataPreprocessor) {
-        this.dataPreprocessor = dataPreprocessor;
+    public void setResultHandler(String resultHandler) {
+        this.resultHandler = resultHandler;
     }
 
     public String getMessageHandler() {
@@ -84,19 +95,19 @@ public class BlockFormDto {
         this.messageHandler = messageHandler;
     }
 
-    public int getMinHeight() {
+    public Integer getMinHeight() {
         return minHeight;
     }
 
-    public void setMinHeight(int minHeight) {
+    public void setMinHeight(Integer minHeight) {
         this.minHeight = minHeight;
     }
 
-    public int getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(Integer width) {
         this.width = width;
     }
 
@@ -114,5 +125,21 @@ public class BlockFormDto {
 
     public void setMonitorId(Long monitorId) {
         this.monitorId = monitorId;
+    }
+
+    public String getResultSource() {
+        return resultSource;
+    }
+
+    public void setResultSource(String resultSource) {
+        this.resultSource = resultSource;
+    }
+
+    public String getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(String messageSource) {
+        this.messageSource = messageSource;
     }
 }

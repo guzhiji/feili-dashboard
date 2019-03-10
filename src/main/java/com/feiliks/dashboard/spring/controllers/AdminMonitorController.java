@@ -11,7 +11,6 @@ import com.feiliks.dashboard.spring.repositories.MonitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +25,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/admin/monitors")
-public class AdminMonitorController {
+public class AdminMonitorController extends AbstractClassicController {
 
     @Autowired
     private MonitorRepository monitorRepo;
@@ -48,12 +47,8 @@ public class AdminMonitorController {
             BindingResult vresult,
             RedirectAttributes ratts) {
 
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+        if (!checkValidation(vresult, ratts))
             return "redirect:/admin/monitors/new";
-        }
 
         DatabaseEntity dbEntity = null;
         if (formData.getDatabaseId() != null) {
@@ -108,12 +103,8 @@ public class AdminMonitorController {
             RedirectAttributes ratts)
             throws NotFoundException {
 
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+        if (!checkValidation(vresult, ratts))
             return "redirect:/admin/monitors/" + id;
-        }
 
         DatabaseEntity dbEntity = null;
         if (formData.getDatabaseId() != null) {

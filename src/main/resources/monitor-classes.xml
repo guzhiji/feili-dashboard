@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monitor_classes>
+    <monitor_class name="internal-name">
+        <display_name></display_name>
+        <java_class></java_class>
+        <result_sources>
+        </result_sources>
+        <message_sources>
+        </message_sources>
+    </monitor_class>
+</monitor_classes>

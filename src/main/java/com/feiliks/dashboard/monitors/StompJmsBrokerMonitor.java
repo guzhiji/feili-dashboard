@@ -8,7 +8,7 @@ import org.fusesource.stomp.jms.StompJmsDestination;
 import javax.jms.*;
 
 
-public class BrokerMonitor extends AbstractMonitor {
+public class StompJmsBrokerMonitor extends AbstractMonitor {
 
     public final class Task extends AbstractMonitor.Task {
 
@@ -55,8 +55,8 @@ public class BrokerMonitor extends AbstractMonitor {
         }
     }
 
-    public BrokerMonitor() {
-        super(BrokerMonitor.class, Task.class, false);
+    public StompJmsBrokerMonitor() {
+        super(StompJmsBrokerMonitor.class, Task.class, false);
     }
 
 }

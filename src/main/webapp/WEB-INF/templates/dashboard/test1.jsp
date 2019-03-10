@@ -24,12 +24,13 @@
             <c:forEach items="${dashboard.blocks}" var="blk">
             <c:if test="${blk.active}">
             <div class="col-xs-${blk.width}">
-                <div class="panel panel-primary">
+                <div class="panel panel-primary" id="block-${blk.id}">
                     <div class="panel-heading">
                         ${blk.name}
                     </div>
-                    <div class="panel-body">
-                        <div style="height: ${blk.minHeight}px;"></div>
+                    <div class="panel-body"
+                        id="block-${blk.id}-container"
+                        style="height: ${blk.minHeight}px;">
                     </div>
                 </div>
             </div>
@@ -67,23 +68,73 @@
             服务器连接错误
         </div>
         <script type="text/javascript">
+        var stomp = null;
+        var stompConnected = false;
         var resultSources = {};
-        $.get('/dashboard/${dashboard.id}.json', function(data) {
-            for (var m = 0; m < data.monitors.length; m++) {
-                var mon = data.monitors[m];
-                if (mon.resultSources) {
-                    for (var r in mon.resultSources) {
-                        resultSources['/dashboard/monitor/' + mon.id + '/result/' + r + '.json'] = {};
+        var messageSources = {};
+        var resultHandlers = {
+            'resultHandler1': function(data) {
+                console.log('resultHanlder1', data);
+            },
+            'resultHandler2': function(data) {
+                console.log('resultHandler2', data);
+            }
+        };
+        var messageHandlers = {
+            'msgh1': function(data) {
+                console.log('msgh1', data);
+            },
+            'msgh2': function(data) {
+                console.log('msgh2', data);
+            },
+            'msgh3': function(data) {
+                console.log('msgh3', data);
+            }
+        };
+        function init(data) {
+            var b, blk, path;
+            for (b = 0; b < data.blocks.length; b++) {
+                blk = data.blocks[b];
+                if (blk.monitorId) {
+                    if (blk.resultSource) {
+                        path = '/dashboard/monitor/' + blk.monitorId +
+                            '/result/' + blk.resultSource + '.json';
+                        resultSources[path] = resultHandlers[blk.resultHandler];
+                    }
+                    if (blk.messageSource) {
+                        path = '/dashboard/monitor/' + blk.monitorId +
+                            '/' + blk.messageSource;
+                        messageSources[path] = messageHandlers[blk.messageHandler];
                     }
                 }
             }
-        });
-        setInterval(function() {
+        }
+        $.get('/dashboard/${dashboard.id}.json', function(data) {
+            console.log(data);
+            init(data);
             console.log(resultSources);
+            console.log(messageSources);
+            connectWs();
+        });
+        function connectWs() {
+            var ws = new SockJS('/sockjs');
+            stomp = Stomp.over(ws);
+            stomp.debug = null;
+            stomp.connect({}, function() {
+                console.log('sockjs connected');
+                // on success
+                stompConnected = true;
+                for (var dest in messageSources)
+                    stomp.subscribe(dest, messageSources[dest]);
+            }, function() {
+                // on error
+                stompConnected = false;
+                setTimeout(connectWs, 1000);
+            });
+        }
+        setInterval(function() {
             for (var url in resultSources) {
-                $.get(url, function(data) {
-                    console.log(data);
-                });
+                $.get(url, resultSources[url]);
             }
         }, 5000);
         </script>

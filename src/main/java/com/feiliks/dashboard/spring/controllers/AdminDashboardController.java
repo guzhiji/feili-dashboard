@@ -3,21 +3,22 @@ package com.feiliks.dashboard.spring.controllers;
 import com.feiliks.dashboard.spring.NotFoundException;
 import com.feiliks.dashboard.spring.TaskActivationException;
 import com.feiliks.dashboard.spring.dto.BlockFormDto;
-import com.feiliks.dashboard.spring.repositories.*;
-import com.feiliks.dashboard.spring.services.MonitorService;
 import com.feiliks.dashboard.spring.dto.DashboardFormDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.DashboardEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
 import com.feiliks.dashboard.spring.entities.TemplateEntity;
+import com.feiliks.dashboard.spring.repositories.BlockRepository;
+import com.feiliks.dashboard.spring.repositories.DashboardRepository;
+import com.feiliks.dashboard.spring.repositories.MonitorRepository;
+import com.feiliks.dashboard.spring.repositories.TemplateRepository;
+import com.feiliks.dashboard.spring.services.MonitorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -28,7 +29,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/admin/dashboards")
-public class AdminDashboardController {
+public class AdminDashboardController extends AbstractClassicController {
 
     @Autowired
     private DashboardRepository dashboardRepo;
@@ -66,12 +67,8 @@ public class AdminDashboardController {
             BindingResult vresult,
             RedirectAttributes ratts) {
 
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+        if (!checkValidation(vresult, ratts))
             return "redirect:/admin/dashboards/new";
-        }
 
         TemplateEntity template = tplRepo.findById(formData.getTemplateId())
                 .orElse(null);
@@ -121,12 +118,8 @@ public class AdminDashboardController {
             RedirectAttributes ratts)
             throws NotFoundException {
 
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+        if (!checkValidation(vresult, ratts))
             return "redirect:/admin/dashboards/" + id;
-        }
 
         DashboardEntity entity = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
@@ -170,16 +163,7 @@ public class AdminDashboardController {
             RedirectAttributes ratts)
             throws NotFoundException {
 
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null) {
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
-            } else {
-                ObjectError oe = vresult.getGlobalError();
-                if (oe != null)
-                    ratts.addFlashAttribute("flashMessage", oe.getDefaultMessage());
-            }
-        } else {
+        if (checkValidation(vresult, ratts)) {
 
             DashboardEntity parent = dashboardRepo.findById(id)
                     .orElseThrow(NotFoundException::new);
@@ -219,10 +203,10 @@ public class AdminDashboardController {
                 "pie", "line", "bar"
         };
         data.put("dataRenderers", dataRenderers);
-        String[] dataPreprocessors = {
-                "preproc1", "preproc2"
+        String[] resultHandlers = {
+                "resultHandler1", "resultHandler2"
         };
-        data.put("dataPreprocessors", dataPreprocessors);
+        data.put("resultHandlers", resultHandlers);
         String[] msgHandlers = {
                 "msgh1", "msgh2", "msgh3"
         };

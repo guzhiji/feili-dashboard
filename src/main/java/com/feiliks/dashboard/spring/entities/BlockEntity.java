@@ -1,6 +1,7 @@
 package com.feiliks.dashboard.spring.entities;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 
 @Entity
@@ -17,14 +18,23 @@ public class BlockEntity {
     @ManyToOne(optional = false)
     private DashboardEntity dashboard;
 
+    @OneToMany(mappedBy = "block", cascade = CascadeType.ALL)
+    private Collection<FieldEntity> fields;
+
     @Column(name = "data_renderer", nullable = false, length = 32)
     private String dataRenderer;
 
-    @Column(name = "data_preprocessor", length = 32)
-    private String dataPreprocessor;
-
     @ManyToOne(optional = false)
     private MonitorEntity monitor;
+
+    @Column(name = "result_source", nullable = false, length = 32)
+    private String resultSource;
+
+    @Column(name = "result_handler", length = 32)
+    private String resultHandler;
+
+    @Column(name = "message_source", length = 32)
+    private String messageSource;
 
     @Column(name = "message_handler", length = 32)
     private String messageHandler;
@@ -73,12 +83,12 @@ public class BlockEntity {
         this.dataRenderer = dataRenderer;
     }
 
-    public String getDataPreprocessor() {
-        return dataPreprocessor;
+    public String getResultHandler() {
+        return resultHandler;
     }
 
-    public void setDataPreprocessor(String dataPreprocessor) {
-        this.dataPreprocessor = dataPreprocessor;
+    public void setResultHandler(String resultHandler) {
+        this.resultHandler = resultHandler;
     }
 
     public MonitorEntity getMonitor() {
@@ -127,6 +137,30 @@ public class BlockEntity {
 
     public void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
+    }
+
+    public String getResultSource() {
+        return resultSource;
+    }
+
+    public void setResultSource(String resultSource) {
+        this.resultSource = resultSource;
+    }
+
+    public String getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(String messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    public Collection<FieldEntity> getFields() {
+        return fields;
+    }
+
+    public void setFields(Collection<FieldEntity> fields) {
+        this.fields = fields;
     }
 }
 

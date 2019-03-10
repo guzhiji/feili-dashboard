@@ -3,10 +3,7 @@ package com.feiliks.dashboard.spring.dto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.DashboardEntity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DashboardDto {
 
@@ -28,7 +25,7 @@ public class DashboardDto {
         setTemplate(new TemplateDto(entity.getTemplate()));
 
         Map<Long, MonitorDto> mmap = new HashMap<>();
-        ArrayList<BlockDto> blist = new ArrayList<>();
+        ArrayList<BlockDto> blist = new ArrayList<>(entity.getBlocks().size());
         for (BlockEntity be : entity.getBlocks()) {
             if (!be.isActive()) continue;
             blist.add(new BlockDto(be));
@@ -37,6 +34,7 @@ public class DashboardDto {
             if (mid != null && !mmap.containsKey(mid))
                 mmap.put(mid, new MonitorDto(be.getMonitor()));
         }
+        blist.sort(Comparator.comparing(BlockDto::getOrdinal));
         setBlocks(blist);
         setMonitors(mmap.values());
     }

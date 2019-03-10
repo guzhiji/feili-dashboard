@@ -51,7 +51,9 @@
                         <tbody>
                             <c:forEach items="${list}" var="board">
                             <tr>
-                                <td>${board.name}</td>
+                                <td>
+                                    <a href="/admin/dashboards/${board.id}/blocks">${board.name}</a>
+                                </td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${board.active}">
@@ -61,9 +63,6 @@
                                     </c:choose>
                                 </td>
                                 <td class="row-actions">
-                                    <a class="btn btn-default" href="/admin/dashboards/${board.id}/blocks">
-                                        <span class="glyphicon glyphicon-eye-open"></span>
-                                    </a>
                                     <a class="btn btn-primary" href="/admin/dashboards/${board.id}">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>

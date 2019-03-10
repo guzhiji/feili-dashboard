@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <template name="test1">
+        <display_name>Test 1</display_name>
+    </template>
+</templates>

@@ -112,17 +112,24 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="select-data-preprocessor" class="col-md-2 control-label">数据预处理方式</label>
+                            <label for="input-result-source" class="col-md-2 control-label">监视器结果源</label>
                             <div class="col-md-10">
-                                <select name="dataPreprocessor" id="select-data-preprocessor" class="form-control">
+                                <input type="text" name="resultSource" id="input-result-source" class="form-control" value="${entity.resultSource}" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="select-result-handler" class="col-md-2 control-label">监视器结果接收器</label>
+                            <div class="col-md-10">
+                                <select name="resultHandler" id="select-result-handler" class="form-control">
                                     <option value="">-</option>
-                                    <c:forEach items="${dataPreprocessors}" var="dp">
+                                    <c:forEach items="${resultHandlers}" var="rh">
                                         <c:choose>
-                                            <c:when test="${dp == entity.dataPreprocessor}">
-                                                <option value="${dp}" selected="selected">${dp}</option>
+                                            <c:when test="${rh == entity.resultHandler}">
+                                                <option value="${rh}" selected="selected">${rh}</option>
                                             </c:when>
                                             <c:otherwise>
-                                                <option value="${dp}">${dp}</option>
+                                                <option value="${rh}">${rh}</option>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:forEach>
@@ -131,7 +138,14 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="select-msg-handler" class="col-md-2 control-label">数据推送接收器</label>
+                            <label for="input-msg-source" class="col-md-2 control-label">监视器推送源</label>
+                            <div class="col-md-10">
+                                <input type="text" name="messageSource" id="input-msg-source" class="form-control" value="${entity.messageSource}" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="select-msg-handler" class="col-md-2 control-label">监视器推送接收器</label>
                             <div class="col-md-10">
                                 <select name="messageHandler" id="select-msg-handler" class="form-control">
                                     <option value="">-</option>

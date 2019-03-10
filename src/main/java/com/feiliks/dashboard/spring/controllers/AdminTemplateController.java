@@ -8,7 +8,6 @@ import com.feiliks.dashboard.spring.repositories.TemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +18,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Controller
 @RequestMapping("/admin/templates")
-public class AdminTemplateController {
+public class AdminTemplateController extends AbstractClassicController {
 
     @Autowired
     private TemplateRepository tplRepo;
@@ -42,12 +40,8 @@ public class AdminTemplateController {
         @Valid TemplateDto formData,
         BindingResult vresult,
         RedirectAttributes ratts) {
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+        if (!checkValidation(vresult, ratts))
             return "redirect:/admin/templates/new";
-        }
         tplRepo.save(formData.toEntity());
         ratts.addFlashAttribute("flashMessage", "template-saved");
         return "redirect:/admin/templates";
@@ -64,8 +58,9 @@ public class AdminTemplateController {
     @GetMapping("/{id}")
     public ModelAndView showTemplateEditor(@PathVariable long id)
             throws NotFoundException {
-        Optional<TemplateEntity> result = tplRepo.findById(id);
-        TemplateEntity entity = result.orElseThrow(NotFoundException::new);
+
+        TemplateEntity entity = tplRepo.findById(id)
+                .orElseThrow(NotFoundException::new);
 
         Map<String, Object> data = new HashMap<>();
         data.put("mode", "modify");
@@ -82,12 +77,8 @@ public class AdminTemplateController {
             BindingResult vresult,
             RedirectAttributes ratts)
             throws NotFoundException {
-        if (vresult.hasErrors()) {
-            FieldError fe = vresult.getFieldError();
-            if (fe != null)
-                ratts.addFlashAttribute("flashMessage", fe.getDefaultMessage());
+        if (!checkValidation(vresult, ratts))
             return "redirect:/admin/templates/" + id;
-        }
         TemplateEntity entity = tplRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
         formData.toEntity(entity);

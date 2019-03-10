@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
-        <title>看板单元块</title>
+        <title>字段</title>
         <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -20,68 +20,37 @@
         <div class="container">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    看板单元块
+                    字段
                 </div>
                 <div class="panel-body">
 
-                    <c:choose>
-                        <c:when test="${flashMessage == 'block-saved'}">
-                            <div class="alert alert-success flash-message">单元块已经保存</div>
-                        </c:when>
-                        <c:when test="${flashMessage == 'block-deleted'}">
-                            <div class="alert alert-success flash-message">单元块已经删除</div>
-                        </c:when>
-                        <c:when test="${flashMessage == 'block-name-empty'}">
-                            <div class="alert alert-danger flash-message">请填写单元块名称</div>
-                        </c:when>
-                        <c:when test="${flashMessage == 'block-renderer-empty'}">
-                            <div class="alert alert-danger flash-message">请选择数据展示方式</div>
-                        </c:when>
-                        <c:when test="${flashMessage == 'block-result-source-empty'}">
-                            <div class="alert alert-danger flash-message">请选择监视器结果源</div>
-                        </c:when>
-                        <c:when test="${flashMessage == 'monitor-required'}">
-                            <div class="alert alert-danger flash-message">请选择监视器</div>
-                        </c:when>
-                        <c:when test="${flashMessage == 'monitor-not-found'}">
-                            <div class="alert alert-danger flash-message">未找到监视器</div>
-                        </c:when>
-                        <c:when test="${not empty flashMessage}">
-                            <div class="alert alert-danger flash-message">${flashMessage}</div>
-                        </c:when>
-                    </c:choose>
+                    <c:if test="${flashMessage == 'field-saved'}">
+                        <div class="alert alert-success flash-message">模板已经保存</div>
+                    </c:if>
+                    <c:if test="${flashMessage == 'field-deleted'}">
+                        <div class="alert alert-success flash-message">模板已经删除</div>
+                    </c:if>
 
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>单元块名称</th>
-                                <th>数据展示方式</th>
-                                <th>启用</th>
+                                <th>字段名称</th>
+                                <th>内部名称</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach items="${list}" var="blk">
+                            <c:forEach items="${list}" var="f">
                             <tr>
-                                <td><a href="/admin/blocks/${blk.id}/fields">${blk.name}</a></td>
-                                <td>${blk.dataRenderer}</td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${blk.active}">
-                                            是
-                                        </c:when>
-                                        <c:otherwise>
-                                            否
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
+                                <td>${f.name}</td>
+                                <td>${f.internalName}</td>
                                 <td class="row-actions">
-                                    <a class="btn btn-primary" href="/admin/blocks/${blk.id}">
+                                    <a class="btn btn-primary" href="/admin/fields/${f.id}">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>
-                                    <a class="btn btn-danger action-btn" data-action-url="/admin/blocks/${blk.id}/delete"
-                                        data-action-desc="删除单元块：${blk.name}" data-action-name="删除"
-                                        data-action-msg="确认要删除该单元块吗？">
+                                    <a class="btn btn-danger action-btn" data-action-url="/admin/fields/${f.id}/delete"
+                                        data-action-desc="删除字段：${f.name}" data-action-name="删除"
+                                        data-action-msg="确认要删除该字段吗？">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
                                 </td>
@@ -92,8 +61,8 @@
 
                 </div>
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="/admin/dashboards/${parent.id}/blocks/new">创建单元块</a>
-                    <a class="btn btn-default" href="/admin/dashboards">返回</a>
+                    <a class="btn btn-primary" href="/admin/blocks/${parent.id}/fields/new">添加字段</a>
+                    <a class="btn btn-default" href="/admin/dashboards/${parent.dashboard.id}/blocks">返回</a>
                 </div>
             </div>
         </div>
@@ -140,3 +109,4 @@ setTimeout(function() {
         </script>
     </body>
 </html>
+
