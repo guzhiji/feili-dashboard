@@ -36,6 +36,7 @@
                             <tr>
                                 <th>字段名称</th>
                                 <th>内部名称</th>
+                                <th>启用</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -44,6 +45,16 @@
                             <tr>
                                 <td>${f.name}</td>
                                 <td>${f.internalName}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${f.active}">
+                                            是
+                                        </c:when>
+                                        <c:otherwise>
+                                            否
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
                                 <td class="row-actions">
                                     <a class="btn btn-primary" href="/admin/fields/${f.id}">
                                         <span class="glyphicon glyphicon-pencil"></span>
