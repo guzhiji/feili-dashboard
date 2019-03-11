@@ -25,10 +25,10 @@
                 <div class="panel-body">
 
                     <c:if test="${flashMessage == 'field-saved'}">
-                        <div class="alert alert-success flash-message">模板已经保存</div>
+                        <div class="alert alert-success flash-message">字段已经保存</div>
                     </c:if>
                     <c:if test="${flashMessage == 'field-deleted'}">
-                        <div class="alert alert-success flash-message">模板已经删除</div>
+                        <div class="alert alert-success flash-message">字段已经删除</div>
                     </c:if>
 
                     <table class="table table-hover">
