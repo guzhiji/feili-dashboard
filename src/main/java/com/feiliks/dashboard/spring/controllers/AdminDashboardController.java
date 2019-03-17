@@ -200,7 +200,7 @@ public class AdminDashboardController extends AbstractClassicController {
 
         data.put("monitors", monitorRepo.findAll());
         String[] dataRenderers = {
-                "pie", "line", "bar"
+                "pie-chart", "category-chart", "time-chart", "data-table"
         };
         data.put("dataRenderers", dataRenderers);
         String[] resultHandlers = {
@@ -238,16 +238,16 @@ public class AdminDashboardController extends AbstractClassicController {
         try {
             for (BlockEntity blk : entity.getBlocks()) {
                 if (!blk.isActive()) continue;
-                MonitorEntity mon = blk.getMonitor();
-                monitorService.activate(mon);
-                activatedMon.add(mon);
+                try {
+                    MonitorEntity mon = blk.getMonitor();
+                    monitorService.activate(mon);
+                    activatedMon.add(mon);
+                } catch (TaskActivationException.TaskAlreadyActivated ignored) {
+                }
             }
             entity.setActive(true);
             dashboardRepo.save(entity);
             ratts.addFlashAttribute("flashMessage", "dashboard-activated");
-        } catch (TaskActivationException.TaskAlreadyActivated e) {
-            entity.setActive(true);
-            dashboardRepo.save(entity);
         } catch (TaskActivationException e) {
             e.printStackTrace();
             for (MonitorEntity mon : activatedMon)
@@ -266,15 +266,14 @@ public class AdminDashboardController extends AbstractClassicController {
         DashboardEntity entity = dashboardRepo.findById(id)
                 .orElseThrow(NotFoundException::new);
 
-        List<MonitorEntity> monPre = monitorRepo.listActiveMonitors();
-        Set<MonitorEntity> monitorsToStop = new HashSet<>(monPre);
+        Set<MonitorEntity> monitorsToStop = new HashSet<>(
+                monitorRepo.listActiveMonitors());
 
         entity.setActive(false);
         dashboardRepo.save(entity);
 
-        List<MonitorEntity> monPost = monitorRepo.listActiveMonitors();
-        for (MonitorEntity mon : monPost)
-            monitorsToStop.remove(mon);
+        monitorsToStop.removeAll(
+                monitorRepo.listActiveMonitors());
 
         for (MonitorEntity mon : monitorsToStop)
             monitorService.deactivate(mon);

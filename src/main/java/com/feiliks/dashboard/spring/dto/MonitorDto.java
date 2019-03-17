@@ -10,7 +10,7 @@ public class MonitorDto {
     private String name;
     private long execRate;
     private Map<String, String> resultSources;
-    private Map<String, String> notificationSources;
+    private Map<String, String> messageSources;
 
     public MonitorDto() {}
 
@@ -19,7 +19,7 @@ public class MonitorDto {
         setName(entity.getName());
         setExecRate(entity.getExecRate());
         setResultSources(null);
-        setNotificationSources(null);
+        setMessageSources(null);
     }
 
     public Long getId() {
@@ -54,11 +54,11 @@ public class MonitorDto {
         this.resultSources = resultSources;
     }
 
-    public Map<String, String> getNotificationSources() {
-        return notificationSources;
+    public Map<String, String> getMessageSources() {
+        return messageSources;
     }
 
-    public void setNotificationSources(Map<String, String> notificationSources) {
-        this.notificationSources = notificationSources;
+    public void setMessageSources(Map<String, String> messageSources) {
+        this.messageSources = messageSources;
     }
 }

@@ -57,7 +57,7 @@ public class DashboardController {
             AbstractMonitor monitor = monitorService.getMonitor(md.getId());
             if (monitor != null) {
                 md.setResultSources(monitor.getResultSources());
-                md.setNotificationSources(monitor.getNotificationSources());
+                md.setMessageSources(monitor.getMessageSources());
             }
         }
         return ResponseEntity.ok(dto);
@@ -126,7 +126,7 @@ public class DashboardController {
         if (monitor == null)
             throw new NotFoundException();
 
-        return ResponseEntity.ok(monitor.getNotificationSources());
+        return ResponseEntity.ok(monitor.getMessageSources());
     }
 
     @GetMapping("/{pathKey}")

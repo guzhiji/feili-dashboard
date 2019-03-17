@@ -1,6 +1,7 @@
 package com.feiliks.dashboard.monitors;
 
 import com.feiliks.dashboard.AbstractMonitor;
+import com.feiliks.dashboard.NotifierMessage;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -22,6 +23,7 @@ public class SqlOneRowMonitor extends AbstractMonitor {
             try (Connection conn = ds.getConnection()) {
                 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+                    long ts = System.currentTimeMillis();
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
                             out = new HashMap<>();
@@ -33,15 +35,15 @@ public class SqlOneRowMonitor extends AbstractMonitor {
                             }
                         }
                     }
-
-                    notifyClient("", "");
+                    sendMessage("Result", new NotifierMessage<>(
+                            "update", String.valueOf(ts), out));
 
                 }
 
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
-                exportResult("result", out);
+                exportResult("Result", out);
             }
 
         }
@@ -49,6 +51,8 @@ public class SqlOneRowMonitor extends AbstractMonitor {
 
     public SqlOneRowMonitor() {
         super(SqlOneRowMonitor.class, Task.class, true);
+        registerResultSource("Result", "obj");
+        registerMessageSource("Result", "obj");
     }
 
 }

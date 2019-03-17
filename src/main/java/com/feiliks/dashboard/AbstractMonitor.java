@@ -25,7 +25,7 @@ public abstract class AbstractMonitor {
     private final boolean repeatable;
     private final Map<String, String> resultStore = new ConcurrentHashMap<>();
     private final Map<String, String> resultSources = new HashMap<>();
-    private final Map<String, String> notificationSources = new HashMap<>();
+    private final Map<String, String> messageSources = new HashMap<>();
 
     public abstract class Task extends Thread {
 
@@ -37,20 +37,20 @@ public abstract class AbstractMonitor {
             return dataSource;
         }
 
-        public final void notifyClient(String notificationSource, String message) {
-            if (messenger != null && notificationSources.containsKey(notificationSource))
+        public final void sendMessage(String messageSource, String message) {
+            if (messenger != null && messageSources.containsKey(messageSource))
                 messenger.send(
                         monitor.getId(),
-                        notificationSource,
+                        messageSource,
                         message);
         }
 
-        public final <T> void notifyClient(String notificationSource, NotifierMessage<T> message) {
-            if (messenger != null && notificationSources.containsKey(notificationSource)) {
+        public final <T> void sendMessage(String messageSource, NotifierMessage<T> message) {
+            if (messenger != null && messageSources.containsKey(messageSource)) {
                 try {
                     messenger.send(
                             monitor.getId(),
-                            notificationSource,
+                            messageSource,
                             new ObjectMapper().writeValueAsString(message));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -90,16 +90,16 @@ public abstract class AbstractMonitor {
         resultSources.put(name, type);
     }
 
-    protected final void registerNotificationSource(String name, String type) {
-        notificationSources.put(name, type);
+    protected final void registerMessageSource(String name, String type) {
+        messageSources.put(name, type);
     }
 
     public final Map<String, String> getResultSources() {
         return resultSources;
     }
 
-    public final Map<String, String> getNotificationSources() {
-        return notificationSources;
+    public final Map<String, String> getMessageSources() {
+        return messageSources;
     }
 
     public final boolean isRepeatable() {

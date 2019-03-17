@@ -47,7 +47,7 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
 
                     @Override
                     public void onNew(History.Item<MemoryUsage> item) {
-                        notifyClient("Realtime", new NotifierMessage<>(
+                        sendMessage("History_Realtime", new NotifierMessage<>(
                                 "update",
                                 String.valueOf(item.getTime()),
                                 item.getData()));
@@ -61,7 +61,10 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
 
                     @Override
                     public void onNewPeriod(String attr, History.Item<History.AggValues<Long>> item) {
-
+                        sendMessage("History_" + attr + "_Minutely", new NotifierMessage<>(
+                                "update",
+                                String.valueOf(item.getTime()),
+                                item.getData()));
                     }
                 },
                 new History.IAggHistoryEventHandler<Long>() {
@@ -72,7 +75,10 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
 
                     @Override
                     public void onNewPeriod(String attr, History.Item<History.AggValues<Long>> item) {
-
+                        sendMessage("History_" + attr + "_Hourly", new NotifierMessage<>(
+                                "update",
+                                String.valueOf(item.getTime()),
+                                item.getData()));
                     }
                 });
 
@@ -105,7 +111,17 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
 
     public LinuxMemoryUsageMonitor() {
         super(LinuxMemoryUsageMonitor.class, Task.class, true);
-        registerNotificationSource("", "");
+        registerMessageSource("History_Realtime", "time-obj-list");
+        registerMessageSource("History_Used_Minutely", "time-obj-list");
+        registerMessageSource("History_Available_Minutely", "time-obj-list");
+        registerMessageSource("History_Used_Hourly", "time-obj-list");
+        registerMessageSource("History_Available_Hourly", "time-obj-list");
+        registerResultSource("Status", "obj");
+        registerResultSource("History_Realtime", "time-obj-list");
+        registerResultSource("History_Used_Minutely", "time-obj-list");
+        registerResultSource("History_Available_Minutely", "time-obj-list");
+        registerResultSource("History_Used_Hourly", "time-obj-list");
+        registerResultSource("History_Available_Hourly", "time-obj-list");
     }
 
 }

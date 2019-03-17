@@ -17,13 +17,13 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
                 new History.IRealtimeEventHandler<Map<String, Double>>() {
                     @Override
                     public void onExpired(History.Item<Map<String, Double>> item) {
-                        notifyClient("History_Realtime", new NotifierMessage<>(
+                        sendMessage("History_Realtime", new NotifierMessage<>(
                                         "remove", String.valueOf(item.getTime()), null));
                     }
 
                     @Override
                     public void onNew(History.Item<Map<String, Double>> item) {
-                        notifyClient("History_Realtime", new NotifierMessage<>(
+                        sendMessage("History_Realtime", new NotifierMessage<>(
                                 "update", String.valueOf(item.getTime()), item.getData()));
                     }
                 },
@@ -67,8 +67,6 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
                     double measure = Math.round(10000.0 * used / total) / 100.0;
                     curMsr.put(entry.getKey(), measure);
                 }
-                notifyClient("Status", new NotifierMessage<>(
-                        "update", String.valueOf(curTime), curMsr));
             }
             lastCpuTime = cpuTime;
             history.add(curTime, curMsr);
@@ -81,9 +79,9 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
 
     public LinuxCpuUsageMonitor() {
         super(LinuxCpuUsageMonitor.class, Task.class, true);
-        registerNotificationSource("History_Realtime", "map");
-        registerResultSource("Status", "map");
-        registerResultSource("History_Realtime", "");
+        registerMessageSource("History_Realtime", "time-obj-list");
+        registerResultSource("Status", "obj");
+        registerResultSource("History_Realtime", "time-obj-list");
     }
 
 }

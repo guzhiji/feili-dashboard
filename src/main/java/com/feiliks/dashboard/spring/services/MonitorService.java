@@ -6,12 +6,14 @@ import com.feiliks.dashboard.spring.TaskActivationException;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
 import com.feiliks.dashboard.spring.impl.Messenger;
 import com.feiliks.dashboard.spring.impl.MonitorInfo;
+import com.feiliks.dashboard.spring.repositories.MonitorRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -28,6 +30,21 @@ public class MonitorService {
 
     @Autowired
     private ThreadPoolTaskScheduler monitorScheduler;
+
+    @Autowired
+    private MonitorRepository monitorRepo;
+
+    @PostConstruct
+    private void monitorServiceStarted() {
+        for (MonitorEntity mon : monitorRepo.listActiveMonitors()) {
+            try {
+                System.out.println("activating monitor " + mon.getJavaClass());
+                activate(mon);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private final Map<Long, AbstractMonitor> monitors = new HashMap<>();
 

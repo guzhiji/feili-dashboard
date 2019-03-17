@@ -30,7 +30,7 @@ public class LinuxNetworkRxTxMonitor extends AbstractMonitor {
                             .append((cur[1] > prev[1]) ? Math.round((cur[1] - prev[1]) / secsDiff) : 0.0)
                             .append(';');
                 }
-                notifyClient("", out.toString());
+                sendMessage("", out.toString());
             }
             lastRxTx = ifaces;
             lastRxTxSecs = curSecs;

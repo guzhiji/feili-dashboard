@@ -34,7 +34,7 @@ public class StompJmsBrokerMonitor extends AbstractMonitor {
 
                     TextMessage received = (TextMessage) consumer.receive();
                     if (received != null)
-                        notifyClient("", received.getText());
+                        sendMessage("", received.getText());
 
                 /*
                 try {

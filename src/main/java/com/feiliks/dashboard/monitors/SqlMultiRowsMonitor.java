@@ -45,7 +45,7 @@ public class SqlMultiRowsMonitor extends AbstractMonitor {
 
                             jg.writeEndArray();
                             exportPreformattedResult(
-                                    "result", sw.toString());
+                                    "Result", sw.toString());
 
                         }
                     }
@@ -53,7 +53,7 @@ public class SqlMultiRowsMonitor extends AbstractMonitor {
 
             } catch (SQLException | IOException e) {
                 e.printStackTrace();
-                exportResult("result", null);
+                exportResult("Result", null);
             }
 
         }
@@ -62,6 +62,7 @@ public class SqlMultiRowsMonitor extends AbstractMonitor {
 
     public SqlMultiRowsMonitor() {
         super(SqlMultiRowsMonitor.class, Task.class, true);
+        registerResultSource("Result", "obj-list");
     }
 
 }

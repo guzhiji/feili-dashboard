@@ -20,7 +20,7 @@ gulp.task('sass:watch', function() {
 });
 
 gulp.task('js', function() {
-	return gulp.src('./js/*.js')
+	return gulp.src(['./js/echarts-*.js', './js/data-table.js', './js/dashboard-core.js', './js/dashboard-ext.js', './js/theme.js'])
 		.pipe(concat('main.min.js', {newLine: ''}))
 		.pipe(uglify())
 		.pipe(gulp.dest(buildPath));

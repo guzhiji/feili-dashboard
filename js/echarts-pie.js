@@ -75,8 +75,12 @@ function PieChart(container, config) {
     }
 
     function update(key, value) {
-        var i = pieKeys.indexOf(key);
-        if (i > -1) data[i].value = value;
+        if (value && typeof(value) == 'object') {
+            load(value);
+        } else {
+            var i = pieKeys.indexOf(key);
+            if (i > -1) data[i].value = value;
+        }
     }
 
     function remove(key) {

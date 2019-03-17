@@ -49,7 +49,7 @@ public class AdminBlockController extends AbstractClassicController {
         data.put("saveUrl", "/admin/blocks/" + id);
         data.put("monitors", monitorRepo.findAll());
         String[] dataRenderers = {
-                "pie", "line", "bar"
+                "pie-chart", "category-chart", "time-chart", "data-table"
         };
         data.put("dataRenderers", dataRenderers);
         String[] resultHandlers = {
