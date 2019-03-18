@@ -297,7 +297,12 @@ var dashboard = (function($) {
     return {
         utils: {
             createFieldTransMap: createFieldTransMap,
-            formatAllFields: formatAllFields
+            formatAllFields: formatAllFields,
+            formatValue: function(formatter, value) {
+                if (formatter && formatter in valueFormatters)
+                    return valueFormatters[formatter](value);
+                return value;
+            }
         },
         registerDataRenderer: function(name, initializer) {
             dataRendererInitializers[name] = initializer;
