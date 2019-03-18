@@ -5,6 +5,7 @@ import com.feiliks.dashboard.spring.dto.BlockFormDto;
 import com.feiliks.dashboard.spring.dto.FieldDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.FieldEntity;
+import com.feiliks.dashboard.spring.entities.MonitorEntity;
 import com.feiliks.dashboard.spring.repositories.BlockRepository;
 import com.feiliks.dashboard.spring.repositories.FieldRepository;
 import com.feiliks.dashboard.spring.repositories.MonitorRepository;
@@ -78,11 +79,18 @@ public class AdminBlockController extends AbstractClassicController {
 
         if (checkValidation(vresult, ratts)) {
 
-            formData.toEntity(entity);
-            entity.setId(id);
+            MonitorEntity monitor = monitorRepo.findById(formData.getMonitorId())
+                    .orElse(null);
+            if (monitor == null) {
+                ratts.addFlashAttribute("flashMessage", "monitor-not-found");
+            } else {
+                formData.toEntity(entity);
+                entity.setId(id);
+                entity.setMonitor(monitor);
 
-            blockRepo.save(entity);
-            ratts.addFlashAttribute("flashMessage", "block-saved");
+                blockRepo.save(entity);
+                ratts.addFlashAttribute("flashMessage", "block-saved");
+            }
         }
 
         return "redirect:/admin/dashboards/" + dashboardId + "/blocks";
