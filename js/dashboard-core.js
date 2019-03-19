@@ -101,7 +101,23 @@ var dashboard = (function($) {
         dataHandlers = {},
         valueFormatters = {
             'int': parseInt,
-            'float': parseFloat
+            'float': parseFloat,
+            '1-minus-x': function(value) {
+                var f = parseFloat(value);
+                if (f < 0)
+                    f = 0.0;
+                else if (f > 1)
+                    f = 1.0;
+                return 1.0 - f;
+            },
+            '100-minus-x': function(value) {
+                var f = parseFloat(value);
+                if (f < 0)
+                    f = 0.0;
+                else if (f > 100)
+                    f = 100.0;
+                return 100.0 - f;
+            }
         };
 
     function createFieldTransMap(fields) {
