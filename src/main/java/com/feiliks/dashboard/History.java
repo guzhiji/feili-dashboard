@@ -12,22 +12,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class History<T, V extends Number> {
 
     public static class Item<T> {
-        private long time;
+        private long key;
         private T data;
 
         public Item() {}
 
-        public Item(long time, T data) {
-            this.time = time;
+        public Item(long key, T data) {
+            this.key = key;
             this.data = data;
         }
 
-        public long getTime() {
-            return time;
+        public long getKey() {
+            return key;
         }
 
-        public void setTime(long time) {
-            this.time = time;
+        public void setKey(long key) {
+            this.key = key;
         }
 
         public T getData() {

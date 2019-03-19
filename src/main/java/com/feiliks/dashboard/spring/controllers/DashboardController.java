@@ -86,7 +86,7 @@ public class DashboardController {
         AbstractMonitor monitor = monitorService.getMonitor(blk.getMonitor());
         if (monitor == null)
             throw new NotFoundException();
-        resp.addHeader("Content-Type", "application/json");
+        resp.setHeader("Content-Type", "application/json");
         resp.getWriter().write(
                 monitor.retrieveResult(rs));
 
@@ -103,7 +103,7 @@ public class DashboardController {
         if (monitor == null)
             throw new NotFoundException();
 
-        resp.addHeader("Content-Type", "application/json");
+        resp.setHeader("Content-Type", "application/json");
         resp.getWriter().write(
                 monitor.retrieveResult(rs));
 
@@ -119,8 +119,8 @@ public class DashboardController {
         return ResponseEntity.ok(monitor.getResultSources());
     }
 
-    @GetMapping("/monitor/{id}/notification-sources.json")
-    public ResponseEntity<Map<String, String>> getNotificationSources(@PathVariable Long id)
+    @GetMapping("/monitor/{id}/message-sources.json")
+    public ResponseEntity<Map<String, String>> getMessageSources(@PathVariable Long id)
             throws NotFoundException {
         AbstractMonitor monitor = monitorService.getMonitor(id);
         if (monitor == null)

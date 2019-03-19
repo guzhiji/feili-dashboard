@@ -95,6 +95,11 @@ dashboard.registerDataHandler('obj-list', function (renderer, blk, data) {
     switch (data.cmd) {
         case 'load':
             renderer.load(data.data.map(function (obj) {
+                if ('key' in obj && 'data' in obj && typeof(obj.data) == 'object')
+                    return {
+                        key: obj.key,
+                        data: dashboard.utils.formatAllFields(blk.fields, obj.data)
+                    };
                 return dashboard.utils.formatAllFields(blk.fields, obj);
             }));
             break;

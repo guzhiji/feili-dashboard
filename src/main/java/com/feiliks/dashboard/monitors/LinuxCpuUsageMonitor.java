@@ -18,13 +18,13 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
                     @Override
                     public void onExpired(History.Item<Map<String, Double>> item) {
                         sendMessage("History_Realtime", new NotifierMessage<>(
-                                        "remove", String.valueOf(item.getTime()), null));
+                                "remove", String.valueOf(item.getKey()), null));
                     }
 
                     @Override
                     public void onNew(History.Item<Map<String, Double>> item) {
                         sendMessage("History_Realtime", new NotifierMessage<>(
-                                "update", String.valueOf(item.getTime()), item.getData()));
+                                "update", String.valueOf(item.getKey()), item.getData()));
                     }
                 },
                 new History.IAggHistoryEventHandler<Double>() {
@@ -79,9 +79,9 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
 
     public LinuxCpuUsageMonitor() {
         super(LinuxCpuUsageMonitor.class, Task.class, true);
-        registerMessageSource("History_Realtime", "time-obj-list");
+        registerMessageSource("History_Realtime", "obj-list");
         registerResultSource("Status", "obj");
-        registerResultSource("History_Realtime", "time-obj-list");
+        registerResultSource("History_Realtime", "obj-list");
     }
 
 }

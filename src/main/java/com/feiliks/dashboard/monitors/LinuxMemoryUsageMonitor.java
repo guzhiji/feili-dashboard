@@ -42,28 +42,30 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
                 new History.IRealtimeEventHandler<MemoryUsage>() {
                     @Override
                     public void onExpired(History.Item<MemoryUsage> item) {
-
+                        sendMessage("History_Realtime", new NotifierMessage<>(
+                                "remove", String.valueOf(item.getKey()), null));
                     }
 
                     @Override
                     public void onNew(History.Item<MemoryUsage> item) {
                         sendMessage("History_Realtime", new NotifierMessage<>(
                                 "update",
-                                String.valueOf(item.getTime()),
+                                String.valueOf(item.getKey()),
                                 item.getData()));
                     }
                 },
                 new History.IAggHistoryEventHandler<Long>() {
                     @Override
                     public void onPeriodExpired(String attr, History.Item<History.AggValues<Long>> item) {
-
+                        sendMessage("History_" + attr + "_Minutely", new NotifierMessage<>(
+                                "remove", String.valueOf(item.getKey()), null));
                     }
 
                     @Override
                     public void onNewPeriod(String attr, History.Item<History.AggValues<Long>> item) {
                         sendMessage("History_" + attr + "_Minutely", new NotifierMessage<>(
                                 "update",
-                                String.valueOf(item.getTime()),
+                                String.valueOf(item.getKey()),
                                 item.getData()));
                     }
                 },
@@ -77,7 +79,7 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
                     public void onNewPeriod(String attr, History.Item<History.AggValues<Long>> item) {
                         sendMessage("History_" + attr + "_Hourly", new NotifierMessage<>(
                                 "update",
-                                String.valueOf(item.getTime()),
+                                String.valueOf(item.getKey()),
                                 item.getData()));
                     }
                 });
@@ -111,17 +113,17 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
 
     public LinuxMemoryUsageMonitor() {
         super(LinuxMemoryUsageMonitor.class, Task.class, true);
-        registerMessageSource("History_Realtime", "time-obj-list");
-        registerMessageSource("History_Used_Minutely", "time-obj-list");
-        registerMessageSource("History_Available_Minutely", "time-obj-list");
-        registerMessageSource("History_Used_Hourly", "time-obj-list");
-        registerMessageSource("History_Available_Hourly", "time-obj-list");
+        registerMessageSource("History_Realtime", "obj-list");
+        registerMessageSource("History_Used_Minutely", "obj-list");
+        registerMessageSource("History_Available_Minutely", "obj-list");
+        registerMessageSource("History_Used_Hourly", "obj-list");
+        registerMessageSource("History_Available_Hourly", "obj-list");
         registerResultSource("Status", "obj");
-        registerResultSource("History_Realtime", "time-obj-list");
-        registerResultSource("History_Used_Minutely", "time-obj-list");
-        registerResultSource("History_Available_Minutely", "time-obj-list");
-        registerResultSource("History_Used_Hourly", "time-obj-list");
-        registerResultSource("History_Available_Hourly", "time-obj-list");
+        registerResultSource("History_Realtime", "obj-list");
+        registerResultSource("History_Used_Minutely", "obj-list");
+        registerResultSource("History_Available_Minutely", "obj-list");
+        registerResultSource("History_Used_Hourly", "obj-list");
+        registerResultSource("History_Available_Hourly", "obj-list");
     }
 
 }
