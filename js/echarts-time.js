@@ -106,42 +106,66 @@ function TimeChart(container, config) {
     }
 
     function update(t, data) {
-        var tdate = new Date(t);
-        if (typeof data == 'object') {
-            for (var skey in data) {
-                var s = seriesKeys.indexOf(skey);
-                if (s > -1) {
-                    var arr = series[s].data;
-                    if (prevTs != null && prevTs >= t) {
-                        for (var p = arr.length - 1; p >= 0; p--) {
-                            if (arr[p][0].getTime() == t) {
-                                arr[p][1] = data[skey];
-                                break;
+        var tdate = toDate(t);
+        if (tdate) { // t is valid
+            t = tdate.getTime();
+            if (typeof data == 'object') {
+                for (var skey in data) {
+                    var s = seriesKeys.indexOf(skey);
+                    if (s > -1) {
+                        var arr = series[s].data;
+                        if (prevTs != null && prevTs >= t) {
+                            // find the timestamp if t is old
+                            for (var p = arr.length - 1; p >= 0; p--) {
+                                if (arr[p][0].getTime() == t) {
+                                    arr[p][1] = data[skey];
+                                    break;
+                                }
                             }
+                        } else {
+                            // push to the end if t is new
+                            if (arr.length >= config.maxLen)
+                                arr.shift();
+                            arr.push([tdate, data[skey]]);
                         }
-                    } else {
-                        if (arr.length >= config.maxLen)
-                            arr.shift();
-                        arr.push([tdate, data[skey]]);
                     }
                 }
+            } else if (series.length == 1) {
+                var arr = series[0].data;
+                if (prevTs != null && prevTs >= t) {
+                    // find the timestamp if t is old
+                    for (var p = arr.length - 1; p >= 0; p--) {
+                        if (arr[p][0].getTime() == t) {
+                            arr[p][1] = data;
+                            break;
+                        }
+                    }
+                } else {
+                    // push to the end if t is new
+                    if (arr.length >= config.maxLen)
+                        arr.shift();
+                    arr.push([tdate, data]);
+                }
             }
-        } else if (series.length == 1) {
-            var arr = series[0].data;
-            if (prevTs != null && prevTs >= t) {
-                for (var p = arr.length - 1; p >= 0; p--) {
+            prevTs = t;
+        }
+    }
+
+    function removeTs(t) {
+        var tdate = toDate(t),
+            s, arr, p;
+        if (tdate) {
+            t = tdate.getTime();
+            for (s = 0; s < series.length; s++) {
+                arr = series[s].data;
+                for (p = 0; p < arr.length; p++) {
                     if (arr[p][0].getTime() == t) {
-                        arr[p][1] = data;
+                        arr.splice(p, 1);
                         break;
                     }
                 }
-            } else {
-                if (arr.length >= config.maxLen)
-                    arr.shift();
-                arr.push([tdate, data]);
             }
         }
-        prevTs = t;
     }
 
     function init(sdata) {
@@ -313,6 +337,10 @@ function TimeChart(container, config) {
         load: function(values) {
             clearData();
             load(values);
+            renderData();
+        },
+        remove: function(t) {
+            removeTs(t);
             renderData();
         },
         clear: function() {
