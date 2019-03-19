@@ -270,7 +270,7 @@ var dashboard = (function($) {
                         resultSources[path] = ResultSource(
                             path,
                             mons[blk.monitorId].resultSources[blk.resultSource],
-                            mons[blk.monitorId].exeRate);
+                            mons[blk.monitorId].execRate);
                     resultSources[path].addBlock(blk);
                 }
                 // register message sources
@@ -288,8 +288,10 @@ var dashboard = (function($) {
         connectStomp();
         $(window).on('resize', function() {
 
-            for (var b in dataRenderers)
-                dataRenderers[b].rebind();
+            for (var b in dataRenderers) {
+                if ('rebind' in dataRenderers[b])
+                    dataRenderers[b].rebind();
+            }
 
         });
     }

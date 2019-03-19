@@ -76,6 +76,7 @@ function PieChart(container, config) {
 
     function update(key, value) {
         if (value && typeof(value) == 'object') {
+            clearData();
             load(value);
         } else {
             var i = pieKeys.indexOf(key);
@@ -94,6 +95,10 @@ function PieChart(container, config) {
 
     function load(values) {
         if (values) {
+            if (Array.isArray ? Array.isArray(values) : 'length' in values)
+                values = values[values.length - 1];
+            if ('key' in values && 'data' in values && typeof(values.data) == 'object')
+                values = values.data;
             for (var key in values) {
                 var i = pieKeys.indexOf(key);
                 if (i > -1)
@@ -149,10 +154,33 @@ function PieChart(container, config) {
             updateTheme(config.theme);
             renderData();
         },
+        /**
+         * update a part of the pie or load all values if object is supplied.
+         *
+         * @param {number|string} key       key that represents a part of the pie
+         * @param {number|object} value     the value to be updated to;
+         * or if an object is supplied, it's redirected to load(),
+         * in which case, key is discarded.
+         */
         update: function(key, value) {
             update(key, value);
             renderData();
         },
+        /**
+         * load data to the chart.
+         *
+         * @param {object|Array} values
+         * each key is mapped to a part of the pie:
+         * ```
+         * {a: 1, b: 2, c: 3}
+         * ```
+         * or if in this format:
+         * ```
+         * {key: 1552980555912, data: {a: 1, b: 2, c: 3}}
+         * ```
+         * key is discarded and content of data is used instead;
+         * or if an array is passed, the last element is applied.
+         */
         load: function(values) {
             clearData();
             load(values);

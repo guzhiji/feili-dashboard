@@ -166,6 +166,8 @@ function CategoryChart(container, config) {
 
     function load(values) {
         if (values) {
+            if (Array.isArray ? !Array.isArray(values) : !('length' in values))
+                values = [values];
             for (var i = 0; i < values.length; i++) {
                 var item = values[i];
                 categoryKeys.push(item.key);
@@ -270,6 +272,30 @@ function CategoryChart(container, config) {
             update(category, data);
             renderData();
         },
+        /**
+         * load an array of data to the chart.
+         *
+         * @param {Array|object} values
+         * for example, for data series with internal names: a and b
+         * ```
+         * [
+         *      {key: 'abc', data: {a: 1, b: 2}},
+         *      {key: 'bcd', data: {a: 3, b: 4}}
+         * ]
+         * ```
+         * or, if there's only one series of data:
+         * ```
+         * [
+         *      {key: 'abc', data: 1},
+         *      {key: 'bcd', data: 3}
+         * ]
+         * ```
+         * or, if a single data item is supplied:
+         * ```
+         * {key: 'abc', data: 1}
+         * ```
+         * it's automatically converted to a single-element array.
+         */
         load: function(values) {
             clearData();
             load(values);

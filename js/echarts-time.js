@@ -159,26 +159,41 @@ function TimeChart(container, config) {
             series[s].data = [];
     }
 
+    function toDate(value) {
+        var n = Number(value);
+        if (isNaN ? !isNaN(n) : value === Number(n)) {
+            var out = new Date(n);
+            if (out.toString() == 'Invalid Date')
+                return null;
+            return out;
+        }
+        return null;
+    }
+
     function load(values) {
         if (values) {
+            if (Array.isArray ? !Array.isArray(values) : !('length' in values))
+                values = [values];
             for (var i = 0; i < values.length; i++) {
                 var item = values[i],
-                    tdate = new Date(item.key);
-                if (typeof item.data == 'object') {
-                    for (var skey in item.data) {
-                        var s = seriesKeys.indexOf(skey);
-                        if (s > -1) {
-                            var arr = series[s].data;
-                            if (arr.length >= config.maxLen)
-                                arr.shift();
-                            arr.push([tdate, item.data[skey]]);
+                    tdate = toDate(item.key);
+                if (tdate) {
+                    if (typeof item.data == 'object') {
+                        for (var skey in item.data) {
+                            var s = seriesKeys.indexOf(skey);
+                            if (s > -1) {
+                                var arr = series[s].data;
+                                if (arr.length >= config.maxLen)
+                                    arr.shift();
+                                arr.push([tdate, item.data[skey]]);
+                            }
                         }
+                    } else if (series.length == 1) {
+                        var arr = series[0].data;
+                        if (arr.length >= config.maxLen)
+                            arr.shift();
+                        arr.push([tdate, item.data]);
                     }
-                } else if (series.length == 1) {
-                    var arr = series[0].data;
-                    if (arr.length >= config.maxLen)
-                        arr.shift();
-                    arr.push([tdate, item.data]);
                 }
             }
         }
@@ -271,6 +286,30 @@ function TimeChart(container, config) {
             update(t, data);
             renderData();
         },
+        /**
+         * load an array of data to the chart.
+         *
+         * @param {Array|object} values
+         * for example, for data series with internal names: a and b
+         * ```
+         * [
+         *      {key: 1552976490828, data: {a: 1, b: 2}},
+         *      {key: 1552976527621, data: {a: 3, b: 4}}
+         * ]
+         * ```
+         * or, if there's only one series of data:
+         * ```
+         * [
+         *      {key: 1552976490828, data: 1},
+         *      {key: 1552976527621, data: 3}
+         * ]
+         * ```
+         * or, if a single data item is supplied:
+         * ```
+         * {key: 1552976490828, data: 1}
+         * ```
+         * it's automatically converted to a single-element array.
+         */
         load: function(values) {
             clearData();
             load(values);
