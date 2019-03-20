@@ -131,7 +131,7 @@ public class History<T, V extends Number> {
             long truncTs = period.trunc(ts);
             if (time == null || truncTs > time) {
                 if (time != null) {
-                    if (queue.size() >= period.length())
+                    while (queue.size() >= period.length())
                         eventHandler.onPeriodExpired(attribute, queue.poll());
                     // save agg for the last period of time
                     double avg = sum.divide(BigDecimal.valueOf(count),
@@ -252,7 +252,7 @@ public class History<T, V extends Number> {
 
     public void add(long ts, T data) {
 
-        if (realtimeData.size() >= 120)
+        while (realtimeData.size() >= 120)
             realtimeEventHandler.onExpired(
                 realtimeData.poll());
         Item<T> newItem = new Item<>(ts, data);

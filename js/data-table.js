@@ -29,6 +29,7 @@ function DataTable(container, $, config) {
         tbody = null,
         page = 0,
         data = [],
+        dataKeys = null,
         jobQueue = [];
 
     if (config.pagerId)
@@ -177,31 +178,87 @@ function DataTable(container, $, config) {
             renderDataOnEmptyTable(animate);
     }
 
+    function loadAll(values) {
+        if (Array.isArray ? !Array.isArray(values) : !('length' in values))
+            values = [values];
+        if (values.length > 0) {
+            if ('key' in values[0] && 'data' in values[0] && typeof(values[0].data) == 'object') {
+                dataKeys = values.map(function(o) { return o.key; });
+                data = values.map(function(o) { return o.data; });
+            } else {
+                dataKeys = null;
+                data = values;
+            }
+        } else {
+            data = [];
+            dataKeys = null;
+        }
+    }
+
+    function updateRow(key, row) {
+        if (dataKeys == null) {
+            if (data.length == 0) {
+                // no data - not sure whether use dataKeys yet
+                if (key == 0) { // no
+                    data.push(row);
+                } else { // yes
+                    dataKeys = [key];
+                    data.push(row);
+                }
+            } else {
+                // use array index
+                if (data[key])
+                    data[key] = row;
+                else
+                    data.push(row);
+            }
+        } else {
+            // use dataKeys
+            var i = dataKeys.indexOf(key);
+            if (i < 0) {
+                // new key
+                dataKeys.push(key);
+                data.push(row);
+            } else {
+                // existing key
+                data[i] = row;
+            }
+        }
+    }
+
+    function removeRow(key) {
+        if (dataKeys == null) {
+            // use array index
+            if (data[key]) data.splice(key, 1);
+        } else {
+            // use dataKeys
+            var i = dataKeys.indexOf(key);
+            if (i >= 0) {
+                data.splice(i, 1);
+                dataKeys.splice(i, 1);
+            }
+        }
+    }
+
     $(window).on('resize', function() {
         jobQueue.push(['re-init']);
     });
 
     // scheduler
     setInterval(function() {
-        var job = jobQueue.pop();
+        var job = jobQueue.shift();
         if (!job) return;
         switch (job[0]) {
             case 'load-data':
-                data = job[1];
+                loadAll(job[1]);
                 renderData();
                 break;
             case 'update-row':
-                var row = data[job[1]];
-                if (row) {
-                    for (var col in row) {
-                        if (col in job[2])
-                            row[col] = job[2][col];
-                    }
-                }
+                updateRow(job[1], job[2]);
                 renderData();
                 break;
             case 'remove-row':
-                data.splice(job[1], 1);
+                removeRow(job[1]);
                 renderData();
                 break;
             case 're-init':

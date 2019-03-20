@@ -71,7 +71,7 @@ dashboard.registerDataRenderer('data-table', function(blk) {
         maxRows: 5,
         minRows: 5,
         bottomSpace: 0,
-        pageSpeed: 1000
+        pageSpeed: 3000
     });
 });
 

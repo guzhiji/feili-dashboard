@@ -72,7 +72,8 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
                 new History.IAggHistoryEventHandler<Long>() {
                     @Override
                     public void onPeriodExpired(String attr, History.Item<History.AggValues<Long>> item) {
-
+                        sendMessage("History_" + attr + "_Hourly", new NotifierMessage<>(
+                                "remove", String.valueOf(item.getKey()), null));
                     }
 
                     @Override
