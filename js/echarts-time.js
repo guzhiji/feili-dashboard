@@ -180,7 +180,7 @@ function TimeChart(container, config) {
     function clearData() {
         prevTs = null;
         for (var s = 0; s < series.length; s++)
-            series[s].data = [];
+            series[s].data.splice(0, series[s].data.length);
     }
 
     function toDate(value) {

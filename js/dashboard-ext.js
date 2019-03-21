@@ -48,6 +48,7 @@
     dashboard.registerDataRenderer('category-chart', function(blk) {
         var chart = CategoryChart('block-' + blk.id + '-container', {
             type: 'bar',
+            maxLen: 100,
             vertical: false,
             valueLabelFormatter: function(v) {
                 if (blk.fields.length > 0) {

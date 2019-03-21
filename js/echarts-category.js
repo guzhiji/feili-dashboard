@@ -121,11 +121,21 @@ function CategoryChart(container, config) {
         }
     }
 
+    function checkLen() {
+        if (config.maxLen && config.maxLen != Infinity && categoryKeys.length >= config.maxLen) {
+            categoryKeys.shift();
+            categoryLabels.shift();
+            for (var s = 0; s < series.length; s++)
+                series[s].data.shift();
+        }
+    }
+
     function update(category, data) {
         var key = typeof category == 'string' ? category : category.key,
             c = categoryKeys.indexOf(key),
             skey, s;
         if (c == -1) {
+            checkLen();
             categoryKeys.push(key);
             categoryLabels.push(category.label || key);
             if (typeof data == 'object') {
@@ -168,7 +178,7 @@ function CategoryChart(container, config) {
         categoryKeys = [];
         categoryLabels = [];
         for (var s = 0; s < series.length; s++)
-            series[s].data = [];
+            series[s].data.splice(0, series[s].data.length);
     }
 
     function load(values) {
@@ -176,6 +186,7 @@ function CategoryChart(container, config) {
             if (Array.isArray ? !Array.isArray(values) : !('length' in values))
                 values = [values];
             for (var i = 0; i < values.length; i++) {
+                checkLen();
                 var item = values[i];
                 categoryKeys.push(item.key);
                 categoryLabels.push(item.label || item.key);
