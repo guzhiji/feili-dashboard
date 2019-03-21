@@ -27,14 +27,14 @@ function colorRange(from, to, n) {
 }
 function asrsView(config) {
 
-    var svgns = "http://www.w3.org/2000/svg",
-        xlinkns = "http://www.w3.org/1999/xlink",
+    var svgns = 'http://www.w3.org/2000/svg',
+        xlinkns = 'http://www.w3.org/1999/xlink',
         ATTR_MAP = {
-            "className": "class",
-            "svgHref": "href"
+            'className': 'class',
+            'svgHref': 'href'
         },
         NS_MAP = {
-            "svgHref": xlinkns
+            'svgHref': xlinkns
         };
 
     function setSVG(elem, attributes) {

@@ -30,14 +30,14 @@ function TimeChart(container, config) {
             tooltip: {
                 trigger: 'axis',
                 formatter: function(params) {
-                    var t = '';
+                    var t = '', i;
                     if (config.yLabelFormatter && typeof(config.yLabelFormatter) == 'function') {
-                        for (var i = 0; i < params.length; i++) {
+                        for (i = 0; i < params.length; i++) {
                             t += params[i].seriesName + ': ' +
                                 config.yLabelFormatter(params[i].value[1]) + '<br>\n';
                         }
                     } else {
-                        for (var i = 0; i < params.length; i++) {
+                        for (i = 0; i < params.length; i++) {
                             t += params[i].seriesName + ': ' +
                                 params[i].value[1] + '<br>\n';
                         }
@@ -106,17 +106,17 @@ function TimeChart(container, config) {
     }
 
     function update(t, data) {
-        var tdate = toDate(t);
+        var tdate = toDate(t), arr, p;
         if (tdate) { // t is valid
             t = tdate.getTime();
             if (typeof data == 'object') {
                 for (var skey in data) {
                     var s = seriesKeys.indexOf(skey);
                     if (s > -1) {
-                        var arr = series[s].data;
+                        arr = series[s].data;
                         if (prevTs != null && prevTs >= t) {
                             // find the timestamp if t is old
-                            for (var p = arr.length - 1; p >= 0; p--) {
+                            for (p = arr.length - 1; p >= 0; p--) {
                                 if (arr[p][0].getTime() == t) {
                                     arr[p][1] = data[skey];
                                     break;
@@ -131,10 +131,10 @@ function TimeChart(container, config) {
                     }
                 }
             } else if (series.length == 1) {
-                var arr = series[0].data;
+                arr = series[0].data;
                 if (prevTs != null && prevTs >= t) {
                     // find the timestamp if t is old
-                    for (var p = arr.length - 1; p >= 0; p--) {
+                    for (p = arr.length - 1; p >= 0; p--) {
                         if (arr[p][0].getTime() == t) {
                             arr[p][1] = data;
                             break;
@@ -200,20 +200,21 @@ function TimeChart(container, config) {
                 values = [values];
             for (var i = 0; i < values.length; i++) {
                 var item = values[i],
-                    tdate = toDate(item.key);
+                    tdate = toDate(item.key),
+                    arr;
                 if (tdate) {
                     if (typeof item.data == 'object') {
                         for (var skey in item.data) {
                             var s = seriesKeys.indexOf(skey);
                             if (s > -1) {
-                                var arr = series[s].data;
+                                arr = series[s].data;
                                 if (arr.length >= config.maxLen)
                                     arr.shift();
                                 arr.push([tdate, item.data[skey]]);
                             }
                         }
                     } else if (series.length == 1) {
-                        var arr = series[0].data;
+                        arr = series[0].data;
                         if (arr.length >= config.maxLen)
                             arr.shift();
                         arr.push([tdate, item.data]);

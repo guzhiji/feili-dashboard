@@ -123,13 +123,14 @@ function CategoryChart(container, config) {
 
     function update(category, data) {
         var key = typeof category == 'string' ? category : category.key,
-            c = categoryKeys.indexOf(key);
+            c = categoryKeys.indexOf(key),
+            skey, s;
         if (c == -1) {
             categoryKeys.push(key);
             categoryLabels.push(category.label || key);
             if (typeof data == 'object') {
-                for (var skey in data) {
-                    var s = seriesKeys.indexOf(skey);
+                for (skey in data) {
+                    s = seriesKeys.indexOf(skey);
                     if (s > -1)
                         series[s].data.push(data[skey]);
                 }
@@ -138,8 +139,8 @@ function CategoryChart(container, config) {
             }
         } else {
             if (typeof data == 'object') {
-                for (var skey in data) {
-                    var s = seriesKeys.indexOf(skey);
+                for (skey in data) {
+                    s = seriesKeys.indexOf(skey);
                     if (s > -1)
                         series[s].data[c] = data[skey];
                 }
