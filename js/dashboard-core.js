@@ -18,30 +18,6 @@ function uptoNow(value) {
     return now() - new Date(value).getTime();
 }
 
-function formatDuration(ms) {
-    var l = Math.round((ms > 0 ? ms : 0) / 1000), t, r;
-    if (l < 60)
-        return l + '秒';
-    l /= 60;
-    if (l < 60) {
-        t = Math.floor(l);
-        r = t + '分';
-        if (l > t) r += formatDuration((l - t) * 60000);
-        return r;
-    }
-    l /= 60;
-    t = Math.floor(l);
-    r = t + '时';
-    if (l > t) r += formatDuration((l - t) * 3600000);
-    return r;
-}
-
-function formatDuration2(ms) {
-    if (typeof ms == 'number' && ms != Infinity)
-        return ms < 0 ? '-' + formatDuration(-ms) : formatDuration(ms);
-    return '-';
-}
-
 function formatNameAndKey(name, key) {
     var result = name || '';
     if (key) result = result ? result + '(' + key + ')' : key;
@@ -99,7 +75,7 @@ var dashboard = (function($) {
     // extensions
     var dataRendererInitializers = {},
         dataHandlers = {},
-        valueFormatters = {
+        valueTransformers = {
             'int': parseInt,
             'float': parseFloat,
             '1-minus-x': function(value) {
@@ -118,25 +94,81 @@ var dashboard = (function($) {
                     f = 100.0;
                 return 100.0 - f;
             }
+        },
+        valueFormatters = {
+            'percentage': function(value) {
+                return Math.round(value * 100) / 100 + '%';
+            },
+            'size-bytes': formatBytes,
+            'size-kb': formatKiloBytes,
+            'duration': formatDuration2
         };
+
+    function formatBytes(value) {
+        if (value < 1000)
+            return value + '';
+        value /= 1024;
+        return formatKiloBytes(value);
+    }
+
+    function formatKiloBytes(value) {
+        var units = ['KB', 'MB', 'GB'], i;
+        for (i = 0; i < units.length; i++) {
+            if (value < 1000)
+                return Math.round(value * 100) / 100 + units[i];
+            value /= 1024;
+        }
+        return Math.round(value * 100) / 100 + 'TB';
+    }
+
+    function formatDuration(ms) {
+        var l = Math.round((ms > 0 ? ms : 0) / 1000), t, r;
+        if (l < 60)
+            return l + '秒';
+        l /= 60;
+        if (l < 60) {
+            t = Math.floor(l);
+            r = t + '分';
+            if (l > t) r += formatDuration((l - t) * 60000);
+            return r;
+        }
+        l /= 60;
+        t = Math.floor(l);
+        r = t + '时';
+        if (l > t) r += formatDuration((l - t) * 3600000);
+        return r;
+    }
+
+    function formatDuration2(ms) {
+        if (typeof ms == 'number' && ms != Infinity)
+            return ms < 0 ? '-' + formatDuration(-ms) : formatDuration(ms);
+        return '-';
+    }
 
     function createFieldTransMap(fields) {
         var out = {};
         for (var f = 0; f < fields.length; f++)
-            out[fields[f].internalName] = fields[f].name;
+            out[fields[f].id] = fields[f].name;
+            // out[fields[f].internalName] = fields[f].name;
         return out;
     }
 
-    function formatAllFields(fields, data) {
-        var out = {}, field, key, f;
+    /**
+     * transform internal-name-keyed/referenced-attribute-keyed data
+     * to field-id-keyed data, with corresponding value transformers
+     * applied.
+     */
+    function transformAllFields(fields, data) {
+        var out = {}, field, f;
         for (f = 0; f < fields.length; f++) {
             field = fields[f];
-            key = field.internalName;
-            if (key in data) {
-                if (field.formatter && field.formatter in valueFormatters)
-                    out[key] = valueFormatters[field.formatter](data[key]);
+            if (field.internalName in data) {
+                if (field.valueTransformer &&
+                    field.valueTransformer in valueTransformers)
+                    out[field.id] = valueTransformers[field.valueTransformer](
+                        data[field.internalName]);
                 else
-                    out[key] = data[key];
+                    out[field.id] = data[field.internalName];
             }
         }
         return out;
@@ -315,7 +347,12 @@ var dashboard = (function($) {
     return {
         utils: {
             createFieldTransMap: createFieldTransMap,
-            formatAllFields: formatAllFields,
+            transformAllFields: transformAllFields,
+            transformValue: function(transformer, value) {
+                if (transformer && transformer in valueTransformers)
+                    return valueTransformers[transformer](value);
+                return value;
+            },
             formatValue: function(formatter, value) {
                 if (formatter && formatter in valueFormatters)
                     return valueFormatters[formatter](value);
@@ -327,6 +364,9 @@ var dashboard = (function($) {
         },
         registerDataHandler: function(name, handler) {
             dataHandlers[name] = handler;
+        },
+        registerValueTransformer: function(name, transformer) {
+            valueTransformers[name] = transformer;
         },
         registerValueFormatter: function(name, formatter) {
             valueFormatters[name] = formatter;

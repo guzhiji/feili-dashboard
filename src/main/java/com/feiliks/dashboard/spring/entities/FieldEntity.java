@@ -15,10 +15,13 @@ public class FieldEntity {
     private String name;
 
     @Column(name = "internal_name", nullable = false, length = 32)
-    private String internalName;
+    private String internalName; // TODO refAttribute
 
-    @Column(length = 32)
-    private String formatter;
+    @Column(name = "value_transformer", length = 32)
+    private String valueTransformer;
+
+    @Column(name = "value_formatter", length = 32)
+    private String valueFormatter;
 
     @Column(name = "is_active", nullable = false)
     private boolean active;
@@ -53,12 +56,20 @@ public class FieldEntity {
         this.internalName = internalName;
     }
 
-    public String getFormatter() {
-        return formatter;
+    public String getValueTransformer() {
+        return valueTransformer;
     }
 
-    public void setFormatter(String formatter) {
-        this.formatter = formatter;
+    public void setValueTransformer(String valueTransformer) {
+        this.valueTransformer = valueTransformer;
+    }
+
+    public String getValueFormatter() {
+        return valueFormatter;
+    }
+
+    public void setValueFormatter(String valueFormatter) {
+        this.valueFormatter = valueFormatter;
     }
 
     public boolean isActive() {
@@ -84,4 +95,5 @@ public class FieldEntity {
     public void setBlock(BlockEntity block) {
         this.block = block;
     }
+
 }

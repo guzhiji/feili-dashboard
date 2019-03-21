@@ -5,6 +5,7 @@
  * @param {object} config
  * ```
  * {
+ *      valueLabelFormatter: function(v) {},
  *      fontSize: [number],
  *      theme: {
  *          colors: [],
@@ -26,7 +27,13 @@ function PieChart(container, config) {
                     radius: '40%',
                     label: {
                         show: true,
-                        formatter: '{b}: {c} \n {d}%'
+                        formatter: function(params) {
+                            // '{b}: {c} \n {d}%'
+                            if (config.valueLabelFormatter && typeof(config.valueLabelFormatter) == 'function') {
+                                return params.name + ': ' + config.valueLabelFormatter(params.value) + ' \n ' + params.percent + '%';
+                            }
+                            return params.name + ': ' + params.value + ' \n ' + params.percent + '%';
+                        }
                     },
                     itemStyle: {
                         opacity: 0.9
@@ -57,8 +64,8 @@ function PieChart(container, config) {
 
     function init(labelTrans) {
         pieKeys = [];
-        pieLabels = [];
-        data = [];
+        pieLabels.splice(0, pieLabels.length);
+        data.splice(0, data.length);
         for (var key in labelTrans) {
             pieKeys.push(key);
             pieLabels.push(labelTrans[key]);

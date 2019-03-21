@@ -17,7 +17,8 @@ public class FieldDto {
     @NotBlank(message = "field-internal-name-empty")
     private String internalName;
 
-    private String formatter;
+    private String valueTransformer;
+    private String valueFormatter;
     private boolean active;
     private int ordinal;
 
@@ -27,7 +28,8 @@ public class FieldDto {
         id = entity.getId();
         name = entity.getName();
         internalName = entity.getInternalName();
-        formatter = entity.getFormatter();
+        setValueTransformer(entity.getValueTransformer());
+        valueFormatter = entity.getValueFormatter();
         active = entity.isActive();
         ordinal = entity.getOrdinal();
     }
@@ -36,7 +38,8 @@ public class FieldDto {
         entity.setId(id);
         entity.setName(name);
         entity.setInternalName(internalName);
-        entity.setFormatter(formatter);
+        entity.setValueTransformer(getValueTransformer());
+        entity.setValueFormatter(valueFormatter);
         entity.setActive(active);
         entity.setOrdinal(ordinal);
     }
@@ -71,12 +74,20 @@ public class FieldDto {
         this.internalName = internalName;
     }
 
-    public String getFormatter() {
-        return formatter;
+    public String getValueTransformer() {
+        return valueTransformer;
     }
 
-    public void setFormatter(String formatter) {
-        this.formatter = formatter;
+    public void setValueTransformer(String valueTransformer) {
+        this.valueTransformer = valueTransformer;
+    }
+
+    public String getValueFormatter() {
+        return valueFormatter;
+    }
+
+    public void setValueFormatter(String valueFormatter) {
+        this.valueFormatter = valueFormatter;
     }
 
     public boolean isActive() {
@@ -94,4 +105,5 @@ public class FieldDto {
     public void setOrdinal(int ordinal) {
         this.ordinal = ordinal;
     }
+
 }

@@ -59,10 +59,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="input-formatter" class="col-md-2 control-label">格式器</label>
+                            <label for="input-value-transformer" class="col-md-2 control-label">数值转换</label>
                             <div class="col-md-10">
-                                <input type="text" name="formatter" id="input-formatter" class="form-control"
-                                    value="${entity.formatter}" />
+                                <input type="text" name="valueTransformer" id="input-value-transformer" class="form-control"
+                                    value="${entity.valueTransformer}" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-value-formatter" class="col-md-2 control-label">数值格式</label>
+                            <div class="col-md-10">
+                                <input type="text" name="valueFormatter" id="input-value-formatter" class="form-control"
+                                    value="${entity.valueFormatter}" />
                             </div>
                         </div>
 

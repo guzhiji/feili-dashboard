@@ -7,7 +7,7 @@
  * {
  *      type: 'line'|'bar',
  *      vertical: true|false, // how bars are aligned
- *      valueLabelFormatter: function() {},
+ *      valueLabelFormatter: function(v) {},
  *      fontSize: [number],
  *      theme: {
  *          colors: [],
@@ -23,18 +23,25 @@ function CategoryChart(container, config) {
         seriesKeys = [],
         categoryLabels = [],
         categoryKeys = [], // e.g. bars, ponits on line
+        series = [],
         options = {
             animation: false,
             legend: { data: seriesLabels },
             tooltip: {
                 show: true,
-                formatter: '{b}: {c}'
+                formatter: function(params) {
+                    // '{b}: {c}'
+                    if (config.valueLabelFormatter && typeof(config.valueLabelFormatter) == 'function') {
+                        return params.name + ': ' + config.valueLabelFormatter(params.value);
+                    }
+                    return params.name + ': ' + params.value;
+                }
             },
             grid: {
                 containLabel: true,
                 bottom: 10
             },
-            series: []
+            series: series
         },
         valueAxis = {
             axisLabel: {
@@ -43,8 +50,7 @@ function CategoryChart(container, config) {
         },
         categoryAxis = {
             data: categoryLabels
-        },
-        series = [];
+        };
 
     function createEcharts(c) {
         if (typeof c == 'string')
@@ -149,10 +155,10 @@ function CategoryChart(container, config) {
      */
     function init(sdata) {
         categoryKeys = [];
-        categoryLabels = [];
+        categoryLabels.splice(0, categoryLabels.length);
         seriesKeys = [];
-        seriesLabels = [];
-        series = [];
+        seriesLabels.splice(0, seriesLabels.length);
+        series.splice(0, series.length);
         for (var skey in sdata)
             createSeries(skey, sdata[skey]);
     }

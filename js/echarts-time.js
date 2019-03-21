@@ -31,10 +31,10 @@ function TimeChart(container, config) {
                 trigger: 'axis',
                 formatter: function(params) {
                     var t = '';
-                    if (typeof(formatter) == 'function') {
+                    if (config.yLabelFormatter && typeof(config.yLabelFormatter) == 'function') {
                         for (var i = 0; i < params.length; i++) {
                             t += params[i].seriesName + ': ' +
-                                formatter(params[i].value[1]) + '<br>\n';
+                                config.yLabelFormatter(params[i].value[1]) + '<br>\n';
                         }
                     } else {
                         for (var i = 0; i < params.length; i++) {
@@ -171,8 +171,8 @@ function TimeChart(container, config) {
     function init(sdata) {
         prevTs = null;
         seriesKeys = [];
-        seriesLabels = [];
-        series = [];
+        seriesLabels.splice(0, seriesLabels.length);
+        series.splice(0, series.length);
         for (var skey in sdata)
             createSeries(skey, sdata[skey]);
     }
