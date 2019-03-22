@@ -18,7 +18,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -31,6 +33,13 @@ public class AdminDatabaseController extends AbstractClassicController {
 
     @Autowired
     private DbConnManager dbConnManager;
+
+    private static final List<String> DRIVERS = new ArrayList<>();
+
+    static {
+        DRIVERS.add("org.apache.derby.jdbc.EmbeddedDriver");
+        DRIVERS.add("com.mysql.cj.jdbc.Driver");
+    }
 
     @GetMapping
     public ModelAndView showDatabases() {
@@ -56,6 +65,7 @@ public class AdminDatabaseController extends AbstractClassicController {
         Map<String, Object> data = new HashMap<>();
         data.put("mode", "create");
         data.put("saveUrl", "/admin/databases");
+        data.put("dbDrivers", DRIVERS);
         return new ModelAndView("admin/database/edit", data);
     }
 
@@ -69,6 +79,7 @@ public class AdminDatabaseController extends AbstractClassicController {
         data.put("mode", "modify");
         data.put("saveUrl", "/admin/databases/" + id);
         data.put("entity", entity);
+        data.put("dbDrivers", DRIVERS);
 
         return new ModelAndView("admin/database/edit", data);
     }

@@ -258,34 +258,57 @@ public class History<T, V extends Number> {
         Item<T> newItem = new Item<>(ts, data);
         realtimeData.offer(newItem);
 
-        for (Method method : data.getClass().getMethods()) {
-            int modifiers = method.getModifiers();
-            if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers))
-                continue;
-            if (!method.getName().startsWith("get"))
-                continue;
-            if (method.getParameterCount() != 0)
-                continue;
-            Class<?> rt = method.getReturnType();
-            if (!rt.isPrimitive() &&
-                    !Number.class.isAssignableFrom(rt))
-                continue;
-
-            String attr = method.getName().substring(3);
-            AggHistory<V> agg = aggData.get(attr);
-            if (agg == null) { // encounters new attribute
-                agg = new AggHistory<>(attr,
-                        minutelyEventHandler,
-                        hourlyEventHandler);
-                aggData.put(attr, agg);
+        Class<?> dataClass = data.getClass();
+        if (Map.class.isAssignableFrom(dataClass)) {
+            // Map
+            Map m = (Map) data;
+            for (Object keyObj : m.keySet()) {
+                if (keyObj == null || !String.class.isAssignableFrom(keyObj.getClass()))
+                    continue;
+                Object valObj = m.get(keyObj);
+                String attr = (String) keyObj;
+                AggHistory<V> agg = aggData.get(attr);
+                if (agg == null) { // encounters new attribute
+                    agg = new AggHistory<>(attr,
+                            minutelyEventHandler,
+                            hourlyEventHandler);
+                    aggData.put(attr, agg);
+                }
+                if (valObj == null || !Number.class.isAssignableFrom(valObj.getClass()))
+                    continue;
+                agg.add(ts, (V) valObj);
             }
-            try {
-                Object n = method.invoke(data);
-                if (n != null) agg.add(ts, (V) n);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
+        } else {
+            // POJO
+            for (Method method : dataClass.getMethods()) {
+                int modifiers = method.getModifiers();
+                if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers))
+                    continue;
+                if (!method.getName().startsWith("get"))
+                    continue;
+                if (method.getParameterCount() != 0)
+                    continue;
+                Class<?> rt = method.getReturnType();
+                if (!rt.isPrimitive() &&
+                        !Number.class.isAssignableFrom(rt))
+                    continue;
 
+                String attr = method.getName().substring(3);
+                AggHistory<V> agg = aggData.get(attr);
+                if (agg == null) { // encounters new attribute
+                    agg = new AggHistory<>(attr,
+                            minutelyEventHandler,
+                            hourlyEventHandler);
+                    aggData.put(attr, agg);
+                }
+                try {
+                    Object n = method.invoke(data);
+                    if (n != null) agg.add(ts, (V) n);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+
+            }
         }
 
         realtimeEventHandler.onNew(newItem);

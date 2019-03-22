@@ -160,15 +160,17 @@ var dashboard = (function($) {
      */
     function transformAllFields(fields, data) {
         var out = {}, field, f;
-        for (f = 0; f < fields.length; f++) {
-            field = fields[f];
-            if (field.internalName in data) {
-                if (field.valueTransformer &&
-                    field.valueTransformer in valueTransformers)
-                    out[field.id] = valueTransformers[field.valueTransformer](
-                        data[field.internalName]);
-                else
-                    out[field.id] = data[field.internalName];
+        if (fields && data) {
+            for (f = 0; f < fields.length; f++) {
+                field = fields[f];
+                if (field.internalName in data) {
+                    if (field.valueTransformer &&
+                        field.valueTransformer in valueTransformers)
+                        out[field.id] = valueTransformers[field.valueTransformer](
+                            data[field.internalName]);
+                    else
+                        out[field.id] = data[field.internalName];
+                }
             }
         }
         return out;

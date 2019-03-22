@@ -30,11 +30,11 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
                 new History.IAggHistoryEventHandler<Double>() {
                     @Override
                     public void onPeriodExpired(String attr, History.Item<History.AggValues<Double>> item) {
-
                     }
 
                     @Override
                     public void onNewPeriod(String attr, History.Item<History.AggValues<Double>> item) {
+                        System.out.println(attr);
 
                     }
                 },

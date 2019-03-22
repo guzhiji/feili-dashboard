@@ -60,9 +60,21 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="input-db-driver" class="col-md-2 control-label">驱动器</label>
+                            <label for="select-db-driver" class="col-md-2 control-label">驱动器</label>
                             <div class="col-md-10">
-                                <input type="text" name="dbDriver" id="input-db-driver" class="form-control"
+                                <select name="dbDriver" id="select-db-driver" class="form-control">
+                                    <c:forEach items="${dbDrivers}" var="d">
+                                        <c:choose>
+                                            <c:when test="${d == entity.dbDriver}">
+                                                <option value="${d}" selected="selected">${d}</option>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <option value="${d}">${d}</option>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
+                                </select>
+                                <input type="text"
                                     value="${entity.dbDriver}" />
                             </div>
                         </div>
