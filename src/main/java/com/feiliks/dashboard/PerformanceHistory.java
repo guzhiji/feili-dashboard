@@ -73,7 +73,7 @@ public class PerformanceHistory extends History<Map<String, Long>, Long> {
     }
 
     public void finish() {
-        if (latencies != null)
+        if (latencies != null && latencies.size() > 0)
             add(System.currentTimeMillis(), latencies);
         lastTimestamps = null;
         latencies = null;
