@@ -1,9 +1,6 @@
 package com.feiliks.dashboard.monitors;
 
-import com.feiliks.dashboard.History;
-import com.feiliks.dashboard.NotifierMessage;
-import com.feiliks.dashboard.SysInfo;
-import com.feiliks.dashboard.AbstractMonitor;
+import com.feiliks.dashboard.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,42 +10,7 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
 
     public final class Task extends AbstractMonitor.Task {
 
-        private final History<Map<String, Double>, Double> history = new History<>(
-                new History.IRealtimeEventHandler<Map<String, Double>>() {
-                    @Override
-                    public void onExpired(History.Item<Map<String, Double>> item) {
-                        sendMessage("History_Realtime", new NotifierMessage<>(
-                                "remove", String.valueOf(item.getKey()), null));
-                    }
-
-                    @Override
-                    public void onNew(History.Item<Map<String, Double>> item) {
-                        sendMessage("History_Realtime", new NotifierMessage<>(
-                                "update", String.valueOf(item.getKey()), item.getData()));
-                    }
-                },
-                new History.IAggHistoryEventHandler<Double>() {
-                    @Override
-                    public void onPeriodExpired(String attr, History.Item<History.AggValues<Double>> item) {
-                    }
-
-                    @Override
-                    public void onNewPeriod(String attr, History.Item<History.AggValues<Double>> item) {
-                        System.out.println(attr);
-
-                    }
-                },
-                new History.IAggHistoryEventHandler<Double>() {
-                    @Override
-                    public void onPeriodExpired(String attr, History.Item<History.AggValues<Double>> item) {
-
-                    }
-
-                    @Override
-                    public void onNewPeriod(String attr, History.Item<History.AggValues<Double>> item) {
-
-                    }
-                });
+        private final FluctuationHistory<Map<String, Double>, Double> fluct = new FluctuationHistory<>(this);
 
         private Map<String, Long[]> lastCpuTime = null;
 
@@ -69,19 +31,23 @@ public class LinuxCpuUsageMonitor extends AbstractMonitor {
                 }
             }
             lastCpuTime = cpuTime;
-            history.add(curTime, curMsr);
+            fluct.add(curTime, curMsr);
 
             exportResult("Status", curMsr);
-            exportResult("History_Realtime", history.getRealtimeData());
+            fluct.exportResults();
         }
 
     }
 
     public LinuxCpuUsageMonitor() {
         super(LinuxCpuUsageMonitor.class, Task.class, true);
-        registerMessageSource("History_Realtime", "obj-list");
+        registerMessageSource("Fluct_Realtime", "obj-list");
+        registerMessageSource("Fluct_cpu_Minutely", "obj-list");
+        registerMessageSource("Fluct_cpu_Hourly", "obj-list");
         registerResultSource("Status", "obj");
-        registerResultSource("History_Realtime", "obj-list");
+        registerResultSource("Fluct_Realtime", "obj-list");
+        registerResultSource("Fluct_cpu_Minutely", "obj-list");
+        registerResultSource("Fluct_cpu_Hourly", "obj-list");
     }
 
 }

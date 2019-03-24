@@ -39,7 +39,7 @@ public class History<T, V extends Number> {
         }
     }
 
-    public static class AggValues<V> {
+    public static class AggValues<V extends Number> {
         private double avg;
         private V max;
         private V min;
@@ -82,7 +82,7 @@ public class History<T, V extends Number> {
         int length();
     }
 
-    public interface IAggHistoryEventHandler<V> {
+    public interface IAggHistoryEventHandler<V extends Number> {
         void onPeriodExpired(String attr, Item<AggValues<V>> item);
         void onNewPeriod(String attr, Item<AggValues<V>> item);
     }
@@ -171,43 +171,51 @@ public class History<T, V extends Number> {
 
         public AggHistory(
                 String attr,
+                IAggHistoryEventHandler<V> minutelyHandler) {
+            this(attr, minutelyHandler, null);
+        }
+
+        public AggHistory(
+                String attr,
                 IAggHistoryEventHandler<V> minutelyHandler,
                 IAggHistoryEventHandler<V> hourlyHandler) {
 
             attribute = attr;
 
-            minutelyData = new AggHistoryInternal<>(attr, new IPeriod() {
-                @Override
-                public long trunc(long ts) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(ts);
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MILLISECOND, 0);
-                    return cal.getTimeInMillis();
-                }
+            minutelyData = minutelyHandler == null ? null :
+                    new AggHistoryInternal<>(attr, new IPeriod() {
+                        @Override
+                        public long trunc(long ts) {
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTimeInMillis(ts);
+                            cal.set(Calendar.SECOND, 0);
+                            cal.set(Calendar.MILLISECOND, 0);
+                            return cal.getTimeInMillis();
+                        }
 
-                @Override
-                public int length() {
-                    return 120;
-                }
-            }, minutelyHandler);
+                        @Override
+                        public int length() {
+                            return 120;
+                        }
+                    }, minutelyHandler);
 
-            hourlyData = new AggHistoryInternal<>(attr, new IPeriod() {
-                @Override
-                public long trunc(long ts) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(ts);
-                    cal.set(Calendar.MINUTE, 0);
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MILLISECOND, 0);
-                    return cal.getTimeInMillis();
-                }
+            hourlyData = hourlyHandler == null ? null :
+                    new AggHistoryInternal<>(attr, new IPeriod() {
+                        @Override
+                        public long trunc(long ts) {
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTimeInMillis(ts);
+                            cal.set(Calendar.MINUTE, 0);
+                            cal.set(Calendar.SECOND, 0);
+                            cal.set(Calendar.MILLISECOND, 0);
+                            return cal.getTimeInMillis();
+                        }
 
-                @Override
-                public int length() {
-                    return 120;
-                }
-            }, hourlyHandler);
+                        @Override
+                        public int length() {
+                            return 120;
+                        }
+                    }, hourlyHandler);
 
         }
 
@@ -216,21 +224,29 @@ public class History<T, V extends Number> {
         }
 
         public void add(long ts, V value) {
-            minutelyData.add(ts, value);
-            hourlyData.add(ts, value);
+            if (minutelyData != null)
+                minutelyData.add(ts, value);
+            if (hourlyData != null)
+                hourlyData.add(ts, value);
         }
 
         public Iterable<Item<AggValues<V>>> getMinutelyData() {
+            if (minutelyData == null)
+                return null;
             return minutelyData.getData();
         }
 
         public Iterable<Item<AggValues<V>>> getHourlyData() {
+            if (hourlyData == null)
+                return null;
             return hourlyData.getData();
         }
 
         public void clear() {
-            minutelyData.clear();
-            hourlyData.clear();
+            if (minutelyData != null)
+                minutelyData.clear();
+            if (hourlyData != null)
+                hourlyData.clear();
         }
 
     }
@@ -250,30 +266,42 @@ public class History<T, V extends Number> {
         hourlyEventHandler = hHandler;
     }
 
+    private AggHistory<V> getOrCreateAggHistory(String attr) {
+        AggHistory<V> agg = aggData.get(attr);
+        if (agg == null) { // encounters new attribute
+            agg = new AggHistory<>(attr,
+                    minutelyEventHandler,
+                    hourlyEventHandler);
+            aggData.put(attr, agg);
+        }
+        return agg;
+    }
+
     public void add(long ts, T data) {
 
-        while (realtimeData.size() >= 120)
-            realtimeEventHandler.onExpired(
-                realtimeData.poll());
+        if (realtimeEventHandler == null) {
+            while (realtimeData.size() >= 120)
+                realtimeData.poll();
+        } else {
+            while (realtimeData.size() >= 120)
+                realtimeEventHandler.onExpired(
+                        realtimeData.poll());
+        }
         Item<T> newItem = new Item<>(ts, data);
         realtimeData.offer(newItem);
 
         Class<?> dataClass = data.getClass();
-        if (Map.class.isAssignableFrom(dataClass)) {
+        if (Number.class.isAssignableFrom(dataClass)) {
+            // Number
+            getOrCreateAggHistory("N").add(ts, (V) data);
+        } else if (Map.class.isAssignableFrom(dataClass)) {
             // Map
             Map m = (Map) data;
             for (Object keyObj : m.keySet()) {
                 if (keyObj == null || !String.class.isAssignableFrom(keyObj.getClass()))
                     continue;
                 Object valObj = m.get(keyObj);
-                String attr = (String) keyObj;
-                AggHistory<V> agg = aggData.get(attr);
-                if (agg == null) { // encounters new attribute
-                    agg = new AggHistory<>(attr,
-                            minutelyEventHandler,
-                            hourlyEventHandler);
-                    aggData.put(attr, agg);
-                }
+                AggHistory<V> agg = getOrCreateAggHistory((String) keyObj);
                 if (valObj == null || !Number.class.isAssignableFrom(valObj.getClass()))
                     continue;
                 agg.add(ts, (V) valObj);
@@ -292,26 +320,19 @@ public class History<T, V extends Number> {
                 if (!rt.isPrimitive() &&
                         !Number.class.isAssignableFrom(rt))
                     continue;
-
                 String attr = method.getName().substring(3);
-                AggHistory<V> agg = aggData.get(attr);
-                if (agg == null) { // encounters new attribute
-                    agg = new AggHistory<>(attr,
-                            minutelyEventHandler,
-                            hourlyEventHandler);
-                    aggData.put(attr, agg);
-                }
+                AggHistory<V> agg = getOrCreateAggHistory(attr);
                 try {
                     Object n = method.invoke(data);
                     if (n != null) agg.add(ts, (V) n);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
-
             }
         }
 
-        realtimeEventHandler.onNew(newItem);
+        if (realtimeEventHandler != null)
+            realtimeEventHandler.onNew(newItem);
     }
 
     public Iterable<Item<T>> getRealtimeData() {

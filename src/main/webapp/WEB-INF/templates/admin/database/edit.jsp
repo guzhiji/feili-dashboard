@@ -74,8 +74,6 @@
                                         </c:choose>
                                     </c:forEach>
                                 </select>
-                                <input type="text"
-                                    value="${entity.dbDriver}" />
                             </div>
                         </div>
 

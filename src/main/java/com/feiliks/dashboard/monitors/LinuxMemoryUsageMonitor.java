@@ -1,9 +1,6 @@
 package com.feiliks.dashboard.monitors;
 
-import com.feiliks.dashboard.History;
-import com.feiliks.dashboard.NotifierMessage;
-import com.feiliks.dashboard.SysInfo;
-import com.feiliks.dashboard.AbstractMonitor;
+import com.feiliks.dashboard.*;
 
 
 public class LinuxMemoryUsageMonitor extends AbstractMonitor {
@@ -38,52 +35,7 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
 
     public final class Task extends AbstractMonitor.Task {
 
-        private final History<MemoryUsage, Long> history = new History<>(
-                new History.IRealtimeEventHandler<MemoryUsage>() {
-                    @Override
-                    public void onExpired(History.Item<MemoryUsage> item) {
-                        sendMessage("History_Realtime", new NotifierMessage<>(
-                                "remove", String.valueOf(item.getKey()), null));
-                    }
-
-                    @Override
-                    public void onNew(History.Item<MemoryUsage> item) {
-                        sendMessage("History_Realtime", new NotifierMessage<>(
-                                "update",
-                                String.valueOf(item.getKey()),
-                                item.getData()));
-                    }
-                },
-                new History.IAggHistoryEventHandler<Long>() {
-                    @Override
-                    public void onPeriodExpired(String attr, History.Item<History.AggValues<Long>> item) {
-                        sendMessage("History_" + attr + "_Minutely", new NotifierMessage<>(
-                                "remove", String.valueOf(item.getKey()), null));
-                    }
-
-                    @Override
-                    public void onNewPeriod(String attr, History.Item<History.AggValues<Long>> item) {
-                        sendMessage("History_" + attr + "_Minutely", new NotifierMessage<>(
-                                "update",
-                                String.valueOf(item.getKey()),
-                                item.getData()));
-                    }
-                },
-                new History.IAggHistoryEventHandler<Long>() {
-                    @Override
-                    public void onPeriodExpired(String attr, History.Item<History.AggValues<Long>> item) {
-                        sendMessage("History_" + attr + "_Hourly", new NotifierMessage<>(
-                                "remove", String.valueOf(item.getKey()), null));
-                    }
-
-                    @Override
-                    public void onNewPeriod(String attr, History.Item<History.AggValues<Long>> item) {
-                        sendMessage("History_" + attr + "_Hourly", new NotifierMessage<>(
-                                "update",
-                                String.valueOf(item.getKey()),
-                                item.getData()));
-                    }
-                });
+        private final FluctuationHistory<MemoryUsage, Long> fluct = new FluctuationHistory<>(this);
 
         @Override
         public void run() {
@@ -92,21 +44,10 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
 
                 long ts = System.currentTimeMillis();
                 MemoryUsage mu = new MemoryUsage(memUsage[0], memUsage[1]);
-                history.add(ts, mu);
+                fluct.add(ts, mu);
 
                 exportResult("Status", mu);
-                exportResult(
-                        "History_Realtime",
-                        history.getRealtimeData());
-                for (String attr : history.getAttributes()) {
-                    exportResult(
-                            "History_" + attr + "_Minutely",
-                            history.getMinutelyData(attr));
-                    exportResult(
-                            "History_" + attr + "_Hourly",
-                            history.getHourlyData(attr));
-                }
-
+                fluct.exportResults();
             }
         }
 
@@ -114,17 +55,17 @@ public class LinuxMemoryUsageMonitor extends AbstractMonitor {
 
     public LinuxMemoryUsageMonitor() {
         super(LinuxMemoryUsageMonitor.class, Task.class, true);
-        registerMessageSource("History_Realtime", "obj-list");
-        registerMessageSource("History_Used_Minutely", "obj-list");
-        registerMessageSource("History_Available_Minutely", "obj-list");
-        registerMessageSource("History_Used_Hourly", "obj-list");
-        registerMessageSource("History_Available_Hourly", "obj-list");
+        registerMessageSource("Fluct_Realtime", "obj-list");
+        registerMessageSource("Fluct_Used_Minutely", "obj-list");
+        registerMessageSource("Fluct_Available_Minutely", "obj-list");
+        registerMessageSource("Fluct_Used_Hourly", "obj-list");
+        registerMessageSource("Fluct_Available_Hourly", "obj-list");
         registerResultSource("Status", "obj");
-        registerResultSource("History_Realtime", "obj-list");
-        registerResultSource("History_Used_Minutely", "obj-list");
-        registerResultSource("History_Available_Minutely", "obj-list");
-        registerResultSource("History_Used_Hourly", "obj-list");
-        registerResultSource("History_Available_Hourly", "obj-list");
+        registerResultSource("Fluct_Realtime", "obj-list");
+        registerResultSource("Fluct_Used_Minutely", "obj-list");
+        registerResultSource("Fluct_Available_Minutely", "obj-list");
+        registerResultSource("Fluct_Used_Hourly", "obj-list");
+        registerResultSource("Fluct_Available_Hourly", "obj-list");
     }
 
 }

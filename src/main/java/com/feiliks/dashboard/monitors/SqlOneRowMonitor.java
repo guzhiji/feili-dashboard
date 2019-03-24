@@ -1,8 +1,9 @@
 package com.feiliks.dashboard.monitors;
 
 import com.feiliks.dashboard.AbstractMonitor;
+import com.feiliks.dashboard.FluctuationHistory;
 import com.feiliks.dashboard.History;
-import com.feiliks.dashboard.NotifierMessage;
+import com.feiliks.dashboard.PerformanceHistory;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -14,46 +15,8 @@ public class SqlOneRowMonitor extends AbstractMonitor {
 
     public final class Task extends AbstractMonitor.Task {
 
-        private final History<Map<String, Object>, Double> history = new History<>(
-                new History.IRealtimeEventHandler<Map<String, Object>>() {
-                    @Override
-                    public void onExpired(History.Item<Map<String, Object>> item) {
-                        sendMessage("History_Realtime", new NotifierMessage<>(
-                                "remove", String.valueOf(item.getKey()), null));
-                    }
-
-                    @Override
-                    public void onNew(History.Item<Map<String, Object>> item) {
-                        sendMessage("History_Realtime", new NotifierMessage<>(
-                                "update", String.valueOf(item.getKey()), item.getData()));
-                    }
-                },
-                new History.IAggHistoryEventHandler<Double>() {
-                    @Override
-                    public void onPeriodExpired(String attr, History.Item<History.AggValues<Double>> item) {
-                        sendMessage("History_" + attr + "_Minutely", new NotifierMessage<>(
-                                "remove", String.valueOf(item.getKey()), null));
-                    }
-
-                    @Override
-                    public void onNewPeriod(String attr, History.Item<History.AggValues<Double>> item) {
-                        sendMessage("History_" + attr + "_Minutely", new NotifierMessage<>(
-                                "update", String.valueOf(item.getKey()), item.getData()));
-                    }
-                },
-                new History.IAggHistoryEventHandler<Double>() {
-                    @Override
-                    public void onPeriodExpired(String attr, History.Item<History.AggValues<Double>> item) {
-                        sendMessage("History_" + attr + "_Hourly", new NotifierMessage<>(
-                                "remove", String.valueOf(item.getKey()), null));
-                    }
-
-                    @Override
-                    public void onNewPeriod(String attr, History.Item<History.AggValues<Double>> item) {
-                        sendMessage("History_" + attr + "_Hourly", new NotifierMessage<>(
-                                "update", String.valueOf(item.getKey()), item.getData()));
-                    }
-                });
+        private final PerformanceHistory perf = new PerformanceHistory(this);
+        private final History<Map<String, Object>, Double> fluct = new FluctuationHistory<>(this);
 
         @Override
         public void run() {
@@ -61,10 +24,14 @@ public class SqlOneRowMonitor extends AbstractMonitor {
             String sql = (String) getMonitorInfo().readConfig("dbSql");
             DataSource ds = getDataSource();
             Map<String, Object> out = null;
+            perf.reset();
 
+            perf.start("Conn");
             try (Connection conn = ds.getConnection()) {
+                perf.stop("Conn");
                 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+                    perf.start("Exec");
                     long ts = System.currentTimeMillis();
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
@@ -75,21 +42,23 @@ public class SqlOneRowMonitor extends AbstractMonitor {
                                 out.put(metaData.getColumnLabel(i),
                                         rs.getObject(i));
                             }
-                            history.add(ts, out);
-                            exportResult("History_Realtime",
-                                    history.getRealtimeData());
+                            fluct.add(ts, out);
+                            exportResult("Fluct_Realtime",
+                                    fluct.getRealtimeData());
                         }
+                        perf.stop("Exec");
                     }
-                    sendMessage("Result", new NotifierMessage<>(
-                            "update", String.valueOf(ts), out));
 
-                }
-
+                } // end: PreparedStatement
+            } catch (SQLTimeoutException e) {
+                perf.stop("Conn");
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
                 exportResult("Result", out);
-            }
+                perf.finish();
+                perf.exportResults();
+            } // end: Connection
 
         }
     }
@@ -97,9 +66,18 @@ public class SqlOneRowMonitor extends AbstractMonitor {
     public SqlOneRowMonitor() {
         super(SqlOneRowMonitor.class, Task.class, true);
         registerResultSource("Result", "obj");
-        registerResultSource("History_Realtime", "obj-list");
-        registerMessageSource("Result", "obj");
-        registerMessageSource("History_Realtime", "obj-list");
+        registerResultSource("Fluct_Realtime", "obj-list");
+        registerResultSource("Perf_Realtime", "obj-list");
+        registerResultSource("Perf_Conn_Minutely", "obj-list");
+        registerResultSource("Perf_Exec_Minutely", "obj-list");
+        registerResultSource("Perf_Conn_Hourly", "obj-list");
+        registerResultSource("Perf_Exec_Hourly", "obj-list");
+        registerMessageSource("Fluct_Realtime", "obj-list");
+        registerMessageSource("Perf_Realtime", "obj-list");
+        registerMessageSource("Perf_Conn_Minutely", "obj-list");
+        registerMessageSource("Perf_Exec_Minutely", "obj-list");
+        registerMessageSource("Perf_Conn_Hourly", "obj-list");
+        registerMessageSource("Perf_Exec_Hourly", "obj-list");
     }
 
 }
