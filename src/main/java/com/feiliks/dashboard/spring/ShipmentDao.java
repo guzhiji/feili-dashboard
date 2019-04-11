@@ -153,7 +153,7 @@ public class ShipmentDao {
     /*
     private final static String sqlTrolleys = "select distinct" +
             "    dd.DROPID trolley_id," +
-            "    o.CONSIGNEEKEY factory," +
+            "    o.SUSR35 factory," +
             "    o.TRADINGPARTNER line," +
             "    t.box_qty," +
             "    o.APPOINTMENTKEY appointment_key " +
@@ -188,7 +188,7 @@ public class ShipmentDao {
      */
     private final static String sqlTrolleys = "select" +
             "    t.trolley_id," +
-            "    max(o.CONSIGNEEKEY) factory," +
+            "    max(o.SUSR35) factory," +
             "    max(o.TRADINGPARTNER) line," +
             "    t.box_qty," +
             "    max(o.APPOINTMENTKEY) appointment_key " +
@@ -246,7 +246,7 @@ public class ShipmentDao {
      */
     private final static String sqlAppointments = "select " +
             "    a.APPOINTMENTKEY appointment_key," +
-            "    max(o.CONSIGNEEKEY) factory," +
+            "    max(o.SUSR35) factory," +
             "    max(o.TRADINGPARTNER) line," +
             "    CAST((FROM_TZ(CAST(a.ADDDATE AS TIMESTAMP),'+00:00') AT TIME ZONE 'Asia/Shanghai') AS DATE) start_time " +
             "from APPOINTMENT a" +

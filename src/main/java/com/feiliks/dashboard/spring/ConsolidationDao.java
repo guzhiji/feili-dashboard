@@ -129,7 +129,7 @@ public class ConsolidationDao {
             "    s.COMPANY storer_name," +
             "    o.SUSR35 consignee_key," +
             "    c.COMPANY consignee_name," +
-            "    o.CONSIGNEEKEY factory," +
+            "    o.SUSR35 factory," +
             "    o.TRADINGPARTNER line," +
             "    CAST((FROM_TZ(CAST(o.EDITDATE AS TIMESTAMP),'+00:00') AT TIME ZONE 'Asia/Shanghai') AS DATE) op_time " +
             "from ORDERS o" +
