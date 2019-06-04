@@ -144,8 +144,16 @@ class ShipmentUtils {
         for (ShipmentDao.TrolleyOrder to : orders) {
             if (!"LKSHIP".equals(to.getPutawayZone()))
                 return false;
-            if (!"55".equals(to.getOrderStatus()))
+            // if (!"55".equals(to.getOrderStatus()))
+            if (to.getOrderStatus() == null)
                 return false;
+            try {
+                // < 55 -> not yet picked -> not WAITING status
+                if (55 > Integer.parseInt(to.getOrderStatus().trim()))
+                    return false;
+            } catch (NumberFormatException ignored) {
+                return false;
+            }
             // get trolleys that contain the current order
             Set<ShipmentDao.TrolleyOrder> trolleys = groupByOrder.get(to.getOrderKey());
             if (trolleys == null) return false;
