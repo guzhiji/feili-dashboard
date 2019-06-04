@@ -222,13 +222,17 @@ public class ConsolidationDao {
     }
 
     private String convertStatus(String s) {
-        if (s != null) s = s.trim();
-        if ("55".equals(s))
-            return Status.PICKED.name();
-        else if ("95".equals(s))
-            return Status.SHIPPED.name();
-        else
-            return Status.OTHER.name();
+        if (s != null) {
+            try {
+                int status = Integer.parseInt(s.trim());
+                if (status >= 95)
+                    return Status.SHIPPED.name();
+                if (status >= 55)
+                    return Status.PICKED.name();
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return Status.OTHER.name();
     }
 
 }
