@@ -39,6 +39,19 @@ public class ShipmentUtilsTests {
     }
 
     @Test
+    public void testIsWaiting_A_AfterPicked() {
+        List<ShipmentDao.TrolleyOrder> trolleyOrders = Arrays.asList(
+                new ShipmentDao.TrolleyOrder(
+                        "a", "1", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "a", "2", "61", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "a", "3", "68", "LKSHIP")
+        );
+        Assert.assertTrue(isWaiting(trolleyOrders, "a"));
+    }
+
+    @Test
     public void testIsWaiting_A_NotInLKSHIP() {
         List<ShipmentDao.TrolleyOrder> trolleyOrders = Arrays.asList(
                 new ShipmentDao.TrolleyOrder(
@@ -81,6 +94,23 @@ public class ShipmentUtilsTests {
                         "b", "3", "52", "LKSHIP")
         );
         Assert.assertFalse(isWaiting(trolleyOrders, "a"));
+    }
+
+    @Test
+    public void testIsWaiting_B_AfterPicked() {
+        List<ShipmentDao.TrolleyOrder> trolleyOrders = Arrays.asList(
+                new ShipmentDao.TrolleyOrder(
+                        "a", "1", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "a", "2", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "b", "1", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "b", "3", "61", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "b", "3", "68", "LKSHIP")
+        );
+        Assert.assertTrue(isWaiting(trolleyOrders, "a"));
     }
 
     @Test
@@ -136,6 +166,27 @@ public class ShipmentUtilsTests {
                         "c", "4", "52", "LKSHIP")
         );
         Assert.assertFalse(isWaiting(trolleyOrders, "a"));
+    }
+
+    @Test
+    public void testIsWaiting_C_AfterPicked() {
+        List<ShipmentDao.TrolleyOrder> trolleyOrders = Arrays.asList(
+                new ShipmentDao.TrolleyOrder(
+                        "a", "1", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "a", "2", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "b", "1", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "b", "3", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "c", "3", "55", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "c", "4", "61", "LKSHIP"),
+                new ShipmentDao.TrolleyOrder(
+                        "c", "5", "68", "LKSHIP")
+        );
+        Assert.assertTrue(isWaiting(trolleyOrders, "a"));
     }
 
     @Test
