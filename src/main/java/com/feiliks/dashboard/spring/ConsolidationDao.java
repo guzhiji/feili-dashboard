@@ -227,7 +227,10 @@ public class ConsolidationDao {
                 int status = Integer.parseInt(s.trim());
                 if (status >= 95)
                     return Status.SHIPPED.name();
-                if (status >= 55)
+                // >= 55 -> picked or packaging
+                // packaging means not yet picked
+                // so, != 61 excludes packaging
+                if (status >= 55 && status != 61)
                     return Status.PICKED.name();
             } catch (NumberFormatException ignored) {
             }

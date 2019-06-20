@@ -148,8 +148,10 @@ class ShipmentUtils {
             if (to.getOrderStatus() == null)
                 return false;
             try {
+                int os = Integer.parseInt(to.getOrderStatus().trim());
                 // < 55 -> not yet picked -> not WAITING status
-                if (55 > Integer.parseInt(to.getOrderStatus().trim()))
+                // = 61 -> packaging -> not WAITING status
+                if (55 > os || 61 == os)
                     return false;
             } catch (NumberFormatException ignored) {
                 return false;

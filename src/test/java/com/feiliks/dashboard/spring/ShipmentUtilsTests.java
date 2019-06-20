@@ -44,7 +44,7 @@ public class ShipmentUtilsTests {
                 new ShipmentDao.TrolleyOrder(
                         "a", "1", "55", "LKSHIP"),
                 new ShipmentDao.TrolleyOrder(
-                        "a", "2", "61", "LKSHIP"),
+                        "a", "2", "68", "LKSHIP"),
                 new ShipmentDao.TrolleyOrder(
                         "a", "3", "68", "LKSHIP")
         );
@@ -106,7 +106,7 @@ public class ShipmentUtilsTests {
                 new ShipmentDao.TrolleyOrder(
                         "b", "1", "55", "LKSHIP"),
                 new ShipmentDao.TrolleyOrder(
-                        "b", "3", "61", "LKSHIP"),
+                        "b", "3", "68", "LKSHIP"),
                 new ShipmentDao.TrolleyOrder(
                         "b", "3", "68", "LKSHIP")
         );
@@ -182,7 +182,7 @@ public class ShipmentUtilsTests {
                 new ShipmentDao.TrolleyOrder(
                         "c", "3", "55", "LKSHIP"),
                 new ShipmentDao.TrolleyOrder(
-                        "c", "4", "61", "LKSHIP"),
+                        "c", "4", "68", "LKSHIP"),
                 new ShipmentDao.TrolleyOrder(
                         "c", "5", "68", "LKSHIP")
         );
