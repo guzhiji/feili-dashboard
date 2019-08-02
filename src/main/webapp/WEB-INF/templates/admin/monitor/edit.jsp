@@ -101,6 +101,14 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label for="input-url" class="col-md-2 control-label">URL</label>
+                            <div class="col-md-10">
+                                <input type="text" name="webUrl" id="input-url" class="form-control"
+                                    value="${entity.webUrl}" />
+                            </div>
+                        </div>
+
                     </form>
                 </div>
                 <div class="panel-footer">

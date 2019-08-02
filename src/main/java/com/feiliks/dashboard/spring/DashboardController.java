@@ -1,7 +1,6 @@
-package com.feiliks.dashboard.spring.admin.controllers;
+package com.feiliks.dashboard.spring;
 
 import com.feiliks.dashboard.AbstractMonitor;
-import com.feiliks.dashboard.spring.NotFoundException;
 import com.feiliks.dashboard.spring.admin.dto.DashboardDto;
 import com.feiliks.dashboard.spring.admin.dto.MonitorDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
@@ -9,7 +8,6 @@ import com.feiliks.dashboard.spring.entities.DashboardEntity;
 import com.feiliks.dashboard.spring.repositories.BlockRepository;
 import com.feiliks.dashboard.spring.repositories.DashboardRepository;
 import com.feiliks.dashboard.spring.services.MonitorService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

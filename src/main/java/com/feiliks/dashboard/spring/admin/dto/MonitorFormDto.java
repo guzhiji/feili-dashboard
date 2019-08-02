@@ -31,6 +31,8 @@ public class MonitorFormDto {
 
     private String dbSql;
 
+    private String webUrl;
+
     public MonitorFormDto() {
     }
 
@@ -44,11 +46,13 @@ public class MonitorFormDto {
         // parse configData to read dbSql
         if (entity.getConfigData() == null) {
             dbSql = null;
+            webUrl = null;
         } else {
             try {
                 Map config = new ObjectMapper().readValue(
                         entity.getConfigData(), Map.class);
                 dbSql = (String) config.get("dbSql");
+                webUrl = (String) config.get("url");
             } catch (IOException ignored) {
                 dbSql = null;
             }
@@ -68,18 +72,21 @@ public class MonitorFormDto {
         entity.setExecRate(execRate);
         // databaseId needs custom code to fetch DatabaseEntity object
 
-        // save dbSql as JSON into configData
-        if (dbSql != null && !dbSql.trim().isEmpty()) {
-            Map<String, String> config = new HashMap<>();
+        // save dbSql and url as JSON into configData
+        Map<String, String> config = new HashMap<>();
+        if (dbSql != null && !dbSql.trim().isEmpty())
             config.put("dbSql", dbSql.trim());
+        if (webUrl != null && !webUrl.trim().isEmpty())
+            config.put("url", webUrl.trim());
+        if (config.isEmpty()) {
+            entity.setConfigData(null);
+        } else {
             try {
                 entity.setConfigData(
                         new ObjectMapper().writeValueAsString(config));
             } catch (JsonProcessingException e) {
                 entity.setConfigData(null);
             }
-        } else {
-            entity.setConfigData(null);
         }
     }
 
@@ -129,6 +136,14 @@ public class MonitorFormDto {
 
     public void setDbSql(String dbSql) {
         this.dbSql = dbSql;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
     }
 }
 

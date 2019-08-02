@@ -1,7 +1,7 @@
 package com.feiliks.dashboard.spring.repositories;
 
 import com.feiliks.dashboard.spring.entities.BlockEntity;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BlockRepository extends CrudRepository<BlockEntity, Long> {
+public interface BlockRepository extends JpaRepository<BlockEntity, Long> {
 }
