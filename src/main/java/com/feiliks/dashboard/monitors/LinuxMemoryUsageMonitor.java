@@ -1,6 +1,8 @@
 package com.feiliks.dashboard.monitors;
 
-import com.feiliks.dashboard.*;
+import com.feiliks.dashboard.AbstractMonitor;
+import com.feiliks.dashboard.FluctuationHistory;
+import com.feiliks.dashboard.SysInfo;
 
 
 public class LinuxMemoryUsageMonitor extends AbstractMonitor {

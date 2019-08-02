@@ -1,4 +1,4 @@
-package com.feiliks.dashboard.spring.controllers;
+package com.feiliks.dashboard.spring.admin.controllers;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

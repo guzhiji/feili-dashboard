@@ -1,8 +1,8 @@
-package com.feiliks.dashboard.spring.controllers;
+package com.feiliks.dashboard.spring.admin.controllers;
 
 import com.feiliks.dashboard.TaskUtils;
 import com.feiliks.dashboard.spring.NotFoundException;
-import com.feiliks.dashboard.spring.dto.MonitorFormDto;
+import com.feiliks.dashboard.spring.admin.dto.MonitorFormDto;
 import com.feiliks.dashboard.spring.entities.DatabaseEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
 import com.feiliks.dashboard.spring.repositories.DatabaseRepository;

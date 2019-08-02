@@ -1,4 +1,4 @@
-package com.feiliks.dashboard.spring.dto;
+package com.feiliks.dashboard.spring.admin.dto;
 
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.DashboardEntity;

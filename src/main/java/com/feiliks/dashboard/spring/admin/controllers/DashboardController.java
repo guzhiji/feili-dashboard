@@ -1,9 +1,9 @@
-package com.feiliks.dashboard.spring.controllers;
+package com.feiliks.dashboard.spring.admin.controllers;
 
 import com.feiliks.dashboard.AbstractMonitor;
 import com.feiliks.dashboard.spring.NotFoundException;
-import com.feiliks.dashboard.spring.dto.DashboardDto;
-import com.feiliks.dashboard.spring.dto.MonitorDto;
+import com.feiliks.dashboard.spring.admin.dto.DashboardDto;
+import com.feiliks.dashboard.spring.admin.dto.MonitorDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.DashboardEntity;
 import com.feiliks.dashboard.spring.repositories.BlockRepository;

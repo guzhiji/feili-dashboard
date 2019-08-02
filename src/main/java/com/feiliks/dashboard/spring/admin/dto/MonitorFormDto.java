@@ -1,4 +1,4 @@
-package com.feiliks.dashboard.spring.dto;
+package com.feiliks.dashboard.spring.admin.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

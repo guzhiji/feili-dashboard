@@ -1,7 +1,7 @@
-package com.feiliks.dashboard.spring.controllers;
+package com.feiliks.dashboard.spring.admin.controllers;
 
 import com.feiliks.dashboard.spring.NotFoundException;
-import com.feiliks.dashboard.spring.dto.TemplateDto;
+import com.feiliks.dashboard.spring.admin.dto.TemplateDto;
 import com.feiliks.dashboard.spring.entities.TemplateEntity;
 import com.feiliks.dashboard.spring.repositories.TemplateRepository;
 

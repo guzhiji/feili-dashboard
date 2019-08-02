@@ -1,8 +1,8 @@
-package com.feiliks.dashboard.spring.controllers;
+package com.feiliks.dashboard.spring.admin.controllers;
 
 import com.feiliks.dashboard.spring.NotFoundException;
-import com.feiliks.dashboard.spring.dto.BlockFormDto;
-import com.feiliks.dashboard.spring.dto.FieldDto;
+import com.feiliks.dashboard.spring.admin.dto.BlockFormDto;
+import com.feiliks.dashboard.spring.admin.dto.FieldDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.FieldEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;

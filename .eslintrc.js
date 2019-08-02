@@ -4,6 +4,7 @@ module.exports = {
     },
     "extends": "eslint:recommended",
     "globals": {
+        "require": true,
         "dashboard": true,
         "jQuery": true,
         "$": true,

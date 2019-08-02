@@ -1,7 +1,7 @@
-package com.feiliks.dashboard.spring.controllers;
+package com.feiliks.dashboard.spring.admin.controllers;
 
 import com.feiliks.dashboard.spring.NotFoundException;
-import com.feiliks.dashboard.spring.dto.DatabaseFormDto;
+import com.feiliks.dashboard.spring.admin.dto.DatabaseFormDto;
 import com.feiliks.dashboard.spring.impl.DatabaseInfo;
 import com.feiliks.dashboard.spring.services.DbConnManager;
 import com.feiliks.dashboard.spring.entities.DatabaseEntity;
