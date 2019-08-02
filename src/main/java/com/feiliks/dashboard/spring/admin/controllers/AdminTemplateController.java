@@ -3,7 +3,7 @@ package com.feiliks.dashboard.spring.admin.controllers;
 import com.feiliks.dashboard.spring.NotFoundException;
 import com.feiliks.dashboard.spring.admin.dto.TemplateDto;
 import com.feiliks.dashboard.spring.entities.TemplateEntity;
-import com.feiliks.dashboard.spring.repositories.TemplateRepository;
+import com.feiliks.dashboard.spring.repositories.TemplateRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class AdminTemplateController extends AbstractClassicController {
 
     @Autowired
-    private TemplateRepository tplRepo;
+    private TemplateRepo tplRepo;
 
     @GetMapping
     public ModelAndView listTemplates() {

@@ -5,7 +5,7 @@ import com.feiliks.dashboard.spring.admin.dto.DatabaseFormDto;
 import com.feiliks.dashboard.spring.impl.DatabaseInfo;
 import com.feiliks.dashboard.spring.services.DbConnManager;
 import com.feiliks.dashboard.spring.entities.DatabaseEntity;
-import com.feiliks.dashboard.spring.repositories.DatabaseRepository;
+import com.feiliks.dashboard.spring.repositories.DatabaseRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,7 +29,7 @@ import java.util.Map;
 public class AdminDatabaseController extends AbstractClassicController {
 
     @Autowired
-    private DatabaseRepository dbRepo;
+    private DatabaseRepo dbRepo;
 
     @Autowired
     private DbConnManager dbConnManager;

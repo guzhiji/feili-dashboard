@@ -6,9 +6,9 @@ import com.feiliks.dashboard.spring.admin.dto.FieldDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.FieldEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
-import com.feiliks.dashboard.spring.repositories.BlockRepository;
-import com.feiliks.dashboard.spring.repositories.FieldRepository;
-import com.feiliks.dashboard.spring.repositories.MonitorRepository;
+import com.feiliks.dashboard.spring.repositories.BlockRepo;
+import com.feiliks.dashboard.spring.repositories.FieldRepo;
+import com.feiliks.dashboard.spring.repositories.MonitorRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,13 +29,13 @@ import java.util.*;
 public class AdminBlockController extends AbstractClassicController {
 
     @Autowired
-    private BlockRepository blockRepo;
+    private BlockRepo blockRepo;
 
     @Autowired
-    private MonitorRepository monitorRepo;
+    private MonitorRepo monitorRepo;
 
     @Autowired
-    private FieldRepository fieldRepo;
+    private FieldRepo fieldRepo;
 
     @GetMapping("/{id}")
     public ModelAndView showBlockEditor(@PathVariable long id)

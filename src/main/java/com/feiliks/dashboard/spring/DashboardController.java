@@ -5,8 +5,8 @@ import com.feiliks.dashboard.spring.admin.dto.DashboardDto;
 import com.feiliks.dashboard.spring.admin.dto.MonitorDto;
 import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.DashboardEntity;
-import com.feiliks.dashboard.spring.repositories.BlockRepository;
-import com.feiliks.dashboard.spring.repositories.DashboardRepository;
+import com.feiliks.dashboard.spring.repositories.BlockRepo;
+import com.feiliks.dashboard.spring.repositories.DashboardRepo;
 import com.feiliks.dashboard.spring.services.MonitorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +27,10 @@ import java.util.Map;
 public class DashboardController {
 
     @Autowired
-    private DashboardRepository dashboardRepo;
+    private DashboardRepo dashboardRepo;
 
     @Autowired
-    private BlockRepository blockRepo;
+    private BlockRepo blockRepo;
 
     @Autowired
     private MonitorService monitorService;

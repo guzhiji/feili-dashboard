@@ -6,7 +6,7 @@ import com.feiliks.dashboard.spring.TaskActivationException;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
 import com.feiliks.dashboard.spring.impl.Messenger;
 import com.feiliks.dashboard.spring.impl.MonitorInfo;
-import com.feiliks.dashboard.spring.repositories.MonitorRepository;
+import com.feiliks.dashboard.spring.repositories.MonitorRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -32,7 +32,7 @@ public class MonitorService {
     private ThreadPoolTaskScheduler monitorScheduler;
 
     @Autowired
-    private MonitorRepository monitorRepo;
+    private MonitorRepo monitorRepo;
 
     @PostConstruct
     private void monitorServiceStarted() {

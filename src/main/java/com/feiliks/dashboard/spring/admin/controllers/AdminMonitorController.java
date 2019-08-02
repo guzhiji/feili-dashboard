@@ -5,8 +5,8 @@ import com.feiliks.dashboard.spring.NotFoundException;
 import com.feiliks.dashboard.spring.admin.dto.MonitorFormDto;
 import com.feiliks.dashboard.spring.entities.DatabaseEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
-import com.feiliks.dashboard.spring.repositories.DatabaseRepository;
-import com.feiliks.dashboard.spring.repositories.MonitorRepository;
+import com.feiliks.dashboard.spring.repositories.DatabaseRepo;
+import com.feiliks.dashboard.spring.repositories.MonitorRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,10 +28,10 @@ import java.util.Map;
 public class AdminMonitorController extends AbstractClassicController {
 
     @Autowired
-    private MonitorRepository monitorRepo;
+    private MonitorRepo monitorRepo;
 
     @Autowired
-    private DatabaseRepository dbRepo;
+    private DatabaseRepo dbRepo;
 
     @GetMapping
     public ModelAndView listMonitors() {

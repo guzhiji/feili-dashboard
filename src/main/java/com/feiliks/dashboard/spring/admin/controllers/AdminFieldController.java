@@ -4,7 +4,7 @@ package com.feiliks.dashboard.spring.admin.controllers;
 import com.feiliks.dashboard.spring.NotFoundException;
 import com.feiliks.dashboard.spring.admin.dto.FieldDto;
 import com.feiliks.dashboard.spring.entities.FieldEntity;
-import com.feiliks.dashboard.spring.repositories.FieldRepository;
+import com.feiliks.dashboard.spring.repositories.FieldRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class AdminFieldController extends AbstractClassicController {
 
     @Autowired
-    private FieldRepository fieldRepo;
+    private FieldRepo fieldRepo;
 
     @GetMapping("/{id}")
     public ModelAndView showFieldEditor(@PathVariable long id)

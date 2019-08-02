@@ -8,10 +8,10 @@ import com.feiliks.dashboard.spring.entities.BlockEntity;
 import com.feiliks.dashboard.spring.entities.DashboardEntity;
 import com.feiliks.dashboard.spring.entities.MonitorEntity;
 import com.feiliks.dashboard.spring.entities.TemplateEntity;
-import com.feiliks.dashboard.spring.repositories.BlockRepository;
-import com.feiliks.dashboard.spring.repositories.DashboardRepository;
-import com.feiliks.dashboard.spring.repositories.MonitorRepository;
-import com.feiliks.dashboard.spring.repositories.TemplateRepository;
+import com.feiliks.dashboard.spring.repositories.BlockRepo;
+import com.feiliks.dashboard.spring.repositories.DashboardRepo;
+import com.feiliks.dashboard.spring.repositories.MonitorRepo;
+import com.feiliks.dashboard.spring.repositories.TemplateRepo;
 import com.feiliks.dashboard.spring.services.MonitorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +32,16 @@ import java.util.*;
 public class AdminDashboardController extends AbstractClassicController {
 
     @Autowired
-    private DashboardRepository dashboardRepo;
+    private DashboardRepo dashboardRepo;
 
     @Autowired
-    private TemplateRepository tplRepo;
+    private TemplateRepo tplRepo;
 
     @Autowired
-    private MonitorRepository monitorRepo;
+    private MonitorRepo monitorRepo;
 
     @Autowired
-    private BlockRepository blockRepo;
+    private BlockRepo blockRepo;
 
     @Autowired
     private MonitorService monitorService;
