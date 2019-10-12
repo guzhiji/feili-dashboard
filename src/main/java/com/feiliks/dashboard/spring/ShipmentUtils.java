@@ -142,9 +142,7 @@ class ShipmentUtils {
         if (orders == null) return false;
         // check whether all orders are picked in this trolley
         for (ShipmentDao.TrolleyOrder to : orders) {
-            if (!"LKSHIP".equals(to.getPutawayZone()))
-                return false;
-            // if (!"55".equals(to.getOrderStatus()))
+            // if (!"LKSHIP".equals(to.getPutawayZone())) return false;
             if (to.getOrderStatus() == null)
                 return false;
             try {

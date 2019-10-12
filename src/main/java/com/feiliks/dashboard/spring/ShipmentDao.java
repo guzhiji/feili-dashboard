@@ -181,7 +181,7 @@ public class ShipmentDao {
      * - Boxes are counted by trolley ids.
      * - Trolleys are not duplicated even if there're multiple orders associated
      *   with them (factories and lines are presumably consistent within the same trolley).
-     * - Only trolleys in LKSHIP are counted.
+     * - ~~Only trolleys in LKSHIP are counted.~~
      * - Associated orders should not be shipped nor cancelled
      *   (in LKSHIP orders naturally shouldn't be shipped).
      * - Extra fields in orders: factory, line, and appointment_key.
@@ -198,7 +198,7 @@ public class ShipmentDao {
             "        count(distinct dd.CHILDID) box_qty" +
             "    from DROPID d" +
             "        inner join DROPIDDETAIL dd on dd.DROPID = d.DROPID" +
-            "    where d.CARTONTYPE = 'TROLLEY' and d.DROPLOC = 'LKSHIP'" +
+            "    where d.CARTONTYPE = 'TROLLEY'" + // and d.DROPLOC = 'LKSHIP'" +
             "    group by d.DROPID) t " +
             "inner join DROPIDDETAIL dd on dd.DROPID = t.trolley_id " +
             "inner join PICKDETAIL p on p.DROPID = dd.CHILDID " +
@@ -239,7 +239,7 @@ public class ShipmentDao {
      * Detailed Requirements:
      * - Associated orders should not be shipped nor cancelled.
      * - Appointment status is not completed.
-     * - Location is LKSHIP.
+     * - ~~Location is LKSHIP.~~
      * - Extra fields: factory, line, and start time of the appointment
      * - Factories and lines are presumably consistent within the same appointment.
      * - The raw start time values are not +8.
@@ -250,11 +250,17 @@ public class ShipmentDao {
             "    max(o.TRADINGPARTNER) line," +
             "    CAST((FROM_TZ(CAST(a.ADDDATE AS TIMESTAMP),'+00:00') AT TIME ZONE 'Asia/Shanghai') AS DATE) start_time " +
             "from APPOINTMENT a" +
-            "    inner join ORDERS o on o.APPOINTMENTKEY = a.APPOINTMENTKEY and o.STATUS not in ('98', '99', '95')" +
+            "    inner join ORDERS o on o.APPOINTMENTKEY = a.APPOINTMENTKEY and o.STATUS not in ('98', '99', '95') " +
+            /*
+            filter1: by droploc
             "        inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
             "        inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
             "        inner join DROPID d on d.DROPID = dd.DROPID and d.DROPLOC = 'LKSHIP' " +
-            // "        inner join LOC l on l.LOC = p.LOC and l.PUTAWAYZONE = 'LKSHIP' " +
+            */
+            /*
+            filter2: by putawayzone
+            "        inner join LOC l on l.LOC = p.LOC and l.PUTAWAYZONE = 'LKSHIP' " +
+            */
             "where a.STATUS <> '5COMP' " +
             "group by a.APPOINTMENTKEY, a.ADDDATE " +
             "order by start_time";
