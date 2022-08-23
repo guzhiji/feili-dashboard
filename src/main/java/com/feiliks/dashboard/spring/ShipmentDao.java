@@ -229,7 +229,7 @@ public class ShipmentDao {
             // "    inner join LOC l on l.LOC = p.LOC" +
             // "    inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY='CQ2'" +
             "    inner join DROPIDDETAIL dd on dd.CHILDID = p.DROPID" +
-            "    inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY' " +
+            "    inner join DROPID d on d.DROPID = dd.DROPID and d.CARTONTYPE = 'TROLLEY' and d.DROPLOC in ('LKSHIP', 'LKCONS') " +
             "where" +
             "    o.STATUS not in ('98', '99', '95')";
 
