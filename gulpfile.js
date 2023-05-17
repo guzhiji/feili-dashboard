@@ -2,11 +2,9 @@
 var buildPath = './src/main/resources/static/build',
 	gulp = require('gulp'),
 	uglify = require('gulp-uglify'),
-	sass = require('gulp-sass'),
+	sass = require('gulp-sass')(require('sass')),
 	concat = require('gulp-concat'),
 	rm = require('gulp-rm');
-
-sass.compiler = require('node-sass');
 
 gulp.task('sass', function() {
 	return gulp.src('./sass/**/*.scss')
