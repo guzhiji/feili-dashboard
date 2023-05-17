@@ -203,6 +203,7 @@ public class ShipmentDao {
             "inner join DROPIDDETAIL dd on dd.DROPID = t.trolley_id " +
             "inner join PICKDETAIL p on p.DROPID = dd.CHILDID " +
             "inner join ORDERS o on o.ORDERKEY = p.ORDERKEY and o.STATUS not in ('98', '99', '95') " +
+            "inner join STORER s ON s.STORERKEY = o.STORERKEY and s.TYPE = '1' and s.SUSR2 like 'CQ%' " + // CQ2 -> CQ%
             "group by t.trolley_id, t.box_qty";
 
     /**
@@ -224,7 +225,7 @@ public class ShipmentDao {
             // "    l.PUTAWAYZONE " +
             "    d.DROPLOC " +
             "from ORDERS o" +
-            "    inner join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' and s.SUSR2 = 'CQ2'" +
+            "    inner join STORER s on s.STORERKEY = o.STORERKEY and s.TYPE = '1' and s.SUSR2 like 'CQ%'" + // CQ2 -> CQ%
             "    inner join PICKDETAIL p on p.ORDERKEY = o.ORDERKEY" +
             // "    inner join LOC l on l.LOC = p.LOC" +
             // "    inner join AREADETAIL ad on ad.PUTAWAYZONE = l.PUTAWAYZONE and ad.AREAKEY='CQ2'" +
